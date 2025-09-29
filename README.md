@@ -1,5 +1,7 @@
 radix by tsvibt
 
+BRIEF update 28 Sep 2025: this codebase is almost certainly in a BROKEN state; i got stuck trying to multi-process-ify it. it's probably not too far from kinda-working, but it is messily halfway through a big change. sorry. hopefully at some point i will rehydrate it. if you're really really motivated to work on it, reach out (gmail: radixtsvibt) and we can have a call, ideally recorded to post on my youtube channel-- to talk through installation, and generally how the code works.
+
 updated 16 Jun 2024, but, probably incomplete. if you are interested in working on this, contact me (gmail: radixtsvibt) for help with setup.
 
 
