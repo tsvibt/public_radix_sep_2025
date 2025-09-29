@@ -1,0 +1,277 @@
+
+<style>
+
+.color-picker-wrapper {
+   z-index: 9999999;
+   position: relative;
+   border-top: 8px;
+}
+
+.coglang-setter-wrapper {
+   white-space: nowrap;
+}
+
+.reset-button {
+   background: transparent;
+   white-space: pre;
+}
+
+.reset-button-wrapper {
+   position: relative;
+}
+
+.reset-button-wrapper-unmodified { display:none; }
+
+.reset-button-wrapper-modified::before {
+   content: '';
+   position: absolute;
+   width: 100%;
+   height: 100%; 
+   z-index: -1; 
+   background-color: rgb(62, 162, 230);
+   box-shadow: inset 0 0 3px 2px rgb(192, 212, 255);
+}
+
+input[type="color"] {
+   width: 1.5em;
+   height: 1em;
+   border: none;
+   padding: .2em; 
+	-webkit-appearance: none;
+   margin-left: .1em;
+   margin-right: .1em;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
+
+</style>
+
+<script>
+
+function handle_Reset_Click(event){
+   let dataset = event.target.dataset;
+   if (dataset.target_kind == 'lang-color'){ Lang_ResetColor(dataset.lang); } 
+   else if (dataset.target_kind == 'lang-coglang'){ Lang_ResetCoglang(dataset.lang); } 
+   else if (dataset.target_kind == 'lang-allcoglangs'){ ResetAllCoglangs(); }
+   else if (dataset.target_kind == 'appearance-color'){ Setting_Reset(dataset.setting); };
+}
+
+function get_current_Coglangs(){
+   let coglangs = [...js_coglangs_default];
+   for (const lang in get_Settings().user_coglangs) {
+      if (get_Settings().user_coglangs[lang]) { coglangs.push(lang); } 
+      else { coglangs = coglangs.filter(item => item !== lang); };
+   }
+   return coglangs;
+}
+
+function ResetAllCoglangs(){
+   for (const lang in get_Settings().user_coglangs) { store_delete('user_coglangs', lang); }
+   Refresh_CoglangsState();
+}
+
+const SetsAreEqual = (a, b) => new Set(a).size === new Set(b).size && new Set(a).size === new Set([...a, ...b]).size;
+
+function Refresh_CoglangsState(){
+   var setters = document.querySelectorAll('input[data-target_kind="lang-coglang"]');
+   for (setter of setters) {
+      if (get_current_Coglangs().includes(setter.dataset.lang)){ setter.checked = true; }
+      else { setter.checked = false; };
+   }
+
+   var elements = document.querySelectorAll('.reset-button-wrapper[data-target_kind="lang-allcoglangs"]');
+   for (element of elements) {
+      if (SetsAreEqual(get_current_Coglangs(), js_coglangs_default)) { Reset_setUnmodified(element); } 
+      else { Reset_setModified(element); };
+   }
+}
+
+function Lang_ResetCoglang(lang){ return; }
+
+function Query_ResetElements(query) { return Array.from(document.querySelectorAll(`.reset-button-wrapper${query}`)); }
+
+// could unify the two pairs. maybe could unify the whole thing, though we want different namespace for langs and also do extra stuff........ _setIsModified (bool)
+function Setting_setModified(setting){
+   Query_ResetElements(`[data-target_kind="appearance-color"][data-setting="${setting}"]`).map(Reset_setModified);
+}
+
+function Setting_setUnmodified(setting){
+   Query_ResetElements(`[data-target_kind="appearance-color"][data-setting="${setting}"]`).map(Reset_setUnmodified);
+}
+
+
+function Lang_setModified(lang){
+   Query_ResetElements(`[data-target_kind="lang-color"][data-lang="${lang}"]`).map(Reset_setModified);
+}
+
+function Lang_setUnmodified(lang){
+   Query_ResetElements(`[data-target_kind="lang-color"][data-lang="${lang}"]`).map(Reset_setUnmodified);
+}
+
+function Reset_setUnmodified(element){
+   element.classList.remove('reset-button-wrapper-modified');
+   element.classList.add('reset-button-wrapper-unmodified');
+}
+
+function Reset_setModified(element){
+   element.classList.remove('reset-button-wrapper-unmodified');
+   element.classList.add('reset-button-wrapper-modified');
+}
+
+function get_Settings(){ return JSON.parse(localStorage.getItem('settings') || '{}'); }
+function set_Settings(obj){ localStorage.setItem('settings', JSON.stringify(obj)); }
+
+function store_update(attr, key, value){
+   let settings = get_Settings();
+   settings[attr][key] = value;
+   set_Settings(settings);
+}
+
+function store_delete(attr, key){
+   let settings = get_Settings();
+   delete settings[attr][key];
+   set_Settings(settings);
+}
+
+function Lang_refreshColor(lang){ LangColor_setColors(lang, get_Settings().user_lang_colors[lang]); }
+function Setting_refreshColor(setting){ SettingColor_setColors(setting, get_Settings().user_appearance_colors[setting]); }
+
+function SettingColor_setPickerColor (setting, color){
+   for (picker of document.getElementsByClassName(`colorPicker-appearance-${setting}`)) { picker.value = rgbToHex(color); }
+}
+
+function LangColor_setPickerColor (lang, color){
+   for (picker of document.getElementsByClassName(`colorPicker-${lang}`)) { picker.value = rgbToHex(color); }
+}
+
+function rgbToHex(rgb) { return '#' + rgb.map(value => value.toString(16).padStart(2, '0')).join(''); }
+function hexToRgb(hex) { return [0, 2, 4].map(i => parseInt(hex.replace('#', '').substring(i, i + 2), 16)); }
+
+document.addEventListener('input', function(event) {
+   let target = event.target;
+   let dataset = target.dataset;
+   let kind = dataset.target_kind;
+   if (kind === 'lang-coglang'){
+      store_update('user_coglangs', dataset.lang, target.checked);
+      Refresh_CoglangsState();
+   } else if (kind === 'lang-color'){
+      store_update('user_lang_colors', dataset.lang, hexToRgb(target.value));
+      Lang_setModified(dataset.lang);
+      Lang_refreshColor(dataset.lang);
+   } else if (kind === 'appearance-color'){
+      store_update('user_appearance_colors', dataset.setting, hexToRgb(target.value));
+      Setting_setModified(dataset.setting);
+      Setting_refreshColor(dataset.setting);
+   };
+});
+
+function SettingColor_setColors(setting, color){
+   Setting_ensureColorExists(setting);
+   document.documentElement.style.setProperty(`--appearance-color-${setting}`, `rgb(${color})`);
+}
+
+function LangColor_setColors(lang, color){
+   Lang_ensureColorsExist(lang);
+   document.documentElement.style.setProperty(`--lang-color-${lang}`, `rgb(${color})`);
+   document.documentElement.style.setProperty(`--lang-elem-color-${lang}`, `rgb(${Darken(color,1.4)})`);
+   document.documentElement.style.setProperty(`--lang-def-color-${lang}`, `rgb(${Darken(color,1.3)})`);
+}
+
+function Setting_Reset(setting){
+   var color = js_appearance_defaults[setting];
+   SettingColor_setColors(setting, color);
+   SettingColor_setPickerColor(setting, color);
+   store_delete('user_appearance_colors', setting);
+   Setting_setUnmodified(setting);
+}
+
+
+function Lang_ResetColor(lang){
+   var color = lang in js_langcolor_defaults ? js_langcolor_defaults[lang] : js_langcolor_defaults['DEFAULT'];
+   LangColor_setColors(lang, color);
+   LangColor_setPickerColor(lang, color);
+   store_delete('user_lang_colors', lang);
+   Lang_setUnmodified(lang);
+}
+
+function Darken(rgb, factor) { return rgb.map(value => Math.floor(value / factor)); }
+
+function Setting_setupRules(setting){
+   addCSSrule(`:root { --appearance-color-${setting}: rgb(80,80,80); } `);
+   if (setting === 'body-background'){
+      addCSSrule(`body {background-color: var(--appearance-color-${setting}) !important;}`);
+   };
+   if (setting === 'body-textcolor'){
+      addCSSrule(`body {color: var(--appearance-color-${setting}) !important;}`);
+   };
+
+}
+
+function Lang_setupRules(lang){
+   addCSSrule(`:root { --lang-color-${lang}: rgb(230,230,230); } `);
+   addCSSrule(`.lang-${lang} {color: var(--lang-color-${lang});}`);
+   addCSSrule(`:root { --lang-elem-color-${lang}: rgb(200,200,200); } `);
+   addCSSrule(`.lang-${lang} .lang_element {color:var(--lang-elem-color-${lang});}`);
+   addCSSrule(`.colorPicker-${lang} {background-color:var(--lang-elem-color-${lang});}`);
+   addCSSrule(`:root { --lang-def-color-${lang}: rgb(200,200,200); } `);
+   addCSSrule(`.lang-${lang} .def_element {color:var(--lang-def-color-${lang});}`);
+}
+
+function addCSSrule(text){
+   const sheet = document.styleSheets[0];
+   sheet.insertRule(text, sheet.cssRules.length);
+}
+
+function Setting_ensureColorExists(setting){
+   const value = getComputedStyle(document.documentElement).getPropertyValue(`--appearance-color-${setting}`).trim();
+   if (value === ''){ Setting_setupRules(setting); };
+}
+
+function Lang_ensureColorsExist(lang){
+   const value = getComputedStyle(document.documentElement).getPropertyValue(`--lang-color-${lang}`).trim();
+   if (value === ''){ Lang_setupRules(lang); };
+}
+
+function ensure_Setting_exists(attr){
+   if (!get_Settings()[attr]) { 
+      let settings = get_Settings();
+      settings[attr] = {};
+      set_Settings(settings);
+   }
+}
+
+ensure_Setting_exists('user_appearance_colors');
+ensure_Setting_exists('user_lang_colors');
+ensure_Setting_exists('user_coglangs');
+
+function DictFun_ItemsMap(d, f) { Object.entries(d).forEach(([k, v]) => { f(k,v); }); }
+
+DictFun_ItemsMap(js_langcolor_defaults, LangColor_setColors);
+DictFun_ItemsMap(get_Settings().user_lang_colors, LangColor_setColors);
+
+DictFun_ItemsMap(js_appearance_defaults, SettingColor_setColors);
+DictFun_ItemsMap(get_Settings().user_appearance_colors, SettingColor_setColors);
+
+
+function set_settings_after_DOM_loaded(){
+   DictFun_ItemsMap(js_langcolor_defaults, LangColor_setPickerColor);
+   DictFun_ItemsMap(get_Settings().user_lang_colors, LangColor_setPickerColor);
+   DictFun_ItemsMap(get_Settings().user_lang_colors, (lang, _) => Lang_setModified(lang));
+
+   DictFun_ItemsMap(js_appearance_defaults, SettingColor_setPickerColor);
+   DictFun_ItemsMap(get_Settings().user_appearance_colors, SettingColor_setPickerColor);
+   DictFun_ItemsMap(get_Settings().user_appearance_colors, (setting, _) => Setting_setModified(setting));
+
+
+   Refresh_CoglangsState();
+}
+
+</script>
+
+

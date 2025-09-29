@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TITLE_PLACEHOLDER</title>
+  <style>
+
+CSS_PLACEHOLDER
+ 
+html {
+   overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+   width: 13px;
+}
+
+::-webkit-scrollbar-thumb {
+   background: #888;
+}
+
+.gram {
+   z-index: 999;
+   position: relative;
+   border-radius: .18em;
+}
+
+h2 {
+   width: 100%;
+   color: rgb(130,225,255);
+   background-color: rgba(210,70,240, .3);
+   margin-top: .6em;
+   margin-bottom: .26em;
+}
+
+h3 {
+   color: rgb(150,205,205);
+   background-color: rgba(140,40,140, .25);
+   border-bottom: 1px solid rgba(210,70,240, .25); 
+   margin-left: 10px;
+   margin-top: .45em;
+   margin-bottom: .2em;
+
+}
+
+h4 {
+   width: 100%;
+   color: rgb(180,215,235);
+   margin-top: .9em;
+   margin-bottom: .3em;
+}
+
+.downsize {
+   font-size: .77em;
+}
+
+a {
+   color: rgb(245, 180, 255);
+}
+
+.horizontal-line {
+    height: 1px;
+    background-color: rgb(200, 200, 200);
+}
+
+
+
+
+table, p, .tree-container, ul:not(:is(li > *)) {
+   border: 1px solid rgb(80,60,80); 
+   margin: .24em;
+   position: relative;
+   display: table;
+   border-radius: 5px;
+   background-color: rgb(46,44,41);
+}
+
+
+p, .tree-container {
+   padding: .3em;
+}
+
+.tree-container {
+   white-space: pre;
+}
+
+table {
+   border-spacing: 0;
+   padding: .1em;
+}
+
+
+td:last-child {
+  border-right: none;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:first-child td {
+  border-top: none;
+}
+
+td:first-child {
+  border-left: none;
+}
+
+td, th, tr {
+   border-right: 1px solid rgb(80,60,80); 
+   border-bottom: 1px solid rgb(80,60,80); 
+   padding: .15em;
+   padding-left: .5em;
+}
+
+button {
+   color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: none;
+   background-color: transparent;
+}
+
+.boxed-text {
+   position: relative;
+   z-index:9999;
+   outline:1px solid rgb(140,140,140);
+   background-color:rgba(100,100,100, .3);
+   white-space: nowrap;
+}
+
+</style>
+
+<script>
+
+JAVASCRIPT_CONTENT_PLACEHOLDER
+
+let timeoutIds = []; 
+
+if (typeof js_page_name !== 'undefined' ){ 
+   (function() {
+      var style = document.createElement('style');
+      style.type = 'text/css';
+      var css = `body { max-width: 1000px; margin: 10px auto !important;} `;
+      style.appendChild(document.createTextNode(css)); 
+      document.head.appendChild(style);
+   })();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+   if (typeof js_page_name !== 'undefined' ){
+
+      document.getElementById('end-element').innerHTML = '';
+
+      const page_buttons = document.getElementsByClassName('page-button');
+      Array.from(page_buttons).forEach((element) => {
+      const originalText = element.textContent;
+      if (originalText === js_page_name){
+         element.style.backgroundColor = 'black';
+         element.style.borderTop =  '1px solid rgb(200, 200, 200)';
+         element.style.borderRight =  '1px solid rgb(200, 200, 200)';
+         element.style.borderLeft =  '1px solid rgb(200, 200, 200)';
+      };});
+
+      if (js_page_name === 'settings'){
+         set_settings_after_DOM_loaded();
+      };
+   };
+    
+   async function fetchAsyncContent() {
+      var async_element = document.getElementById('async-content');
+      if (async_element) {
+         try {
+            const response = await fetch('/async_content', {
+               method: 'POST',
+               body: JSON.stringify({starting_word:js_starting_word, Coglangs:get_current_Coglangs()})});
+            const text = await response.text();
+            async_element.innerHTML = text;
+         } catch (error) { console.error('Error fetching async content:', error); }
+   }}
+   fetchAsyncContent();
+
+});
+
+function handleMouseover(event) {
+   var target = event.currentTarget;
+   if (target.classList.contains('gram')) {
+      const timeoutId = setTimeout(() => { showPopup(target, 'hover'); }, 200); 
+      timeoutIds.push(timeoutId); 
+   } else if (target.classList.contains('reset-button')){
+      target.style.background = "red";
+   };
+}
+
+
+
+// TODO refactor click and hover some? 
+// TODO abstract the click patterns (shift, cmd)
+document.addEventListener('click', function(event) {
+   const target = event.target;
+   if (target.classList.contains('gram')) {
+      if (event.metaKey) {
+         window.open(target.dataset.click_url, '_blank');
+      } else { 
+         hidePopup(target, 'hover'); 
+         showPopup(target, 'click'); 
+      };
+   } else if (target.classList.contains('jump-button')) {
+      var parent_data = document.getElementById(target.dataset.parent_id).dataset;
+      console.log(parent_data);
+      var direction = parent_data.direction || 'pastward';
+      console.log(direction);
+      try {
+         var jump_to_id = '0'
+//         var jump_to_id = js_direction_gramlang_firstID[direction][parent_data.gramtext][parent_data.lang];
+      } catch (e) {
+         var jump_to_id = '0'
+//         var jump_to_id = js_direction_gramlang_firstID['futureward'][parent_data.gramtext][parent_data.lang];
+      }
+      console.log(jump_to_id);
+      var element = document.getElementById(jump_to_id);
+      Element_scrollTo(element);
+      flashElement(element);
+   } else if (target.classList.contains('reset-button')){
+      handle_Reset_Click(event);
+   } else if (target.classList.contains('radix-button')) {
+      EventButtonkind_click(event, 'radix');
+   } else if (target.classList.contains('wiktionary-button')) {
+      EventButtonkind_click(event, 'wiktionary');
+   } else if (target.classList.contains('etymonline-button')) {
+      EventButtonkind_click(event, 'etymonline');
+   } else if (target.id !== 'universal_hover_popup' && target.id !== 'universal_click_popup' && !(target.id.startsWith('gram_element')) ) {
+      document.getElementById("universal_click_popup").style.display = "none";
+      document.getElementById("universal_hover_popup").style.display = "none";
+} } ) ;
+
+</script>
+
+AUX_HTML_PLACEHOLDER
+
+</head>
+<body style="font-family: Menlo, monospace; font-size: 12px; margin: 12px;">
+            
+
+
+HTML_HEADER_PLACEHOLDER
+HTML_CONTENT_PLACEHOLDER
+
+<div id="end-element"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br> </div> 
+
+<span id="universal_hover_popup" class="universal_hover_popup" onmouseleave="hidePopup(event, 'universal_hover_popup')" style="display:none;padding:2px">popup_content</span>
+     
+
+<span id="universal_click_popup" class="universal_click_popup" style="display:none; padding:1px">popup_content</span>
+
+</body>
+</html>

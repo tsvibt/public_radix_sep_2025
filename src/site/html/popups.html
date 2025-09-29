@@ -1,0 +1,104 @@
+
+
+<style>
+
+.universal_hover_popup, .universal_click_popup {
+   display: none;
+   background-color: rgba(12, 12, 12);
+   color: rgba(212, 212, 212);
+   z-index: 99999;
+   position: absolute;
+   left: 0;
+   border: 1px solid #828;
+   padding: 30px;
+}
+
+.universal_hover_popup {
+   background-color: rgba(20, 20, 20, 0.7);
+   z-index: 999999;
+}
+
+.universal_click_popup{
+   outline: 11px solid rgba(40, 40, 40, 0.9);
+}
+
+
+</style>
+
+<script>
+
+function hidePopup(event, boooop) {
+    timeoutIds.forEach(id => clearTimeout(id));
+     timeoutIds = [];
+
+   var popup = document.getElementById("universal_hover_popup");
+   const entering = event.relatedTarget || event.toElement;
+   if (!entering || entering.id !== "universal_hover_popup") {
+      popup.style.display = 'none';
+   }
+
+}
+
+function showPopup(parent, kind) {
+   if (parent.dataset.suppress_popups === 'True') { return; }
+
+   var popup = document.getElementById( "universal_" + kind + "_popup");
+   popup.style.display = "block";
+
+   if (kind === 'hover') {
+      var Left = parent.getBoundingClientRect().left;
+      popup.style.left =Left + 'px';
+
+
+      var Top = parent.getBoundingClientRect().top;
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      popup.style.top = (Top + scrollTop - popup.offsetHeight) + 'px';
+   } else {
+      popup.style.left ='20px';
+      var Top = parent.getBoundingClientRect().bottom;
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      popup.style.top = (Top + scrollTop + 9)+ 'px';
+   };
+
+   
+
+   popup.innerHTML = 'getting popup content';
+   ElementKind_HTML(parent, kind).then(element => {
+      popup.innerHTML = element;
+      popup.style.width = Math.max(parent.offsetWidth, htmltext_width(element)) + 'px';
+   });
+}
+
+function htmltext_width(htmltext) {
+   var tempElement = document.createElement('div');
+   tempElement.style.display = 'inline-block'; 
+   tempElement.innerHTML = htmltext;
+   document.body.appendChild(tempElement);
+   var elementWidth = tempElement.offsetWidth;
+   tempElement.remove();
+   return elementWidth;
+}
+
+function EventButtonkind_click(event, kind) {
+   const target_url = document.getElementById(event.target.dataset.parent_id).dataset[kind + '_url'];
+   console.log(target_url);
+   if (event.shiftKey) {
+      window.location.href = target_url;
+   } else {
+      window.open(target_url, '_blank');
+} }
+
+async function ElementKind_HTML(parent, kind) {
+   var button_panel = Element_Buttonpanel(parent);
+   if (kind === 'click') {
+      const response = await fetch('/inspection/', {
+         method: 'POST',
+         body: JSON.stringify({inspect_gram: parent.dataset, starting_word:js_starting_word })});
+      return button_panel + await response.text();
+   } else if (kind === 'hover') {return Promise.resolve(button_panel);};
+}
+
+</script>
+
+

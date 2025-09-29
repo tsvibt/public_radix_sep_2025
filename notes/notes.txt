@@ -1,0 +1,3315 @@
+
+######### from parsearticle:
+# sigh... actually what i want does already exist.....!!!!
+#https://github.com/tatuylonen/wiktextract
+#https://kaikki.org/dictionary/
+# may still need to get the derived terms or something. 
+# .... NOOOOOO i doesn't have RECONSTRUCTIONS!!! nooo.... fuck it we'll do it live
+
+#https://stackoverflow.com/questions/3364279/has-anyone-parsed-wiktionary
+#hard...
+
+
+# TODO: maybe like see if we can get more info by assuming that {{m right after something is the same kind? like eg. in WordLangDicts('necto', 'la')[0]['Etymology'] we see "{{der|la|ine-pro|*gned-}}, {{m|ine-pro|*gnod-||to bind}}", and it would be cool to maybe also get the second wone (though in this case it does actually have an entry)
+
+
+
+
+# if word starts with * then it's a reconstruction, so say Reconstruction: + Codelangs[code] + '/' + word is the word
+# either way, we then look it up , get the dict for lang, and there we go..
+
+
+#assume lang is english, then german, then latin, etc.... for now just give language. use codes.
+#get language codes 
+#if language has etymology or etymology 1, look at it. get the root if such. if none.... idk, look for derived?
+#if no etymology , check Verb / Noung / Adjective / Etc. ..
+
+#could try following "all possible routes to the root" and see if they always converge or what. e.g. via intermediate steps, via cognates and derivatives, etc. 
+
+#etyl m l cog bor der inh noncog inherited derived borrowed cognate noncognate
+#seems like there's a lot.... la-adj, la-IPA.... inflection of.... etc. see »aux.py»
+#
+#ah okay the arguments are given in pages like this:
+#https://en.wiktionary.org/wiki/Template:derived
+#
+
+
+######### from radix:
+
+
+
+#
+#so we can start at a word....
+#and then we can look at decsendants, derived terms; and its etymology, but most importantly the "stem"....
+#really we have to look only at the stem. if we lookat the affixes we get infinity stuff....
+#but also we need see "sibling" roots, right?
+#
+#another approach is to look at PIE root, and then look at all derivations / descendants, and then, yeah. 
+#
+#
+#okay todo:
+#   so we can .... get the language codes. we can find derived terms that are in our desired langs; look them up; then get their descendants, etc.
+#   consolidate word <-> filename
+#   use ls-attempt2.txt as index, eg read it into memory and find the desired filenames rather than trying to use ls
+#
+
+#okay so, given a word+thingy, well... we don't know which one to use. can get them all of course, that is probably right. 
+#
+
+#https://en.wiktionary.org/wiki/Module:languages#makeEntryName
+
+
+
+#test words: annex; lucid; factory
+# in theory for lucid, could go via https://en.wiktionary.org/wiki/Template:la-part
+#https://en.wiktionary.org/wiki/elucidatus#Latin
+#gives neuter
+#https://en.wiktionary.org/wiki/elucidatum#Latin
+#gives 
+# {{inflection of|la|ēlūcidō||acc|sup}}
+#
+#wait apparently elucido is a dead end??
+#only way is from elucidate:
+#from {{der|en|la|ex-}} and {{m|la|lūcidus|t=clear}}.\n\n'
+#dangit!!!
+
+# could order the "backbone" of the root; then use that as the LCA thing. could do an ordering thing, where eg cognates, alt forms, etc go later; could even include mentions in the Et section, etc., after everything else. 
+
+
+# oh NOOOOO there's multiple sections with the same names! eg "derived terms"!!!!!!!!!!!!! etc. have to correct!!!! could possibly just fix it by appending. maybe make a function to "create or append" to dict key.
+#todo: print with definition/gloss and with IPA
+#todo: add affix https://en.wiktionary.org/wiki/Template:affix, prefix, suffix, borrow, etc....
+# todo: add outlinks (with direction!). 
+# todo: use outlinks to find guys who are earlymost. how to find most fine-grained paths...???
+#eventually make lang=None, and assume defaults from list of langs, first that exists if any
+#could track up/downstream
+
+
+
+#could like try better to have the pathways be ideal. densest path. could also try to just infer from order in etym section? suspicious but maybe it always is good? worried about "...ultimately from {{pie}}, via latin {thing}"
+#print with short def? (maybe get glosses from other mentions, such as descendats??)
+#...oh it's lca distance or similar, not whatever distance. except now synchrony actually does matter? thinking of the bʰeh₂- from dʰéh₁s case, where "do" is related to "say" in the desc section, but i'd want to have that be put after other relationshpis, though maybe that's not coherent becuase i'm fine with other PIE-PIE descent?
+#print with <-- for derived from; use tabs to denote derivation distance from root.
+
+#example of badness:
+#====Derived terms====
+#* {{l|la|ars}} (''&quot;art&quot;'') → {{l|la|artifex}} (''&quot;artist&quot;'')
+#* {{l|la|panis}} (''&quot;bread&quot;'') → {{l|la|panifex}} (''&quot;bread-maker&quot;, &quot;baker&quot;'')
+#* {{l|la|aedes}} (''&quot;building&quot;'') → {{l|la|aedifex}} (''&quot;builder&quot;'')
+#{{suffixsee|la}}</text>
+#<sha1>tuv3hrj37waverah83jo7hnmh1xidjb</sha1>
+#</revision>
+#</page>
+#
+
+#         if k.strip(' 0987654321') in LinkSections:
+   # if the type of the link indicates the relationship; *or* the section indicates the link, then, we accept. that one determines the direction. need to allow synchrony. what if the directions conflict??? print a statement i guess.
+   # previously wllinks meant that the link was in a good section. now it includes section but doesn't assert good. so need to filter based on section? 
+
+# if link points futureward ((section) derived; (section) descendant), it gets included and points futureward
+# if link is synchronic (cognate, doublet, (section) alternate forms), it gets included, and points the same as the parent
+# if parent points pastward and link points past or future, its inclueded and points like the link
+# if link points pastward and parent points futureward, not included
+# what about declensions?
+#
+
+#211123    04:07:56    
+#Pastward = ['root', 'derived',  'inherited', 'inflection of',] 
+#Futureward = ['descendant']
+#Synchronic = ['cognate', 'borrowed', 'doublet', 'suffix', 'prefix', 'affix', 'compound', 'blend', 'calque']
+#Neutral = ['link', 'mention']
+
+
+# we take a stricter notion of time. not really correct because cognate could be either, so we minimize explosion. problem is getting a cognate from the future while going backwards, and the cognate has crazy stuff. eg. annex -> necto cognate english "knot"; english lists lots of stuff, eg la--nodus as a cognate, sending us backwards on that (so instead with these settings we only go forward).
+#['en -- annex', 'la -- annecto', 'la -- adnecto', 'la -- necto', 'en -- knot', 'la -- nodus', 'en -- net', 'enm -- net', 'en -- neat', 'en -- neatherd', 'en -- herd', 'en -- bearherd', 'en -- bear', 'sa -- भरति', 'la -- fero']
+# by cognates we end up still pastwards at en--net, which takes us to middle english net, giving futureward en--neat, then by compound we get neatherd
+#..... nvm idk, who knows. like one actual problem with using cognate as synchronic (search strategy) is just homophones. eg we get en-net, then fy--net, which also means frisian "not", which has unrelated stuff .
+
+# :( gotta deal with etyl; and {{m}} in etym section. cf english entry for "mechanism"
+#https://en.wiktionary.org/wiki/mechanism
+# in this entry, , can we degrade confidence in the doublet? just treat doublets like um cognates? idk. really it'd be nice to check epistemic status, like notice the "argues"
+#https://en.wiktionary.org/wiki/%CE%BC%CE%B7%CF%87%CE%B1%CE%BD%CE%AE
+
+# hm. could also kind of check consistency; and translfate facts. like if X merely {{m}} Y in etyl, but then, Y gives X as desc, can use that..
+# maybe use ML to do sense disambiguation ??????
+# maybe do some kind of salience thing???? or probabilities....
+# another strategy: try to get probability of relevance based on what would be predicted by a phonetic generative process. sounds hard ofc. 
+
+   # so this is dangerous: english annex has alt form "anex", which has unrelated sense that explodes backward. but need this for adnecto :( use banned list.
+         
+
+   # ok this is also bad. eg https://en.wiktionary.org/wiki/-%F0%90%80%BA%F0%90%80%92#Mycenaean_Greek lists in derived terms unrelated stuff.
+
+
+
+#PartsOfSpeech = ['Noun', 'Verb', 'Adjective', 'Adverb', 'Proper noun', 'Participle', 'Pronoun', 'Prefix', 'Preposition', 'Prepositional Phrase', 'Conjunction', 'Determiner', 'Contraction', 'Particle', ]
+#LinkSections = frozenset(PartsOfSpeech + ['Etymology', 'Derived Terms', 'Derived terms', 'Descendants'])
+
+#Pastward = ['root', 'derived',  'inherited', 'inflection of','borrowed','suffix', 'prefix', 'affix', 'compound', 'blend', 'calque'] 
+#Futureward = [ 'cognate','descendant']
+#Synchronic = [ 'doublet', ]
+#Neutral = ['link', 'mention']
+
+#desc is stronger than derived section, in fact derived shouldn't be used for this. desc should imply later in backbone; derived.... wait why not this too? yeah for example latin ex- https://en.wiktionary.org/wiki/ex- has as derived terms tons of stuff; but only actually other versions of ex- as descendants. 
+#also https://en.wiktionary.org/wiki/-%F0%90%80%BA%F0%90%80%92#Mycenaean_Greek 
+# look at the Etymology sections. firs
+
+#wtf? https://en.wiktionary.org/wiki/meer#Dutch
+#From {{inh|nl|dum|mêer}}, from {{inh|nl|odt|mēr}}. This form stood alongside the older {{cog|dum|mêe}}, from {{cog|odt|*mē}}, from {{cog|gem-pro|*maiz}}.\n\n'
+# this is a mistake, no??
+
+# debug sharp. should give acerbic via latin, more importantly should give *(s)ker, scrape etc. 
+
+# should do sense disambiguation. even if can't do it by reference
+
+
+# todo: sense disamgig, i guess by etymology section or by "root" section in PIE
+# backbone: just: compute a big nest of guys; then just compute a set of guys connected to the word via hard connections like desc, der, inh, bor. can extend by allowing infered stuff like stuff in der section, mentions that i think mean inh etc. ; and see if the hard ones are like a line; and see if that line is extended by this additions; etc
+# also , make the links two way. for some reason. namely... then we can like see if there's disagreements... no idk i forget
+# anyway so then, how do i get the backbone? well we want to take the closure under... ah that's why we need 2way, so we can just go backwards from the word. so we take the word, and just take everything that's backwards. then those things may or may not be ordered? if they are, that's what we want i guess?
+# first get all the guys. make links two way. any connection. ...but somehow score the connection? and put a cap? like desc is basically no penalty; appearing a der section is i guess some penalty; cog is some penalty; turning around futureward to pastward is some penalty??; ....???? how do the penalties combine???
+# then, traverse this graph for the connected component of word under desc, der, inh, etc. (including two-way guys). 
+# somehow deal with ambiguity?????
+# see if the resulting upset of word can be sorted.  if so, sucsess!!
+
+
+# uh oh
+# https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/bait%C5%8D
+# so this should mean bite. but it links to 
+#https://en.wiktionary.org/wiki/bat#Old_English
+#https://en.wiktionary.org/wiki/bat#Middle_English
+# which are different, and don't contain any sense of "bite"
+# one possible thing is to note that the descendants of bat aren't mentioned in baito, so maybe that says not to consider them? another thing is to note that the senses we get from bat have distinct roots from baito...
+# one gives a clear PIE root, the other is just a ang dead end
+
+
+
+
+# https://en.wiktionary.org/wiki/necto#Latin
+# should get necto by just being mentioned in Et2, then see that it gives annecto, which annex is der from, hence "promote" necto in some way....
+# ah so we can sense disambiguate anex because one Et has {{alternative spelling of|annex type thing!
+
+#ah interesting: https://en.wiktionary.org/wiki/Template:alternative_form_of
+
+#example of ambiguity ; could be resolve simply by backbone reasoning i think ! https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/swer-
+#Okay so a good example is en--embellish, which gets stuck because fro--bel doesn't point as it should to la--bellus; but it does point to enm--beau, which points (der) to la--bellus.
+# so.... anyway, we want to reverse the links. then, simply follow backwards links from the start. this should give a DAG. it should be "sortable" into a tree; that is, there should be a refinement that makes it a tree. (is this always possible?? yes of course, just keep picking things who's downsets are already picked; we don't mess any future guys up, as otherwise that would be a cycle.) so we really want a "minimal" thing...??
+#ok probably i need to 1. print stuff better and 2. factor the code better. problem is, to print stuff better i have to do backbone!!
+   
+#   SIGH.....
+#   https://lark-parser.readthedocs.io/en/latest/examples/index.html
+#get etymology. then, remove the parenteticals. then, .... well we can try just getting the inhs, ders, and bors. 
+   
+
+
+   #todo: pretty print. sort by lang. 
+#figure how to do derivations more explicitly. get definitions. print Latin, colus: [def]
+         
+
+#could build a dictionary. when we process a word that's not already been processed (which we know because then it's in the dictionary), we say "made progress" so continue the loop... or well we could instead have a queue and a dict, and while queue is not empty, process another one if it's not marked in dict as processed. and we can mark things in terms of their relationship to the original word; like everything gets a string that's the path to get there from the start word. except there could be ambiguity.... possibly we want to get them all? or we could try to pick. all seems fine... anyway, this seems good. we want to be restricive, eg for now just avoid 'mention' altogether, because like , it could be some other word, and then we'll get a serious explosion. basically just want derived, descendants; cognates and doublets; and then, der, bor, inh, root. 
+
+
+#hm... so we can get all the things that are bor, der.... 
+
+
+# arg WTF we have corrupted data :( 'de -- beissen' has its file and also has replaced 'de -- beißen' some how :((( 
+
+
+
+
+#https://lark-parser.readthedocs.io/en/latest/index.html
+
+#todo: scan through english and greman etymologies to see which ones have has gots the {{inh, if they do print up the etymos sfor readin
+
+
+#211213    22:15:25    
+
+#sooo...... the thing to do is ...
+#clean up the code somehow. maybe make a legit separation between parsing and traverseing?
+#comments? better function names? clearer encapsulation? document the datastructure???
+
+#abstract regex
+#https://github.com/Ruminat/Asq-Server/blob/master/modules/AbstractRegularExpressions.py
+
+
+#ah okay so...
+##https://en.wiktionary.org/wiki/Category:Language_data_modules
+#eg 
+#https://en.wiktionary.org/wiki/Module:languages/data2
+#gives stuff like:
+#
+#m["la"] = {
+#	"Latin",
+#	397,
+#	"itc",
+#	Latn,
+#	ancestors = {"itc-ola"},
+#	entry_name = {remove_diacritics = MACRON .. BREVE .. DIAER .. DOUBLEINVBREVE},
+#	standardChars = "A-Za-z0-9ÆæŒœĀ-ăĒ-ĕĪ-ĭŌ-ŏŪ-ŭȲȳ" .. MACRON .. BREVE .. PUNCTUATION,
+#}
+#
+#
+#m["en"] = {
+#	"English",
+#	1860,
+#	"gmw",
+#	{"Latn", "Brai", "Shaw", "Dsrt"}, -- entries in Shaw or Dsrt might require prior discussion
+#	ancestors = {"enm"},
+#	sort_key = {
+#		from = {"[äàáâåā]", "[ëèéêē]", "[ïìíîī]", "[öòóôō]", "[üùúûū]", "æ" , "œ" , "[çč]", "ñ", "'"},
+#		to   = {"a"       , "e"      , "i"      , "o"      , "u"      , "ae", "oe", "c"   , "n"}},
+#	wikimedia_codes = {"en", "simple"},
+#	standardChars = "A-Za-z0-9" .. PUNCTUATION .. u(0x2800) .. "-" .. u(0x28FF),
+#}
+#
+#which say what substitutions to do to get the word. well, that's ... a thing....
+#
+#test: convey should give voyaje
+#
+#
+
+
+# eg. *wéryeti specifically does have the accents in the entry! i wonder if this is still missing things.... eg if there's a word with some but not all accents.... eg latin with some accents but not vowel length marks, or germain with umlaut but no accent......???
+
+
+#Wordtext
+#words as mentioned in links
+
+#Wordmain
+#https://en.wiktionary.org/wiki/Module:languages#makeEntryName
+#words as printed in the wiktionary page; the canonical word. this has diacritics removed..? no not always; german umlauts, spanish or latin accents, ... could be a problem, could have the word removed some but not all accents.... could stage WordtextLangWordmain so it first removes vowel length things, then tries without all the umlauts or without all the accents, then .... then tries with no accents...
+
+#Wordwiki
+#the wiktionary entry; the thing that goes in the url. same as above but has * replaced by the name of the reconstructed language, eg gem-pro or ine-pro
+
+#Wordfile
+#the filename; like Wordwiki but replaces /, ß, capitals
+
+
+
+
+def Raw(word, l=''):
+   if l != '':
+      word = 'Reconstruction:' + Codelangs[l] + '/' + word
+   return Read(WordwikiWordfile(word))
+
+def Et(entry):
+   lang, word = entry.split(' -- ')
+   d = WordmainLangMaybedict(word, lang)[0]
+   for k in d.keys(): 
+      if k.startswith('Etymology'):
+         print(d[k])
+
+
+
+#211214    22:25:05    
+## OOOOOOHHH! i don't need to cleverly discover all the guys who link to me, or to my ancestors, etc.. i can just build an index of the entire thing! and have all the links from anywhere in an index. then starting at a word, i can follow whichever of the links in its article and/or that link to it, that i want!
+
+
+
+#
+#alright so i got ustring working. 
+#download directory https://github.com/wikimedia/mediawiki-extensions-Scribunto/tree/master/includes/engines/LuaCommon/lualib/ustring
+#by changing url tree/master --> trunk, so 
+#https://github.com/wikimedia/mediawiki-extensions-Scribunto/trunk/includes/engines/LuaCommon/lualib/ustring
+#then do 
+#snv checkout https://github.com/wikimedia/mediawiki-extensions-Scribunto/trunk/includes/engines/LuaCommon/lualib/ustring
+#in the appropriate directory. which? well... 
+#tbt:/usr/local/lib/lua/5.4 ø 
+#was what i needed....
+#then after that, do pip3 install lupa; then this installation searches for and finds this directory, and makes what's in it available. i guess. or something....?????? or maybe it's dynamically getting it after,,,.....??????
+#anywa....
+#
+#https://pypi.org/project/lupa/#examples
+#https://en.wiktionary.org/wiki/Module:languages#makeEntryName
+#https://en.wiktionary.org/wiki/Module:languages/data2
+
+#debug: family en -- invite
+
+# todo: put all the wordtext -> wordmain in one place??? seems nice.
+
+ want to scan. start with top most common english words, maybe also german? look for things with the word "cognate" in the etymology section. print the word and the cognates; ideally also give the IPA of the cognates.
+
+
+230923    11:24:27    
+dumping stuff to clean up src files... 
+
+"""
+exec(open('radix.py').read())
+b=Cognates('steigen', 'de')
+b=Cognates('core', 'en')
+profile("b=Cognates('economy', 'en')")
+profile("b=Cognates('is', 'en')")
+PrintCognates(b)
+
+why is steigen printing english sty twice??
+other discrepancies; due to different version?
+file:///Users/tbt/Downloads/steigen_radix.png
+
+why is economy showing so many descendeants, e.g. 
+           ├Fr économie: economy┬Fr macroéconomie: macroeconomics
+           │                    ├Fr économiste: economist
+           │                    ├Fr économisme: economism
+           │                    ├Fr économiser: economise (to conserve money)-Fr économiseur: economiser
+           │                    ├Fr géoéconomie: geoeconomy
+           │                    └Fr microéconomie: microeconomics
+
+is the whole printing thing messed up??
+
+
+word = Word('steigen', 'de')
+sense = GivenSense(word, 1)
+
+"""
+#{[*stéygʰeti, ine-pro], [stigen, gmh], [steigen, de], [*stīganą, gem-pro], [stigan, goh], [*steygʰ-, ine-pro]}
+# python 3.9.10
+# lua 5.4.3 maybe? and lupa
+# iterm2 or other for millions of colors (ansi color codes)
+
+
+
+#https://stackoverflow.com/questions/1254370/reimport-a-module-while-interactive
+# just import and then immediately reimport? so conventient for repl. 
+# esp good for parsearticle?
+
+
+# why did i ever include 'calque'?
+(in pastawrds)
+
+#neðan
+# previously sensenum = 1. but now with sqlite + json, the dict is coming out with keys that are stringified. idk if it matters, but why?
+
+# maybe instead of given vs linked, have main vs other? in fact why do i even need liked senses? well they're objects subject to unificiation.
+
+
+         #placeholders for other senses??????? we aren't tracking given vs linked senses and whether every sense has been assigned a given ......
+#         [the infereeed links]
+
+# every sense should be assigned a given, unless there are no givens; or unless there is a disagreement...??
+
+#word = Word('*stīganą', 'gem-pro')
+
+
+#   for sense1,sense2 in pairs senses:
+#         #XXX get definitions of sense 1/2, compare definitions
+#         #XXX get links, see if reciprocal
+#         if unify:
+#            Sense_Equivalents[(word, lang)].add((sense1, sense2))
+#   #      disunifixations?
+# maybe when ther'es givens, just like, make them distinct, and otherwise unify as much as possible? i.e. every nongiven dgets assigned a given?
+#     transitive closure 
+#   #   check against disiunifixations?
+#
+# check if sense unifies with itself. check if different entry senses unify.
+
+
+230923    15:27:55    
+todo: make tests: check if thing is and isn't in tree for thing. generate by going through carefully.
+
+
+
+230923    15:45:16    
+
+https://github.com/ultrajson/ultrajson
+
+   # XXX TODO maybe this should be caulled wordtitle, not word? which should go here?could pass word instead? it's wordtext. 
+
+   # this is not good programming. i'm sorry. probably should be done w/ an actuall xml parser, but would have to be fast.
+   # instead of this include=False stuff , could just rely on the real parsing. but that's more likely to fail
+
+#            filename = TitleToFile(current_title)
+#            dirname = FilenameHash(filename) + '/'
+#            targetfile = writing_entriesDir + dirname + filename
+
+            # these things corrupt parsing
+            current_article_accumulator = current_article_accumulator.replace('wplink==', 'wplink=xx').replace('fake====', 'fake=xxx').replace('fake===', 'fake=xx').replace('fake==', 'fake=xx')
+
+could have just one table?
+
+#      db_cursor.execute('''UPDATE Words SET inlinker_list_json=? WHERE word=? AND lang=?''', (ujson.dumps(list(linkers_list)), to_word, to_lang))
+
+
+"""
+
+scrub this stuff:
+##scrubbing corruptive stuff...
+for i,file in enumerate(ind):
+   print(i,file)
+   text = Read(EntriesDir + file).replace('wplink==', 'wplink=xx').replace('fake====', 'fake=xxx').replace('fake===', 'fake=xx').replace('fake==', 'fake=xx')
+   Write(text, EntriesDir + file)
+
+try to parse. if yes, get links, write links, write xml. if no parse, then instead write to a file that says failed to parse.
+
+if fail to write, say that in the file.
+
+
+
+"""
+
+231122    13:52:22    
+
+okay need to make scripts to update the resources. example:
+https://en.wiktionary.org/w/index.php?title=Category:urj-fin-pro:All_topics&action=history
+this name was changed, and so now stuff was broken. need to update the "etymology only" things (see la-cla) and the datax etc etc stuff in resources. make a script... selenium? 
+... but also make the thing resistant to this? maybe shouldn't be gating references on well-formedness? ie having a legit language? at least not in xmldumpparse....
+
+
+https://en.wiktionary.org/wiki/Module:etymology_languages/data
+
+231213    09:44:44    
+sometimes wordtexts in templates have #Etymology_1 or #Etymology_2 etc; should later be parsed as a sense specification. 
+
+in the value display, we're seeing latin valeo with an accent over o, which is wrong and also gives wrong wikt url for modal
+
+
+
+
+231217    01:42:28    
+>>> b=Cognates('evidence', 'en')
+Exception: trying to take transitive closure of order with cycles of size greater than 2
+
+
+231217    12:37:25    
+resolve small diamonds . e.g.  in 'want':
+
+MHG wenden-Ger wenden
+OHG wenten-Ger wenden ▲
+
+and in 'value':
+├OFr valur-Fr valeur
+└La valor┬Fr valeur ▲
+Middle French convalescence-En convalescence
+└La convalēscentia-En convalescence ▲
+
+fix wordetexts. e.g. in 'value' we get.. as above. in want,we get
+OE westen-ME westen ▲
+OE wēsten ME westen ▲
+
+1. i wish this was understood as coming from english valid
+2. why doesn't this show after La valere????
+├En invalidate
+
+
+231218    00:04:54    
+moral gives meh (through sense ambiguity unfortuantyely) . but also fails to give med (model, etc)
+
+something wrong with "drive". first of all, we have 
+PIE *dʰer-:support;hold┬En drive
+and then later En words.. why out of order? oh nvm. they are just missing the mark
+but, why no https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/d%CA%B0er%C7%B5%CA%B0-
+from https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/d%CA%B0er-
+"extension"
+====Extensions====
+* {{l|ine-pro|*dʰerǵʰ-||strong, robust}}
+* {{l|ine-pro|*dʰers-||to be bold}}
+
+instrument doesn't go past latin instruo
+
+231218    15:03:00    
+starting english "cry", we get that latin creo gives Ofr crier. this is linked in the la creo article. but this seems false? confused. 
+
+wait...
+for
+>>> b=Cognates('intent', 'en')
+why does intent show up next to the PIE? why would it be in PIE's immediate lefts ... shouldn't the latin interpose..????
+
+231218    23:01:43    
+Exception: trying to take transitive closure of order with cycles of size greater than 2
+>>> b=Cognates('stiff', 'en')
+
+>>> b=Cognates('yearn', 'en')
+very long time, then
+Exception: trying to take transitive closure of order with cycles of size greater than 2
+
+hits an especially bad PIE multiple sense
+>>> b=Cognates('push', 'en')
+
+231219    18:15:29    
+why is PIE tect linking to *tend- in cog('attempt')?? https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/tet%E1%B8%B1-?useskin=vector-2022#Proto-Indo-European
+
+'yearn' should give charisma via PIE gher, but doesn't...
+
+yearn: should disambiguate the very *first* sense and that would really help!
+
+231220    05:20:16    
+todo:
+DAG viewer. 
+inspect links
+infered links
+probability indicators, ambiguity
+caching big results
+internet
+ordering by language order...
+maybe ordering trunk ; display by giving the segment that's unique before a guy...
+
+jeez. idk how do this. maybe compute the thick tree, and then go back and guess at the thing tree..???
+
+with german meiden, get weird 
+PIE *meyth₂-:┬
+but it links to the same place as
+PIE *meytH-:change;exchange;remove┬
+
+
+231227    01:49:53    
+
+wait, the results for 
+b=Cognates('value', 'en')
+are super different randomly??? why??
+seems to ONLY happen on closing and reloading the whole thing; not reexecuting radix, not re PrintSummaries, not re loading GWordtitle_Redirect = Load_Wordtitle_Redirects()
+
+231227    04:51:58    
+so, todo: make things super fast, and readyier for website, by precompiling. we do this like: 
+go through every word. figure out its pastmosts by following pastward. (and incidentally take care of its pastwards) then, for each pastmost:
+close futureward; compute immediate_futurewards ( i guess by getting transitive closure, which is fast now). store two tables: one takes a word and gives its pastward pastmost words; other takes a word and gives its immediate futurewards. 
+so then to get a tree: given a word: look up its pastmosts. from the pastmosts, close futureward. union those orders. then that's the order you use. donzel
+
+
+231231    01:41:47    
+this links back to OHG arn, but that's eagle--i guess it's an unentered alternate meaning, but this is bad because it looks like the only one. 
+https://en.wiktionary.org/wiki/Ernte?useskin=vector-2022#German
+
+240104    19:03:41    
+complicated nonsense wit LUA :(((((
+makeEntryName
+https://en.wiktionary.org/wiki/Module:languages
+https://en.wiktionary.org/wiki/Module:scripts
+https://en.wiktionary.org/wiki/Module:scripts/data
+https://en.wiktionary.org/wiki/Module:languages/doSubstitutions
+
+240106    07:22:11    
+inference:
+#todo: ref, ...... (from the ) same source as ... ref
+#Eg. https://en.wiktionary.org/wiki/%CF%86%CF%8D%CE%BB%CE%B1%CE%BE#Ancient_Greek
+#is linked by https://en.wiktionary.org/wiki/%CF%86%CF%85%CE%BB%CE%AC%CF%83%CF%83%CF%89#Ancient_Greek
+#which would put the hypothetical From Proto-Hellenic *pʰuláťťō, the 
+#which futureward (ought to) uses to say eg prophylaxis is a sibing.
+
+240107    08:03:16    
+sigh.
+maybe should get rid of senses altogether???
+no... want to eventually use them. but not actually using them currently
+simple thing is to do single step handshakes. you have a word w1 that you accept, and it links to w2. w2 has s1,s2. s1 links to w1, s2 does not. so we don't include s2. 
+one thing, is that this may actually get worse if we use inferred links, because if we interpose a fictitious guy, then we don't check any handshakes. so, what's supposed to happen? 
+could do this: starte from a sense s0. suppose that s0 is unambiguous. go pastwards. now, when  you hit a word w1 that is ambigous with s10 and s11, what do? well you check to see what are the words that s10 and s11 link forward to. if no info, then just use them both. but if s10 links to something thats in past(s0) but s11 does not, then we accept s10 to the exclusion of s11. (but how exactly? do we forever exclude s11? this seems wrong, because s11 and s10 could be cognate. however , if we let s11 back in , then maybe we're too exposed, like any ambiguous link would let s11 back in? ) 
+
+can we just show the different sense...?? agh. 
+classify any backlink as either accounted for by a particluar sense, or as unaccounted, and then exclude [acounted for by another]? 
+
+as we go pastward, if ther's ambiguity, we do this:we check , for each sense, what it's actual futurelinks are (which could include the specification-of-sense things pastward from the future)
+check if any of the senses points to a word that's already decided to be in the pastward set
+if it's the case that any sense points futureward to the pastward set, then, we exclude anyone who fails to do so. 
+as we go backwards, we will exclude words who fail to link to the accepted set, and who are linked to by the excluded set... this does really wor=k though :/ we need attribution probably........ well, ... 
+like, could have s11 pastward to s2. if that's in s11, then ok, we exclude. what if it's from s2? well then we don't know, so ok, we assume s2 is pastward of s10, fine. but what if it's there because of .... an inference. ?
+
+if using immediate lefts, this could ignore long range given lefts
+
+240108    15:57:50    
+so...
+given the cognates posets....
+start with the word.... look at its real senses.... pick te first one (later: allow to specify)
+then close pastwards:
+for each immediate pastwards
+look at real given senses . 
+if none or one, just take "all", include in nthe thing. 
+if >1, then for each sense, see if it links future to something already in. 
+if none, then jsut take "all"
+if some, then include those and 
+
+
+display... i think we display multiple senses as children, like 
+1:def1
+2:def2
+but how to distribute guys who don't say who they come from?  could have '?' sense?
+
+going future, eliminate guys who have in their future a guy who's in the future specifically of the eliminated sense; unless its got in its future something in the specific future of an included sense
+
+
+structure: a decoration of the poset which gives a dict of excluded senses.... 
+wait but we have to exclude also the dummy sense....
+
+todo: add cognates at beginngin summary for other langs. ger, latin
+todo: add pastwards trunk at beginning (just like futurewards thing)
+
+
+todo: etymonoline links
+todo: boxes around things in summary and in fulltree that show who's in narrow-sense tree
+todo: little superscripts for number of senses? coloring to track # of senses flow?
+todo: testing in terms of : intersect etymonline (probably true) with wide-sense (in radix scope); then check that narrow-sense gets them all
+todo: fix sanskrit printing (arabic, persian, etc)
+
+colors show like , among the radix words, those found by etymonline too; 
+among the etymonlyine, those found by narrow- or by wide-sense radix
+narrow-/wide- sense ones are separated in radix section
+
+
+should change all "lefts" to "fore" and "rights" to "back", or similar
+
+
+https://search.metaphor.systems/search?q=A%20tool%20that%20traverses%20wiktionary%20and%20shows%20the%20etymology%20tree%3A&filters=%7B%22domainFilterType%22%3A%22include%22%2C%22timeFilterOption%22%3A%22any_time%22%2C%22activeTabFilter%22%3A%22all%22%7D&autopromptString=%22Here%20is%20a%20tool%20that%20can%20help%20you%20traverse%20Wiktionary%20and%20view%20etymology%20trees%3A
+https://hal.science/hal-01511911/file/p1635-pantaleo.pdf
+https://etygraph.com/
+https://etytree.toolforge.org/
+https://github.com/mikevonwang/engsource?tab=readme-ov-file
+https://etymologyexplorer.com/
+https://github.com/myrriad/jsetymology?tab=readme-ov-file
+
+todo: improve etymonline scraping...
+
+fix platypus. can maybe do inference, but then if there's exactly 1 that doesn't have - or -, you take that one 
+
+
+240110    06:03:18    
+alternative idea is about: classify each futureward word into the pastmosts. etc. try to make it a partition. if there's ambiguity then show it as ambiguous.
+
+240111    06:11:01    
+theory of "ambiguous dags"
+so you have rules like: there's a bunch of words (blobs) and senses
+there's an underlying DAG structure of senses
+what we get is data about the groupings of senses, and about links. we get info like "this sense links to this word" and we get "this word links to that word". occasionally we get info like "this sense links to that sense" (how often , in wikt?)
+so then, what can you infer about the underlying thing, given what info?
+analogy language:species
+incorporating priors , like approximately being forward--trees plus homonymy
+
+
+there's noise everywhere; links can be false or uncertain, there may be missing senses, there may even be made up words, there may be inconsistency, senses may realuly be the same...
+
+todo: alternate forms and Alternative reconstructions https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/(H)rewH- 
+
+todo: for parseing, make better use of the number of == in the header? not sure how consistent it is. 
+
+https://en.wiktionary.org/wiki/Template:senseid
+are they actually accurate? if so can at least use for testing / validation.
+
+240112    08:12:40    
+get rid of radisx original senses, and its stuff.
+then incorporate links. the redo reallinks
+
+240114    16:31:14    
+todo: words in etymonline should only be marked "unseen bay radix" if it's not in the entired radix poset, not just whats' printed (so including hidden stuff due to being repetitive or wahtever)
+
+wtf is going on with ordering of sthings in printing...??? e.g. want, sense 1
+
+240114    20:26:27    
+sigh. the thing under Noun in https://en.wiktionary.org/wiki/fero#Latin is obviously another sense..... how to segment the senses? note, it comes after derived terms. 
+
+240115    07:23:23    
+todo: other sources, like etymonline, for cognate sets? mine cognates from wikt. 
+
+scan word_xml. print out the headers. color with parser..?
+Scan to see all unrecognized ref 
+Scan xml, show headers
+Get list of all headers 
+Do mutation testing for equivalence and speed of parsing 
+
+
+240122    08:59:15    
+todos:
+fix definitions for sense-wise
+add pastward tree from root
+add markers for in narrow/wide/etymonline
+add inferred links eg for en value to order the ME stuff right.
+fix ordering by langs. 
+internet.... need efficient....
+
+explore what the pastward trunks look like . eg are they almost always a Y?
+maybe add in +s, but exclude a manual list of short thingies...
+maybe diamong collapsing (for ME)?
+
+
+
+
+why 
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/b%CA%B0eh%E2%82%82-?useskin=vector-2022#Proto-Indo-European 
+futureward of
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/d%CA%B0%C3%A9h%E2%82%81s?useskin=vector-2022#Proto-Indo-European
+??
+
+
+240125    23:20:13    
+order and highlight by word frequency?
+add definitions ("bear")
+hover over to show relation (intersect the pastsets; futureset that; then intersect that with the union of the two pastsets)
+maybe forget wide guy. just show narrow, but with deadends for wide guy. 
+for summaries, maybe for wide guy, only show guys not in narrow?
+
+scrape https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/English/Wikipedia_(2016)
+https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/German
+
+sumaries have german
+
+240129    07:07:05    
+todos:
+get basic inferences in. from , stuff. maybe think about + and in general deal with small elements such as "ad-".
+cache inferences, and cache lots of stuff. 
+
+todo: in hover, show connection to first word; button to jump to thing in tree (and highlight ?)
+todo: settings? colors, langs,...
+
+
+240131    08:47:33    
+fix some stuff in xmldump. fix the wplink thing; try doing in big chunks for time...
+in reparse, .... try out new thing?
+mark up the times of adding tables? "last time recomputegd"/ , storted at the end of each procumopetation. then automatically figure out the rrecent things, and therefore  know which version to use automaticaly? 
+
+todo: histogram line lens in xml dump... why sections where line rate is so slow?
+
+go by chunks in xml, not by lines.
+
+240131    12:04:17    
+what am i doing wrong... need to organize thoughts. 
+want to add inference; and maybe sense markings, and definition inferences.  and leave room for others, eg LLMs.
+ambiguity, where we want to associate the infered link with the sensedict because it is computationally better that way, or on the other hand want to associate it with the linked refs...
+how are infered links actually used? definitely used by reallinks. 
+
+xmldumpparse: separate into xml files, clean up, do redirects, keep the ones that are real
+reparse: get worddicts
+reallinks: record all links between words that count, as pastward/ futureward sets. this should already have all the wordlinks, so the straightforward ones and the inferred ones...
+preexploration: record pastmosts and full futuresets. this is all about wordlinks, taken from reallinks. 
+
+problem: we lose the source of the inferred links. this is not so bad, except if later we want to get sense-specific with the inferred links, eg via defs, sense-markers, or llms. 
+
+later we want to get sense-specific. we want to look at the worddicts that gave the wordlinks. 
+eventually we can cache that stuff...
+
+
+240131    18:41:57    
+hm. maybe for enm stuff, too many from inferences,we can equate guys. just go with the one or two main ones, or something? exclude their outlinks, in some sense? 
+https://en.wiktionary.org/wiki/left
+https://en.wiktionary.org/wiki/left
+https://en.wiktionary.org/wiki/value
+
+
+240201    22:25:53    
+wild shows up in 'value'. but it shouldn't. should be able to see based on gloss...
+https://en.wiktionary.org/wiki/wild?useskin=vector-2022#English
+from {{der|en|ine-pro|*h₂welh₁-|t=hair, wool, grass, ear (of corn), forest}}.
+# {{senseid|ine-pro|wool}}[[hair]]; [[wool]]
+
+for summaries, make defs be , for narrow, the right defs, for the others, all the other defs. 
+
+240202    11:10:22    
+omg. fix whatever is causing 
+b=Cognates('scrape', 'en', 1)
+to not exclude the sense of (s)ker that means turn...
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/(s)ker-?useskin=vector-2022#Proto-Indo-European
+try after inferences...?
+
+todo: somehow use "perhaps" notations... like put ? in places or something?
+and unc=1 entries in refs
+
+240203    03:37:34    
+todo: are other language wiktionaries having stuff that the english one doesn't have? eg for german, or even for english...
+
+240203    19:25:55    
+why isn't this:
+https://en.wiktionary.org/wiki/%D0%BA%D0%BE%D1%81%D1%82%D1%8C#Old_Church_Slavonic
+showing up in the thing for 
+https://en.wiktionary.org/wiki/costa?useskin=vector-2022#Latin
+via the PIE??
+oh it is. just hidden.
+
+todo: somehow be able to inspect to see more endpoint words. eg. for latin "costa", want to see descendants of the PIE root, even though there aren't any Eng/Ger/La/Grk
+
+todo : even for english, show definition if the word isn't sense 1? eg. for latin ad- we get PIE leating to a german thing that leads to english "over", but it's a totally differen thing fro uber, it means shore and really does cognate ad-
+possibly even try to link to the right sense..??
+
+240204    10:09:15    
+could use noncognate markers as tests ...
+todo: display the sources of links... i guess it's like, show the line and the subheadre and word that it comes from..?
+
+todo: maybe redo some / lots of stuff using the tools mentioned here
+https://en.wiktionary.org/wiki/Wiktionary:Parsing
+https://www.mediawiki.org/wiki/Alternative_parsers
+specifically toolforge? or something else? idk
+
+todo: what's up with the [[]] insides templates. deal with that. https://en.wiktionary.org/wiki/Template:mention
+
+todo: what to do with calques? maybe show but treat as dead end, like short affixes.
+
+
+todo: exclude forward calques, or at least mark them as calques
+https://en.wiktionary.org/w/index.php?title=%CF%80%CF%81%CE%BF%CF%83%E1%BF%B3%CE%B4%CE%AF%CE%B1&action=edit
+* {{desc|la|accentus|qq=calque}}
+spaceballs meme
+my french's latin's greek calque's stem morphme's compound's latin's 
+
+
+240206    06:03:56    
+
+this should not show in narrow radix for value!
+   ├P-Slavic *volsъ:hair-O.Church Slavonic владь-Czech Vladislav┬Hungarian László-En Lazlo; Laszlo
+                                  │                                                            └Polish Władysław-Russian Владислав-En Vladislav
+
+240211    00:29:03    
+todo: simply print the etymology section.
+
+240212    06:31:06    
+auto-profile recording
+collapse diamonds
+what to do with "wild" showing up in value? it's hard to avoid given the wilde link. we can  at least mark it as questionable ? at begin, and put it at the end of summaries. we know because... well... at least by the definition....
+
+colape the waist of diamonds. all diamonds? try it.
+words should register when they were cut off from printing; maybe even put them on in sumarized form? eg valedictorian, valorisation... 
+generally, investigate cycles. in particular, cycles might be broken differently for pastward trunk and futureward tree, which is fine but awkward.
+
+todo: the already mark should let you jump to the first instance within the tree
+todo: styling for words in the trunk
+todo: for showng the trunk, if there's only one descendant, fold it into the prev...in other words do  not
+
+En value
+ME value:Material/monetary worth-En value ▲
+ME valew-En value ▲
+OFr value-ME value:Material/monetary worth ▲
+La valeo┬En value ▲
+
+but 
+
+La valeo┬OFr value-ME value, valew- En value
+
+240212    13:32:21    
+must fix: accost. gives costa--consto -- sto -steh. bad. have to get inspections, and see why costa-consto. 
+
+maybe group names..
+in the summaries, group conjugation nonsense ? or is it already excluded.? 
+
+240212    18:40:23    
+hm. accost is troublesome. costa... this word in this obscure sense barely exists? 
+file:///Users/tbt/Downloads/(Leiden%20Indo-European%20Etymological%20Dictionary)%20Michiel%20de%20Vaan%20-%20Etymological%20dictionary%20of%20Latin%20and%20the%20other%20Italic%20languages-Brill%20Academic%20Publishers%20(2008).pdf
+https://en.wiktionary.org/wiki/kost#M%C3%B2cheno
+DMLBS
+https://en.wiktionary.org/wiki/Kosten
+https://logeion.uchicago.edu/costa
+https://logeion.uchicago.edu/costus
+https://www.perseus.tufts.edu/hopper/morph?l=costa&la=la&can=costa0
+
+todo: maybe just always have sensedecs? new_radix can do it, it just takes longer, right? sense_radix jsut uses the pastsmosts? or what? 
+
+maybe we just straight up add the alternative def for costa? and we use sensedecs for the pastward tree as well? and this fixes it, does it? 
+
+240213    00:43:25    
+false results with 'think'. seems there's a missing PIE *teng- sense. could add it. 
+similar with 'accost'. obscure latin meaning. 
+
+
+todo: see 'scale'. need to be able to do multiple senses; and should show which ssense using and which ones not using. 
+
+what's up with 'humor'?
+
+
+240213    08:52:44    
+changelog
+https://en.wiktionary.org/wiki/v%C7%ABttr
+had "english want". deleted
+
+
+changelog
+https://en.wiktionary.org/wiki/aktuel
+From Latin actus, perfect passive participle of agō (“make, do”), from Proto-Indo-European *h₂eǵʰ- (“plough animal”). Cognate with German aktuell and French actuel.
+*h₂eǵʰ- to *h₂eǵ- 
+
+
+todo: get rid of vector skin.
+
+todo: block small roots. eg ago is actually one such.
+
+anything to be done about conjugation diamonds, ? e.g. purgatory
+
+
+240213    21:19:11    
+sorry why is wield coming after wald and weald in value???? (?in summaries)
+
+we are missing interesting things. eg.. 
+
+en value ->
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/h%E2%82%82welh%E2%82%81-
+Possibly connected to {{m|ine-pro|*welh₁-||to choose, wish}}
+-> will, volition
+
+240214    08:44:05    
+ccould mark diamonds with a diamond, or something.
+
+# less narrow: try to explain away all immediate rights via backlinking senses; if succeed then do this, otherwise use all senses
+# this doesn't account for that a backlinking sense might specifically backlink to a word, and that word has only senses that either don't cover this word, or else are excluded.....
+
+240214    16:14:13    
+todo: use Snappy and/or botli  for compression...?
+shit which one was way faster? zlib.
+serialize AND compress?
+
+240215    17:05:56    
+hm. compression slow, including decompression.... 
+could look at other ones...
+https://encode.su/threads/2347-LZ5-a-modification-of-LZ4-which-gives-a-better-ratio-at-cost-of-slower-compression
+
+should use for compilation though.
+
+240216    05:16:40    
+automatically find anomalies. big way: find where lang order is reversed. 
+maybe : where there's lots of pastmosts; a branching pastmost tree; links that are somehow probably loadbearing (e.g. early in time??) but have very few sources
+
+
+240216    06:30:02    
+maybe cache sense-tree concmputations...?
+maybe regularize caching. could put Store inside sql. almost just word->thing; could do that with word_pastxwards_futurewards, but , less efficinet for pre/pastmosts and pre/allfuturwards. could make curent thing even slightly more effiecnt maybe.. by only retrieving the needed column? 
+change red of warning
+fix ordering of words... does it come from cycle breaking? no... comes from ordering....
+make cycle breaking make better guesses about who is pastmost. eg shorter words, oldere langs, stronger links.  really it's a sense_wise concept, though sensewise probably still has cycles....
+
+240216    21:14:59    
+TODOs:
+see end of senseradix.
+consolidate cachify into sql
+consoldiate precomputation so that we go horizontally instead of vertically--compositional, i.e. can do a diamond. that is: we can either do the whole thing, or a subsegment , such that we are doing one article at a time through the whole segment of functions; or else we can do one whole function. well i guess that's just a special case really. 
+big question: how big is imm_right, or the whole poset? how well do they comprtess?
+6_pastmost_allfutures
+#TODO store the whole poset? or the all_lefts? or imm_rights? etc
+directly constructing poset. or jsut unpack!
+ooh. can print getsize of e.g. caches throughout the thing. 
+hm... can we store all the sense_decorations? seems like quite a lot.. b/c it depends on the langs. but maybe you can ... somehow just do it will all langs, and then take a subset, somehow? 
+
+240218    04:20:17    
+scan pastwards, i guess; all pairs word, partward ... is lang of pastward later than lang of word
+
+240218    05:54:03    
+ok so to test things, can ust get the lefts from the loaded poset lolo. 
+
+240218    15:55:05    
+oh right, so: if the sense decorations flow mainly strictly forward from the pastmost sense, then... maybe we can just merge cached ones for each pastmost? not clear. 
+
+for wobsite:
+https://flask.palletsprojects.com/en/3.0.x/
+render.com ?
+quinn, keenan
+
+240220    17:19:15    
+todo: merge new_radix into sense_radix, deelet new_radix
+
+240220    20:29:32    
+todo : investigate exec(open('src/scanning/scan_pastmosts.py').read())
+why so many guys with so many pastmosts???
+todo: change to prior/ulterior
+
+240228    01:02:15    
+so... caching senses. qs:
+1. do the pastward sense finding always end in a pastmost? in otherwords, is the sense pastwards tree have as pastmosts a subset of wide pastmsot?
+2. if so, and if you go sensewise futureward from the  the pastmosts senss, then do you get all the senses that were in pastward trunk senses? do you get more? currently we force only getting thoes...
+really, the current thing is incorrect; we should include both the starting senses and the found senses. the question is whether going futureward from pastmost senses only, gets at least all the pastward senses starting from the original sense .
+
+
+240228    07:09:48    
+fix loading PIE; just load the poset. how ? separate thing, or manual pickle file? 
+check compatibility of merging things
+sense caching
+make server...
+fix inspecting...
+could cache the luawordrawtext wordtext thing. 
+allow all levels of sql or not.
+deal with [[word]] stuff , whatever that is. 
+
+could maybe skip a lot of processing by... ignoring, e.g. when computing pastmosts, guys who are in future of an english word, e.g. , or otherwise obviously excluded by the eclusion criterion/? ... nah. want language flexibility.
+
+
+240228    18:30:28    
+check what's up with 'angle'... gets derailed...??
+sigh. caching senses stuff seems really hard. idk what to do. could have all pastmost senses per sense... very suspicious though....
+problem: dictionary 1. takes really long because it hits latin -arium, and 2. probably it should include -arium (though later we should exclude it!), but it doesn't, not sure why, presumably senses kill it but why?
+maybe should at least try the thing of caching all the variables for each futureward of a pastmost, as a package, and loadem up? ?  would that even help?
+
+240229    02:57:45    
+can do complicated caching stuff... but i think the main thing is:
+cache all the lookups for each pastmost
+offload computing the posets for printing to client (maybe incremental print??)
+
+240229    04:10:13    
+
+#TODO: try with manually reversing and then constructing. 
+def PosetDomain_Restricted(poset, domain, reverse=False):
+   Restricted_ulteriors = OrderDomain_Restricted(poset.immediate_ulteriors, domain)
+   if reverse:
+      Restricted_ulteriors = Order_Reversed(Restricted_ulteriors)
+   direction = poset.direction if not reverse else Direction_Reversed(poset.direction)
+   return Poset(Restricted_ulteriors, direction=direction)
+
+
+240229    19:55:55    
+'angle, en' is diferent with different included_levels....
+also it's wrong in both.
+
+
+240301    16:34:04    
+
+word = Word('dictionarium', 'la')
+word = Word('-arium', 'la')
+p = Word_Parsed(word)
+
+anomalies: 
+logged_Cognates('bend', 'en', 1)
+boss shouldn't be there ...; also why Ger Boss from japanese???
+
+want is going crazy...
+angle is crazy...
+
+240301    18:13:08    
+look at errors
+efficientify. cache allinfos; try to caches senses or something?
+integrate display. only display one tree; give visible dead ends--- wide-radix visible dead ends maaaaybe should display, and be able to unfold; other exclusion things should maybe just be a button within a word's popup menu or something, saying show futures... like show conjugations, show all langs....
+show in the chupchik on left of word, how the word is connected by inspection to its parent. 
+investigate angle / angel!
+incremental loading in webpage???  (depends what takes time... could cache the beggining results, i.e. up until the main tree)
+
+240301    22:01:43    
+for printing, in the pastward tree, somehow do something with like single splits? with a sinple split, you want to do depth first, but with complicatde diamondy things you want to ust go timewise. 
+
+
+240302    14:53:38    
+maybe get roots image for guys with no parent, eg https://i.etsystatic.com/16337046/r/il/1440ca/2559364751/il_fullxfull.2559364751_ay7v.jpg
+
+240303    22:32:12    
+todo: have to ... put caching into the freakin thing? into sql? as well as computing and defaults??
+240304    18:07:27    
+case of angle seems actually problematic...  i mean a problem with wikt. is there really an old french word angle meaning angle? if so, it should get an entry. 
+http://localhost:8000/angle
+
+why is companion here? http://localhost:8000/love
+
+why are these out of order?
+http://localhost:8000/goal
+
+the link 
+PIE *ǵʰēy- └PIE *ǵʰengʰ-
+is indeed in https://en.wiktionary.org/wiki/gay#English
+but it's no good... what to do? could try to use glosses... could mark probability based on the surrounding context ('possibly') and based on only 1 link... and no oover lapping stuff? etc...
+http://localhost:8000/goal
+
+have manual folding? or consensus folding stored?...??
+
+check after recompute that 
+http://localhost:8000/young
+doesn't have tocharian B before PIe.
+generally try the lang ordering thing. 
+
+240304    22:09:52    
+hm. how to mak faster. loading too much. 
+could already have it all in ram??
+could load less. know exclusion set, or some of it, beforehand? seems to depend on the language :(
+
+
+big spenders, without allcaches
+word_allgivensenses
+Word_AllGivenSenses
+<string>:113(<setcomp>)                                      <-   97682    0.928    2.233  <string>:112(Word_AllRealGivenSenses)
+
+
+<string>:58(cachified)                                       132710    0.437    9.862  <string>:39(Word_SenseRefsLinks)
+<string>:113(SenseDirection_Wordrefs)                                <-  101950    0.229    1.033  <string>:36(<genexpr>)
+                                                                          20058    0.056    8.781  <string>:39(sense_is_backlinking)
+<string>:36(<genexpr>)                                       <-     193    0.000    0.000  <string>:35(word_explicitly_covered_by)
+                                                                 119717    0.697    2.216  {built-in method builtins.any}
+
+240305    20:20:01    
+inflection detection is costly. also probably messedup? should check sensewise, no?
+240306    00:26:50    
+hm. maybe compute the exclusion set first. and THEN compute senses. could be much faster. depending on how big is the exclusion set.
+
+
+240306    15:52:30    
+
+uh oh. what's up with 
+http://localhost:8000/have
+why excluded? what's up?  what do
+
+can we redo the whole thing by dynamically caching the whole excluded sets of langs or something?
+understanding the exclusion criteria
+what's up with trhe trunk
+how to cache for english + german.......
+
+240306    22:10:02    
+do the shards thing. get the futureposet for a pastmost; then get the restriction to guys with langword in future, for each lang that has a wrd in the poset; 
+
+240307    10:03:44    
+refactor coglang endlang
+then test out shards...
+reposition exclusion set taking
+
+
+240307    10:32:38    
+plenty of room to further improve display. e.g. 
+http://localhost:8000/angle
+O.Norse angr:sorrow,resentment,distress;repentance;tr┬ME anger:Grief,painfulness/discomfort;feeling of ┬ME angry:angry;displaying angriness;Easily annoye-En angry
+└ME angren:annoyed,angry/upset;in a state of mental-En anger
+└O.Norse angra:grieve,vex,distress;grieved┬ME angren:annoyed,angry/upset;in a state of mental ▲
+└ME angeren:angren-En anger ▲
+
+could really just be 1 or 2 line
+
+and this
+http://localhost:8000/Bostrom
+
+O.Norse bóndi:farmer;husband┬OE bunda-ME bonde:tenant farmer,bond;husband,head of house-En bond
+                            └OE bonda:husband┬ME bonde:tenant farmer,bond;husband,head of house ▲
+                                             └ME bond:band┬ME bonden:put in bonds,take prisoner-En bond ▲
+                                                          └La bondagium
+
+should also be two lines maybe? like could just have the latin thing coming off that one word in the ist ME bond... off the middle of it or something...????
+
+we're generally ignoring equivalences... maybe a mistake... how does this work for merging slices?
+
+
+240307    21:30:01    
+try string formatting in sql
+
+240308    15:34:02    
+could shatter the subposet caches, even if not shattering the subposets....
+how to shatter subposets more?
+can maybe only store immediates and equivalents,...??
+can probably improve the domain sorted construction for merging posets. 
+ah, hm... maybe can mark up only the nonobvious futuresets.....
+like we can look at a protogermanic word and assume it has no latins in the future unless it explicitly says so...
+
+
+240308    17:48:19    
+should be cutting of particles, like -ing. how? could simply not load these pastmosts. could save pastposets of all words, and show the whole thing, but show the cut off guys. easy in that simply say: heres a list [-ing, -ed, ..]; exclude all pastmosts of guys in the list] .  still leaves the question of how to show those guys; they will by default show billions, eg : "draping" or whatever. their cashes will have this as well. hm. how to do. idk. 
+
+can also detect mistakes maybe by looking where word of len = k says it comes from word of len >> k , like 2x or +3 or whatevre.r 
+
+general problem is that we don't know gramamtical function ; so we can't sense disambiguate particles... eg 3 etymologies of https://en.wiktionary.org/wiki/-us#Latin
+
+
+240308    19:56:50    
+todo:
+try to eliminate all ulteriors altogether? andor all priors... and would have to avoid useless ly recomputing them when reconstituting the poset...
+then only store whats needed
+cache the inspections (i guess by sorted set of sensenums...)
+shatter the caches.... have to dynamically compute the sets... how though? also... this can't scale to all the langs... so what will we do... can just have a dual thing-- like use caches for haevily trafficked langs, and otherwise... ooh, could do an "all other langs" lang...! maybe that's good?
+
+240309    20:20:04    
+jessus. so slow. ok probably try to eliminate more caching stuff........
+also definitely cache the sense backlinking whatever thing
+and ... cache the um the thing. the thing with the thing. not cache. get to avoid all_ult and allprior. 
+and .... possibly somehow restrict to the narrow tree,  ??? maybe too hard. maybe can partically do it>>>>???? like partially restrict; just make sure to be bigger than the final thing; but try to make it small thean the whole wordtree....
+also maybe somehow shatter the posets themselves...????? but have to take transitive closure..??? unless you dn't need allprior allulterior????????
+
+
+240309    21:22:35    
+should be:
+'xml', 'parsed', 'links_refs', 'pastwards_futurewards', 'pastwards_poset', 'pastmosts', 'full_futureposets', 
+
+
+'futuresubposets', 'real_given_senses', 'parent_isinflection', 'allcaches', 'subposet_caches', 'shattered_caches', 'html_caches']
+
+240310    11:21:15    
+Maybe try losing everything in cache
+Check size difference full post vs just immediate
+Can shatter immediates
+
+240310    11:21:23    
+could do a hybrid shattering? like save the overlaps of pastmsts; and for the nonoverlaps, shatter them . or just shatter anyone who's too big or has too big a ration between the shatter for some top langs and then whole thing????
+
+240310    23:39:48    
+chacnge dummy to sandbox
+possibly do precomptuation by returning list of tuples where first element says the table to write to ???
+
+
+240311    11:17:18    
+MUTATE operator decorator thingy/. OLD / NEW
+
+240311    21:48:33    
+rename sql tables to say WORD
+redo abstracted precompute? could have each result of FUN give the appropriate table...
+hm... this doesn't make indexing obvious...
+
+240313    03:47:16    
+apparently the sensewise thing is good/???
+well. should test about combingin the invidividual guys. and compare permuting lang subposet with sense finding. 
+then precompute the sincluded senses.... 
+
+240313    22:44:54    
+todo....
+debug: check all uses of Word_AllRealGivenSenses, seee if they should instead be Word_GivensOrPlaceholder. 
+then , in exec(open('src/scanning/scan_pastmosts.py').read()) , scan and store all pastmosts progressively , as well as all pastmost senses which aren't of a pastmost word; print count the ratios, so we know how much more xepesnive to store pastmostsense->futurue poset included senses. (well , shattered...)
+then actually do that, hopefully. but first check if you can really combo the included senses, as opposed to combo posets then get included ensesenses. 
+
+
+240314    19:51:23    
+annoything:this
+https://en.wiktionary.org/wiki/%CE%BC%CE%B1%CE%BD%CE%B8%CE%AC%CE%BD%CF%89
+says 
+ from Proto-Indo-European *mn̥-n-dʰ-, nasal infix present of *men-dʰ-, extension of *men- (“to think, mind”)
+ but that looks like
+ from {{der|grc|ine-pro|*men-|*mn̥-n-dʰ-}}, nasal infix present of {{m|ine-pro|*men-dʰ-}}, extension of {{m|ine-pro|*men-||to think, mind}},
+ which says that men is futureward of mendh. because the mn-n-dh link is to the men entry..... how do deal with this?
+
+240314    22:20:16    
+todo:
+implement how you'd use the stuff from scan  / scan_pastmosts; the sense pastmosts things. then run that; then do same for the sensewise futurewards thign. 
+
+240319    15:56:44    
+sense cognates Sense_Cognates:
+1. get the backwards senseposet
+2. get all the pastmost senses
+3. for each pastmost sense, for each language, get the future senseposet 
+4. merge the future senseposets as well as the reversed pastward senseposet
+
+
+240321    18:40:37    
+hoo boy. ok now we need to cache everyyyy thing.
+the pastwards things; the futurewrardsets (for the lookups in .....)
+
+.... should we be moving to "class" version..?? how to do the closures in the first place? 
+wait ... maybe it's much more efficient to find equivalences when it's pastwards? idk probly doesn't matter. 
+
+
+240322    07:45:13    
+TODO: have to move exclusion set to right after we retrieve the langsenseposets. this way we can just store domain ........ wait.... shoot. can we some complicated exclusion in clusion thing? how to not step on each oheters toes...
+
+before computing the exclusions, we want to extract *all* english (coglang) words, and pass them on for printing--e.g. 'want' should give vacuity, vacation, vanity, even though those are excluded (rightly, as derivatives)
+
+240325    18:43:24    
+redo 5_!
+maybe it's  in unused. maybe should allow unused in git; check old machine
+
+then do sense_pastwardssenseposet
+test on 40k
+
+240326    01:15:09    
+the whole SenseRefsLinks thing ought to be different... should take sensenum, link kind, and direction as indices.  probably. at least 'ref' should be separate. 
+
+sigh. idk what to do . so slow for the pastwards senseposets. maybe can invert the thing. maybe can load up all sense reflinks... idea is just load up everything that says sense to pastward word refs. then you tell coverage by remembering all the directly covered and anticoered words, period; which you do by, whenever updating the clusions, you also go through and add in their directly covered words; and , then, to test if  a word is covered , you test if its ulteriors intersect the covereds. possibly could speed up more: instead of just adding directly covereds, you check if the directly covered is already in; if not, you add it and all its priors.  
+
+
+240326    23:44:54    
+see def WordPoset_Ulteriorsubposet(word, poset):
+wrong1!!!
+value en 1 doesnt' work..
+.... but why does any of hthem work ??? angle seem to work!!
+
+240327    00:34:12    
+should create tests that run the thing for all cache levels and test if the resulting html is equal. whould have to supress metadata. and would have to implement the noncached versions of things. and would have to fix all orderings... namely of defs and of summary lists. 
+(maybe regularizing cache/non-cache? hard...)
+
+240327    08:13:16    
+sigh. ok so redo ordering correctly. then try without the posets cached. then redo the poset caching. then recasche the posets. 
+
+
+240329    02:01:48    
+5_wordpastmosts is annoyingly much memory. could redo abstracted so that it takes a list of target tables, and results will end in their specific target  table. then redo without the big dict. 
+also that should make it easier to do mutliple guys vertically rather than horizontally...
+
+240329    03:09:10    
+implement ability to do covring senses with or without cache. likewise other earlier stuff. 
+240329    04:25:53    
+note: want to use SQL_Wordtext_Lang_Direction_GivenRefWords, not SQL_Wordtext_Lang_SenseRefsLinks, because the former has more words, as it registers guys who are linked to but not having an article
+
+
+240329    05:24:20    
+ah.... it's non-cache python variables that are mem hoging. need to manaually wipe i gues..??
+
+240331    07:11:18    
+would be nicer to have senseargs. like WORD. 
+further: when passing word:senses sorts of args, would maybe rather just past lists of senses, and convert internally if needed. (like is done in precomputing sense_pastwardssenseposet
+
+240331    22:13:56    
+fuck. there aren't any pastmost words in the menh futurepusote????? 
+
+240401    14:40:18    
+great! ok so todos:
+reconstitute inspections
+reconstitute wordlist sumaries for all langs. may need to make table for all futurewards. 
+further optimize the thing. need to optimize defs? word->element?
+can maybe easily reconstitute pastwards things, for every word, as they are all stored now???
+in 'draping', don't follow -aris type links backwards? that is, don't include them, somehow? idk how.  maybe exclude all pastmosts of ofr -ier, unless -ier is the only pastward?
+
+240402    21:11:16    
+ok so ... we can cache the defs per sense, if they are really taking long. 
+we want to trying running the exclusion before. that is, we just run it for the single lang that is the lang subposet of the senseposet... see how much smaller it is. 
+
+we want to scan for order violations. 
+
+add summaries for other langs
+test with ru, sa
+
+
+240403    21:27:35    
+want to do the word exclusion thing, with co- etc. not just an efficiency issue, also a display issue. 
+we can do this like so: have a list of PIE  or whatever pastmost guys to exclude. perhaps generated by eg giving english word 'co-' and saying, include all the pamstmosts of this.
+now, given a word to cognates, say it has none of those things. then it's normal. say it has *only* those things. then we do nothing further--- it seems it was meant to have them so we leave it be. eg if the cognates word is actually "co-", it should proceed. 
+now say it has some but not all pastsmosts excluded like this. so now we do through the domain once, backwards. if a guy's immedeatie parents (hm so we have to add the reversed order) are all excluded, our gu is excluded; otherwise left included. 
+then wen printing, we print the pastward poset as normal, but visiualyy indicate excludd guys; in word summarizes, we don't includ those guys; and wen we make the bg sensposet, we didn't load the excluded guys, so they only appear in the pastmost poset display. 
+
+we have a separate problem with coalesc. it leads to latin quom from co-. why/how??
+happepns both with coalesce and coordinate. seems that the latin cum doesn't get sense disabiguated. wny??? 
+ah... ok i think we're supposed to have a  infererd ref via columns type references in derived terms (and desc?) sections. but we just don't. was there a reason? try scanning things... if seems good, then add them!
+
+
+240404    16:40:33    
+what do square brackets in wordtexts mean?? see eg la Africa... unclear what to do
+{{m|la|āfricus}}/{{m|la|Āfricus}}, as a noun elliptic of {{m|la|[[terra]] āfrica/Āfrica|lit=the land of the Afri}}
+sees fairly rare though. 
+
+240405    18:19:14    
+should  maybe exclude anythin that's longer than 2 or 3 words? how else to get rid of that crap?
+learn to direct transfer from new to old https://chat.openai.com/c/401098ea-360b-4b45-bc01-264e0e76b2dd
+
+
+240405    21:47:38    
+
+ok so. show excluded guys and their upclade as boxed in partwards. don't show those in summaries and in the trunk of the main tree. ideally: put those as lower priority in the pastwards tree. 
+
+
+
+240406    02:34:13    
+oy. how to do sense inference for latin "in-"
+https://en.wiktionary.org/wiki/in-#Latin
+eg from infer
+https://en.wiktionary.org/wiki/infero#Latin
+
+why brown shows up here??
+http://localhost:8000/inferential
+reconstitute inspection??
+
+why kwel from television? 
+http://localhost:8000/televangelist
+clean up vision, television
+oh. from tele. so tele is n't showing because it's an affix. but we should probably just allow all affixes, and then cut them off via exclusions...???
+
+why the fuck PIE *h₁su-:good┬PIE *ménos:mind;thought
+which is a big problem if i want to exclude eu-....!!
+
+wtf. https://en.wiktionary.org/wiki/-ellus#Latin
+http://localhost:8000/prunella
+rebracking shit... but why are the links actually there. 
+
+-ella. having only the 0 sense seems wrong?? not sure. 
+
+brown should not point to bher!
+http://localhost:8000/prunella
+
+
+240406    16:03:42    
+jeez. ok allow big inspectsions, on demand , by interface. 
+create inspections that say which rule make a link. how? 
+word = Word('video', 'en')
+other_word = Word('video', 'la')
+res = WordWord_Biggerinspection(word, other_word)
+>>> pprint(res)
+[([video, en], [video, en], 'pastward', [video, la]),
+ ([vídeo, pt], [video, la], 'pastward', [video, en]),
+ ([wideo, pl], [video, en], 'pastward', [video, la]),
+ ([video, nl], [video, en], 'pastward', [video, la]),
+ ([vídeó, is], [video, en], 'pastward', [video, la]),
+ ([vídeo, gl], [video, la], 'pastward', [video, en]),
+ ([vídeo, es], [video, la], 'pastward', [video, en]),
+ ([видео, bg], [video, en], 'pastward', [video, la])]
+ From Latin videō (“to see”), borrowed from English video in technological fields.
+ hm. can edit wiki. hard to programmatically stop... unless "brorowed from" is always like this, or rare? 
+ but could in general suppress lang-reversing links.
+
+
+
+hm. maybe want to display which senses are being shown? eg 
+http://localhost:8000/brokeback
+want to see *brok senses. 
+put in big popup?
+
+fuck. what to do with 
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/brahtaz#Proto-Germanic
+From *brekaną (“to break”), from Proto-Indo-European *bʰreg- (“to break, crack”), from Proto-Indo-European *bʰer- (“to rend, tear, cut, split”).
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/b%CA%B0ard%CA%B0%C3%A9h%E2%82%82
+https://lrc.la.utexas.edu/lex/master
+
+want to be able to scan somtehing about PIE words... maybe scan ones  with articles to see who has overlapping definition wordsk; and also scan anyone ever saying one, to see what words they say in glosses? 
+
+
+240406    17:44:43    
+http://localhost:8000/brokeback
+https://en.wiktionary.org/wiki/back#English
+does link forward to brokeback. so, why is french bac being linked..??
+?? En brokeback┬En broker; broken; broke; break┬En brook
+
+set up transfer bridge. 
+
+hm. figure how to actually show the -en types... how to hide all the unrelatedwords? have to look only at derived or descended, one of them? 
+
+240408    16:09:36    
+http://localhost:8000/telos
+sigh. so we have this lat/fer shit. how to deal with, if at all????
+
+240407    19:08:53    
+to understand why words are in etymonline but aren't  in radix, want to take two words and find "nearest connection"-- like , are they in the wordposet? are they in the senseposet without exclusions? etc
+
+http://localhost:8000/amen
+shouldn't point to aim... but how to avoid. 
+
+hm... how to make this actually useful. 
+want to know number of senses...? 
+know defs even if there's no entry; pull from links. 
+indicate whether there's no entry
+indicate ... more stuff. like tell me all the inlinkers and why they inlink?
+tell me why 1 among multiple senses wasnt' excluded. e.g back; cano http://localhost:8000/incentive
+put in as much as possible, but only for the pastward thigns. 
+etmyonline links. 
+"go to previous mention" for "lready menationed" marker; and highlight the jump-to
+
+scan for time reversals
+
+hm... maybe like attempt to do more expansive sense disambig...????
+
+240408    20:57:20    
+https://en.wiktionary.org/w/index.php?title=cooperor&action=edit
+possible? incorporate latin conjugations.... can we copy wiki code somehow?
+
+http://localhost:8000/cooperate
+want to fix... idk how. way to check "it's the whole etym section"?
+
+print some of the article sections. esp etymology, maybe POSs. make the links active
+
+make buttons! to etymonline, wiktioanry, radix, etc
+
+print german wordds , etc
+
+various messed up things:
+http://localhost:8000/Seaborg
+
+http://localhost:8000/beeman
+http://localhost:8000/bee
+bee is messed up. why doesn't it even show the real thing? 
+why does it link to be? show full links inspection from button ...
+
+jesus. cycle from bicycle. fix this somehow, idk how. actually i don't understand why these aren't considered ... ok i guess it's like , the links are broken ... no idk. have to understand how this happens. 
+http://localhost:8000/doxycycline
+http://localhost:8000/bicycle
+works fine, so idk what problem is. 
+
+just generally scan for der, inh, cog (what else?) in non(tymology sections. 
+
+privelege non-gray in pastward poset printing
+make lexicographic ordering method 
+
+"perhaps" suspiecious. citatiosn? or can we incorporate "prhaps" into things????
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/ple%E1%B8%B1-#Proto-Indo-European
+
+
+oh boy. how ot avoid. is this common in derived sectiosn? 
+https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/-%C3%B3nts#Proto-Indo-European
+* {{l|ine-pro|[[*pleh₂-|*pl̥h₂]]-n̥t-éh₂}}<ref name="DeVaan_planta" />
+*pl̥h₂-n̥t-éh₂[2]
+maybe we're supposed to extend the 'nonempty' idea? like only allow isolated links..ones that aren't pre/proceede by aanother link or some text??
+
+why isn't 
+*-ónts, ine-pro
+exclusion working??
+
+http://localhost:8000/cellulosic
+
+wtf is up with the descendants of k'el- ???? eg law.. , color.. ??
+
+geez. the pastward thing is just a messa with all the ME OE stuff
+http://localhost:8000/long
+
+
+240409    21:25:54    
+damit. this is getting a bunch of "fer" stuff
+http://localhost:8000/drive
+https://en.wiktionary.org/wiki/fere#Latin
+
+this poitns at pie *mew-
+https://en.wiktionary.org/wiki/%CE%BC%CF%85%CF%81%CE%AF%CE%BF%CF%82#Ancient_Greek
+but with a different meaning.... hapens a lot :( how to fix????????
+
+could use automatic detection and incorporate that into a probabilistic display? and also scan to point out cases where theaere probably missing entries??
+
+sigh :(
+need to build more tools for showing why things appear. separately there are major problems probaly maybe only addressable via editing wikt, or using llms or osmethin? 
+
+why do 
+├En unmoveable; mobilize; locomote
+in http://localhost:8000/motive
+only appear on the pie, rather than on the closer things?
+
+http://localhost:8000/stance
+
+La sto┬P-Italic *staēō:stand┬PIE *sth₂éh₁yeti
+      │                     └PIE *steh₂-:stand (up)-PIE *sed-:sit
+      └P-Italic *(s)ta(je)-tōd-PIE *(s)teh₂-
+
+could use cleaning up.... in particular does (s)teh always mean steh/teh?
+
+maybe: in the inspection for a word, show how it connects with the main word. eg. http://localhost:8000/weave , want to click on raven and see how to get from weave to raven, with full defs and etym sections...
+
+240410    16:24:41    
+wiktionary favicon:
+https://upload.wikimedia.org/wikipedia/commons/8/83/En.wiktionary_favicon.svg
+https://en.m.wikipedia.org/wiki/File:En.wiktionary_favicon.svg
+
+240410    21:25:14    
+make a global variable of the word + senses that's the root / page. 
+incoporate senses everywhere
+for the report... hm... if query word is in pastwards of the root word, then, we are looking for reports of adjacents in the pastwards poset of ther oot. otoh, if query root not in pastwards, then looking for ..... sigh :( seems expensive ..! though we could use the pastwards of the query word, but, not clearn.....
+
+
+240411    22:09:40    
+refactor word elements.
+acc_trunk += Word_Element(word, info={'kind':'summary wordlist'})
+acc_trunk += Outline(Graya(150), Word_ColoredElement(trunk_word)) + ': ' 
+
+240413    16:04:43    
+ok the nondeterminism is pretty annoying. get rid of it. 
+
+240413    22:49:44    
+for highlighting, use like a light green  or something, less obtrlusive, for guys who have been excluded just for space but are in the senseposet. 
+
+240413    22:54:12    
+jesus. 
+ ├ME hawt-En haut
+  ├ME haute┬En haut
+  │        └En haughty
+  ├ME haut┬En haut
+  │       └En haught
+  ├ME hault-En haught
+
+
+240413    23:11:45    
+borrowrings English-> german are kind of dunmb , mostly? exclude? 
+make the hover popup be as horizontal as the parent, so can move mouse down to it. 
+
+
+240414    03:35:08    
+(answer: root) why does this link to *hel-? http://localhost:8000/word/lang:en/visceral
+
+
+240414    12:39:49    
+acknowledgement for radish svg: https://openclipart.org/detail/209660/food-radish
+
+240415    23:03:44    
+hm. pastward posets should maybe include the dead ends that are excluded from word poset. ......
+
+240415    23:40:11    
+hm. maybe put popups to the right or above word... to avoid like movieng mouse down to word, and can't click because popup from guy above is pblockeing .
+
+
+240416    23:14:02    
+
+what's with http://localhost/word/sing ??????
+
+
+240418    18:42:13    
+
+suppletive root. eg fer / lat; http://localhost/word&lang:grc/%CF%80%CE%B5%CF%81%CE%AF%CE%B4%CF%81%CE%BF%CE%BC%CE%BF%CF%82
+
+allow click without cmd key to open wikt
+
+scan for cases of 'lopsided split'. where X links to Y strongly, with lots of sources, and also X links to Z weakly, with 1 or two sources. 
+
+
+240419    08:22:23    
+http://localhost/word/weave
+here we have a bad diamond. w1:1 and :2 link to w2, w2:1 and :2 link to w1, but they are legit different senses. in this case we could use etymid...
+
+
+
+240419    08:39:53    
+maybe for a popup, clicking on it should also get rid of it unless it is on a butotn that was clicked. 
+240419    11:12:52    
+would prefer if scrolling was smooth but faster than default. 
+
+
+240419    16:03:37    
+dictionaries:
+pokorny:
+https://archive.org/details/Indogermanisches-Etymologisches-Woerterbuch/page/n405/mode/2up
+kroonen:
+file:///Users/tbt/Downloads/(Leiden%20Indo-European%20Etymological%20Dictionary)%20Guus%20Kroonen%20-%20Etymological%20Dictionary%20of%20Proto-Germanic-BRILL%20(2013)%20(1).pdf
+
+240420    14:18:39    
+maybe use "akin" like cog
+https://en.wiktionary.org/wiki/Wiktionary:Etymology#Etymology_jargon
+
+philosophy: should roughly monotonically improve as wiktionary improves. should tend towards perfect as wiktionary tends toward perfect. perfect means accurately representing the understanding of the linguistic / lexicographological community
+
+240420    17:08:29    
+http://radix.ink/word/refract
+maybe autodetect sequences of same lang that are too long
+P-Italic *frangō-PIE *bʰreg-:break-PIE *bʰer-:bear,carry-PIE *bʰrewe-
+also detect sequences esp of PIE where the words get longer pastwards...
+possibly want to exclude only further up the chain? if we exclude latin re- than we exclude a lot, like rotate... partly fine because if that's the only root, then yeah, but... maybe only exclude latin re- and futurewards, but not further past? though this loses the benefit of not having to load the whole thing... In *theory* could do more complicated partial loading thing. 
+fix these:
+-PIE *bʰreg-:break-PIE *bʰer-:bear,carry-PIE *bʰrewe-
+
+
+240420    17:59:02    
+PIE dictionaries: 
+verbs, 2001
+https://en.wikipedia.org/wiki/Lexikon_der_indogermanischen_Verben
+nouns and adjectives, 2008
+https://en.wikipedia.org/wiki/Nomina_im_Indogermanischen_Lexikon
+intro and particles, 2014
+https://en.wikipedia.org/wiki/Lexikon_der_indogermanischen_Partikeln_und_Pronominalst%C3%A4mme
+https://en.wikipedia.org/wiki/Indo-European_Etymological_Dictionary
+
+240421    16:30:07    
+lolwut. why does helfen appear??
+http://radix.ink/word/elephant
+
+how to refactor
+SQL_Table('Wordtext_Lang_SenseRefsLinks', ['WORD'], 'sensenum_refslinks')
+maybe we move to sensewise, and also merge formats of links; and extend to say info like source, rule, sense, header. yeah this is probably good? 
+#look at interface, precomputing 3 and 4. 
+
+240421    21:23:33    
+
+ooh... if we do this refactor then senseids should be much easier? well... then would have to allow things in liniks to be either word or sense...
+
+...oh. is that what i'm supposed to do? i could... pickle word or sense or whatnot, and use that as the key...
+
+hm. so there is theoretically a difference if we get rid of ref/link distinction. in theory you could have w1:s1,s2; and s1 says "s2 links to w2". but we'd record "s1 says w1 links to w2". but this should basically never happen?
+
+240422    00:28:37    
+unused/gists.txt
+unused/gist_processing.py
+
+
+240424    01:47:26    
+#at some point, scan for places where these aren't different, ie. there's a legit presense. check if it really counts as a sense; maybe exclude ones that doen't, eg where the only subheader is presubheader and then Pronunciation or Alternative forms
+# could just include starting with any Pos, exclude before that. see parsearticle
+def Word_AllRealGivenSenses(word: Word):
+   if 'real_given_senses' in G_included_levels:
+      result = SQL_Wordtext_Lang_RealGivenSenses_CACHE_Select(word)
+      return result if result else set() 
+   else:
+      return {sense for sense in Word_AllGivenSenses(word) 
+           if sense.num != 0 or any(token['kind'] == 'reference' for _,v in Word_Parsed(word)[0].items() for token in v)}
+
+
+
+240424    10:25:34    
+todo: fix ordering. check "see" on mill initial
+
+240424    14:15:44    
+eventually fix language ordering.. but not obvious how
+
+hm. ok so there's 
+0. how the thing should be computed, if not using sql
+1. how the thing was computed in precomputation
+2. the switch to use sql or not
+3. default value
+4. runtime cache  or no
+
+
+240425    00:30:14    
+ok so to fix the empty links, we have to make radix links send the dataset info ; then the server has to retrieve the data and get the senses; then pick one and send it to logged sense cognates
+240425    16:34:04    
+hm. maybe can speed up precomputaiton by checking to see if smth has already been pastwardsenseposeted... and if so we just load it; and then we deadend its members; and at the end we MERGE it in . 
+
+
+240427    09:39:07    
+should i use SQLAlchemy or some shit
+
+240427    11:15:17    
+TODO: change includedSenses to Sensenums
+
+
+240427    14:41:33    
+problem:
+https://en.wiktionary.org/wiki/dictionary#English
+says 
+from dictus, perfect past participle of dīcō (“to speak”) + -ārium (“room, place”)
+which points dictus to -arium inappropriately
+
+240430    00:35:23    
+how to get reports for futurewards ? maybe send to hmtl the pastmost sense that are for this guy. ... well this doesn't work for guys who are here only from the pastward poset...??
+anyway then... well then... jeeez idk. could just get the whole freakin thing. 
+
+
+240501    07:14:54    
+WIKTIONARY_FULL_24.04.25-24.04.27-03_39_01.db
+sent 38 bytes  received 18582114170 bytes  2214925.11 bytes/sec
+total size is 45649489920  speedup is 2.46
+18582114170 
+45649489920  
+
+Affixes make things big
+How to add senses
+How to propagate sense links
+How to deal with ambiguous sense affixes
+Maybe to do more don't grain pre computer
+Refractor xml
+Auto find affixes bmy links
+Reverse index links for inspections
+Maybe separately handle affixes before more printing
+Do past wards to get immediate, use for future wards so don't have to fix point
+Get rid of extraneous zero sense
+Sub universe xml slice for testing
+undo affixes for now :)
+
+240501    08:39:23    
+first do the reverse indexing for links
+then subuniverse slicing
+... maybe should be doing all mentioners, not just accepted links, for purposes of subuniverse. also need accepted links, for purposes of inspections. but for example, if we want to figure out the um the um the affixes thing, if we get a subuniverse from a non-affix db, then, we won't be able to see many of the affixes (in theory) when we try with affixes form the subuniverse. 
+
+
+
+240501    10:02:17    
+todo:
+regularize xml
+deal with redirects somehow...
+subuniverses...
+
+240501    15:32:12    
+allow dict generators in precomputing...
+
+240502    16:22:42    
+TODO: 
+make function for this shit:
+
+#to_do_1 = {'generator source':[(x,) for x in SQL_AllPastmosts.Unstore(SQL_AllPastmosts.RowIterator().fetchone()[0])], 'function':FUN, 'target tables':[SQL_WORD_FuturePoset], }
+
+
+240503    02:02:16    
+
+finish and check
+exec(open('src/precomputing/parsed_allmentioners.py').read())
+then do subuniverses.
+
+240504    00:31:56    
+have to get the subuniverses from the current thing on server. 
+but then fix 
+SQL_Table('WORD_Parsed', ['WORD'], 'parsed', )
+
+and
+
+#GWordtitle_Redirect = {}
+GWordtitle_Redirect = (SQL_WordtitleRedirect.OneValue() if globals().get('G_not_loading_to_xml_redirects', True) else {})
+
+
+240504    03:00:46    
+next:
+download 
+/root/radix/wiktionaries/SUBUNIVERSE_WIKTIONARY_FULL_24.04.25_value24.05.04-11_59_28.xml
+run the things on it to see what happens
+then do the same for break, table... i guess for some substantial list..?
+then, fix sql etc stuff, and ... proceed. well, something about affixes.... well in general use these things for testing...
+
+240505    11:56:29    
+
+Possibly somehow precompute map from pastmosts to relevant etymology online-- like, given etymonline guy, return the set of pastmosts who have it in future.... or something. 
+Priority: enable partial displays . Just pastward Poset; jst etymonline overlaps... for speeds sake
+Use append not plus in printing 
+
+240505    23:28:02    
+
+awkard to have 
+G_English_words_order = {word:i for i,word in enumerate(G_English_words_order_list)}
+only in the scrap_wiki_word_freq file
+
+
+240506    07:35:14    
+we record all_pastwards, and equivalents
+during closur, we check if the word has already been pastwardsed. if not, just continue. but if so, then... we get allpastwards of the word, and equivlaents. we add those in, but mark them as already done.
+possibly we can also use this somehow, later... in Poset... eg by using immediate pastwards, instead of given pastwards...
+
+probably need to keep clearing cache in order for sever not to crash
+
+Just stay away from the already done. Then transitive closure. Then paste them back in by operating on the guys who are immediate of the live guys
+Though do we even need to take transitive closure? What actually need
+
+Maybe lookup faster merging....
+Instead of sets . union-find..?
+
+240506    11:17:46    
+wow this kern thing is dogshit. just do https://lothiraldan.github.io/2018-02-18-python-line-profiler-without-magic/
+lesson learned, magic is often bad
+
+240506    11:49:36    
+can't get line_profiler to see the source  code :(((
+
+
+240506    21:14:08    
+....hmmm....
+so i think that the sorting is inefficient. it's because we're trying to also sort w.r.t. the language or whatever. but when is this actally needed. ? certainly not, for example , in precomputing 5; we don't even store the domain at all, so it really doesn't matter. so actually we should be using a more efficient queue based sorting, at least in that case!
+
+240506    21:50:26    
+... ok we should maybe do a lot of things diferently.. move to a more separated out thing.. don't need to be packaging posets until later. ... 
+
+
+240508    06:32:38    
+todo: use scalene. 
+optimize 💥 ⚡def GivenulteriorsStrictulteriors_Immediateulteriors(Item_Givenulteriors, Item_Allulteriors):
+💥 ⚡   result = {item: ulteriors - unionfold(Item_Allulteriors[ulterior] for ulterior in ulteriors)
+
+
+240508    11:46:23    
+from numba import jit?
+--reduced-profile
+--cpu-only for less overhead
+pip install scalene
+
+
+240511    18:57:28    
+Maybe load whole tables eg words direction set
+Word cover set maybe invert or something?
+
+separate out all_ulterios (from transitive closure)
+then: do some clever thing with the immediates, merging them? ...?
+like, 
+
+Just stay away from the already done. Then transitive closure. Then paste them back in by operating on the guys who are immediate of the live guys
+Though do we even need to take transitive closure? What actually need
+Maybe lookup faster merging....
+Instead of sets 
+
+probably need to keep clearing cache in order for sever not to crash
+
+
+
+240512    02:07:48    
+well. we can try optimizing 2_parsed. currently we have a test going to see if we *ever* need to do the corrections twice.
+we can also optimize other things. 
+
+240512    12:48:42    
+at some point, we should fix def do_Tokens_MarkLookaheads(tokens). instea of searching the text, first do tokens, and then search through the tokens to see which is a reference of the right kind, if any
+also finish the renaming tokens -> eqchunks
+at some point think more about newer_GivensStrictsEquivalents_Immediates
+
+
+
+240512    13:18:48    
+possibly could speed up closures by getting equivalents, and then only loading immediates once... this only works for after the initial precomputation.... and probably is slower assuming that cycles are rare.
+
+
+240512    14:53:59    
+probably in general should not care about performance for cycles, only correctness
+
+
+240512    17:33:20    
+todo: assume global printing off for precomputation lol. 
+test the runall with scalene
+
+
+240512    18:05:48    
+todo: track down difference here
+k1,k2 = AssertTablesEqual(SQL_WORD_Allfuturewards, SQL_WORD_Strictfutureset)
+might be excluding the word, or all equivalents. 
+figure which one we care about more, etc.
+
+240513    02:12:27    
+#TODO::::::
+what is up with 
+
+k1,k2 = AssertTablesEqual(SQL_WORD_Strictfutureset, SQL_WORD_Strictfuturewardset)
+
+240514    10:23:38    
+use multithreading?
+
+240515    17:40:23    
+sigh. ok so for some reason special_update special_WordsDirection_UlteriorclosureGivens is very close to correct but is incorrect. not sure why. anyway, it does in fact speed things up significantly, like 25% or something (i.e. 3/4ths the time). but i should move on for now :/
+
+
+
+240515    22:53:59    
+that's weird. 
+exec(open('src/radix.py').read())
+k1,k2 = AssertTablesEqual(SQL_WORD_Direction_Coveringsenses, SQL_WORD_Direction_Coveringsenses_tweak)
+k1== k2
+obj_diff(k1,k2)
+
+printing obj_diff of the two results:
+('add', [([wateren, nl], 'futureward')], [(0, {[water, dum]_1})])
+
+240515    23:31:33    
+WTF is going on with the perf different between the two word_coverings...??????
+
+240516    20:14:07    
+todo:
+redo exec(open('src/precomputing/O_KN_sense_pastwardsenseposet.py').read())
+with immedeaties... compare... 
+senseids...
+affixes...?
+https://en.wiktionary.org/wiki/Template:senseid
+
+240517    20:27:06    
+bend? https://github.com/HigherOrderCO/Bend
+pypy3?
+Futhark?
+
+
+240518    06:00:58    
+try tweaking word coverings to include equivs.  see if equivalent
+
+240518    07:26:25    
+fuck. a lot of optimizations are about getting from storage. but we're not testing those with repeat testing and we get confused. 
+maybe when we redo previous precomps, it resets it and we get a good measure?
+
+
+240518    17:46:25    
+todo optimize shit more after moving to more dynamic thing... eg.
+@line_profile
+def WordDirection_ManualPoset(main_word, direction):
+
+
+240518    17:50:24    
+todo: continue moving to more immediates / stricts; look at when needing orders; optimize sense poset thing.......
+
+240518    23:39:46    
+
+wtf is up with these things:
+#SQL_WORD_RealGivenSenses only really is used here...
+
+def Word_AllRealGivenSenses(word: Word):
+   if 'real_given_senses' in G_included_levels:
+      result = SQL_WORD_RealGivenSenses_CACHE_Select(word)
+      return result if result else set() 
+   else:
+      return {sense for sense in Word_AllGivenSenses(word) 
+           if sense.num != 0 or any(token['kind'] == 'reference' for _,v in Word_Parsed(word)[0].items() for token in v)}
+
+# blech. 
+def Word_GivensOrPlaceholder(word: Word):
+   givens = Word_AllRealGivenSenses(word)
+   return givens if len(givens)>0 else {Sense(word, -1)}
+
+can we do givens or placeholders everywhere in stead? 
+
+todo: 
+exec(open('src/precomputing/O_KN_sense_pastwardsenseposet.py').read())
+figure what to iterate over....
+ideally simplify.... really want to iterate over word_givensor placemholder?
+
+240524    20:45:40    
+sigh. i don't know. 
+
+240525    19:53:19    
+ok good enough...... now what. 
+could invert word_coverings things. 
+could go for senseid. 
+profile senseposets
+
+240526    00:45:54    
+ok etymid is the nice thing
+
+240526    01:32:32    
+should be able to get ritd of 
+G_included_levels
+#cachelevel_setcachelevels('strict_futures')
+stuff!
+but first do given senses!
+
+maybe delet??
+to_do_3 = OBJECT_TABLE_TODO(MENTIONERS, SQL_WORD_LinkerSenses)
+
+
+240526    19:24:53    
+ok great. so we cleaned up some stuf. now: first to do , is to get a function from parsed to a dict that maps word to a map from senseid, anchor, and etymid to sensenum
+
+240526    23:01:39    
+maybe would waant to clean up parsearticle by making it more like, we build a dict that takes a ref type to a function from the text to the necessary dict
+can delete the "inheritor lang" stuff? 
+
+at some point should probably call "references" instead "templates" (and ugh also "ref" -> "temp" or "template"?)
+
+need to check where anchors are used. generally check stuff about targets (anchor, etymid, senseid)
+
+
+240529    22:25:46    
+ok fuck. i don't even know if id= gets used much in *Recognized* templates..>??????
+
+
+240530    15:40:37    
+sheesh. well fuck senseids for now i guess? i dunno. and fuck affixes? really want to have affixes, but..
+
+learn to use cookise? 
+make a folding info panel
+parallel processing for precomputation
+offload merging to broweser??
+learn to use partial loading / multiple reuqests
+
+do more coglangs; make it a thing...
+
+we want things in etymonline but not narrow radix to be marked differently depending on wheither
+* in radix
+* not in narrow radix, but only because excluded
+* not in wide radix
+* not even in wide radix
+
+maybe want to show dead ends? 
+
+make options to show or not show different parts? even rearranget hem ? ? 
+
+give def of current sense  explorign. 
+
+.. fuuck. everything is a drag ... 
+clean up printing.py and display.html? 
+
+for the reactiveness... do we have backward dependency, eg where a guy up top wants to point at a guy downstairs, by id, but the id doesn't exist yet?
+
+group things (eg have a thing for all info; a thing for cognates; a thing for more info about this word...; a thing for pastward tree; a thing for futureward tree
+maybe allow to see futureward tree for just one guy
+.... honestly should maybe just separately have the futureward trees........ better in a lot of ways? efficiency, ... well no because need to recompute specifically given "already computed"... ok idk. 
+
+have a template for sections, which allows them to be reactively loaded; toggled on/off in settings; click to show/hide.
+
+redirect /word to /word/word lol
+redirect /xyz to /word/xyz unles s xyz is some other path 
+generally m
+
+240530    21:41:48    
+sigh. so much stuff we *could* do. but should probably just cut losses for now...
+make mvp for me...
+so make an info page... move nonessential stuff there...
+
+240531    10:21:59    
+info:
+short description of what this is. link to wiktionary
+"try it". word box
+acknowledgements. philology, wiktionary, abstract regex, quinn for help re/ servers
+link to donation; call for devs. describe my plans briefldy. 
+link to blog posts (general intro; todos)
+link to info page saying how to use / meaning of sections
+warning/ disclaimers. 
+
+
+240601    21:47:26    
+put article info (etymology, other senses, defs)
+
+
+240603    02:44:11    
+remove the empty space at the end for non radix pages..?
+
+240603    20:47:42    
+maybe should have all the text pages load at once, for responseviness?
+
+240605    17:53:58    
+weird thing with nuked articles? ???
+maybe should be using Wikimedia Toolforge??
+
+https://en.wiktionary.org/w/index.php?title=Wiktionary:Grease_pit/2024/June
+https://en.wiktionary.org/wiki/Wiktionary:Grease_pit/2024/June#c-This,_that_and_the_other-20240606031800-This,_that_and_the_other-20240606031700
+https://phabricator.wikimedia.org/T365155
+
+240606    15:54:29    
+lot of bad stuff. eg brook, -en. http://radix.ink/word/lang:en/break
+brook doesn't give inspection. need to check if inspection is empty; if so go to wider inspection. 
+
+post to https://phabricator.wikimedia.org/ ? 
+240606    17:58:16    
+probably should havea framework for sampling differences. that is, if we want to tweak , say , inferences, then we do a scan over parseds, run the new and old versions, and look for instances where it's a change. 
+
+need to get server logging going. 
+
+240607    23:08:11    
+sigh. i guess factor shit out from word _element, and that will enable the fuckin legend...
+
+240608    18:37:53    
+
+maybe send less stuff, eg in 
+   json_data = ujson.loads(request.get_data().decode('utf-8'))
+eg to decrease log sizes / make easier to read.
+
+maybe make top panel button for each word lol
+
+
+240609    23:55:23    
+add sitemap.
+https://ahrefs.com/blog/google-index/#:~:text=1.,the%20pages%20on%20your%20site
+https://search.google.com/search-console/index?resource_id=http%3A%2F%2Fradix.ink%2F
+
+get rid of div lines in docs... maybe everywhere
+
+240611    07:32:51    
+maybe inspection should show *all* mentioners. this way we can eg. see if └PIE *wr̥dʰh₁om in http://radix.ink/word/lang:en/word is made up by one article, or is a thing that appears in a lot of places.
+
+240612    11:43:44    
+"event" should not show in http://radix.ink/word/lang:en/weather
+
+http://radix.ink/word/lang:en/clean *gel example of missing sense
+
+Inspection should repeat word because left justified
+Things should different background eg pops
+for mobile, reposition inspection, or at least make wide
+have tree in inspection
+all mentioners in inspection??
+
+240612    11:46:40    
+todo:
+first of all move to some dynamic thing lik ajax or whatever. 
+have the pages load just the wiki and the pastwards. this is the same regardless of language settings. it also loads a thing that async will check the localstorage and will then ask for the appropriape sumaries and tree.
+we can also put the docs into local storage and only update if out of date. 
+
+240613    15:39:45    
+for click over, first wipe (and add buttons i guess), then show, then fetch ther est
+
+
+
+240613    22:58:53    
+games. are these two cognaate? name a cognate
+name a close cognate
+name a cognate from xyz language 
+group together cognates.
+
+240614    22:44:27    
+use http://radix.ink/angle as example of confuseing / missing etymology of ofr angel
+
+
+240615    18:12:02    
+set default colors back to gray
+
+240628    14:12:06    
+finish with settings thing...
+theng add coglang cettings...
+then fix global connections... use read only? 
+
+eventually: multithreading, WGSI
+add to acklowledgement
+
+240628    20:30:09    
+cel-his and other stuff...
+
+240629    23:50:59    
+todo: actually have settings for coglangs. be able to wipe color settings.
+note: 7.23 is number of pixels width of 1 character. better way to do settings size things?????
+
+240630    19:39:18    
+could be nice to enhance the language settings poset with historical info such as a old norse contributing to old french, or whatever is the case...
+
+240630    21:41:56    
+maybe have reset guys hidden if they'd do nothing
+eventually have "blank slate" setting..?? too many possibilities
+could allow arbitrary js  stuff...
+
+240707    03:56:52    
+maybe colorpickers also on main
+ok so ... want to refactor so we can do coglangs settings. start at def CognatesPage. maybe move the whole thing... like move the whole sense->Displaycontent to a different file. have to get rid of G_cognatesprinting, and want to make the wordlists and the tree be asynch... but note that word_element wants to be in main...
+
+
+240709    00:00:26    
+rename wordelement to wordinfo_element and delecte info=
+inspections: if the column with the plaintext is super long, truncate around the match somehow.... wait didn't i already...???? 
+
+
+240709    07:45:21    
+arguably all senses should be printed separately.... idk
+
+240710    08:35:13    
+can we filter out most garbage requests? for example, are there any legit requests that have a period in them?
+
+240711    05:05:44    
+alright. fuck you. todo:
+figure out about wsgi stuff. criteria: want to have the thing not die just because of a crash; want to put cores to work; ideally would want to have good scheduling (?); want to share cache between workers. 
+https://medium.com/@jgleeee/sharing-data-across-workers-in-a-gunicorn-flask-application-2ad698591875
+want to do precompute for more langs
+want to make commonwordslist; maybe cache for them; when trying, do more exclusions probably
+maybe fix more actual stuff, getting stuff wrong? 
+maybe inspections for futureward
+maybe colorpicker on main
+maybe wiktionary stuff for starting word, and alt senses
+randomword
+etymonline sync load?
+
+setting for show defs / not?
+put some more stuff in popups, eg full defs...
+
+240711    22:43:15    
+etymonline not always right. eg http://radix.ink/word/lang:en/see . maybe restrict to PIE roots with a bidirectional handshake ?? ???
+
+http://radix.ink/word/lang:en/tortfeasor
+
+sigh. 
+so , we *could* just do it without cache. this seems kinda sad. unpickling does take time though. 
+alright. well it doesn't actually make a *huge* amount of difference? and theings aren't *that* bad? so fuck it? probalby fuck it yeah. 
+
+240713    04:41:42    
+alrighty.did it. now, we want to:
+more info on main word
+inspections for futureward
+more langs
+reset all settings ( in a section) 
+settings for print summary lang (wordlists) . maybe endlang as well. but how is it used? in precomputation ? ??
+more writing
+commonwords, random word
+caching html for common english words? good to go through anyway....
+
+240714    01:24:12    
+https
+something about dealing with multi senses.......???
+
+attack shouldn't be in stego, wrong pie root... :(
+http://localhost/word/lang:en/stegosaurus
+
+recolor etymonline guys that show up in unexcluded... but we don't store unexcluded... fuck... 
+do we store "all futures"? we can then precompute... no this is wordwise, it's bad. we instead want to.. when making the lang senseposets, store all futures from english. yeah. 
+inspections for futureward. need to send in POST the parent in the tree. 
+
+scanning for most common langs to cache...
+
+240715    07:54:06    
+47809 xcl Old Armenian
+23293 hy Armenian
+wtf???? why old has 2x the entries as hy?? some weird error maybe? 
+
+boop
+
+240716    04:06:47    
+man. we need to make the results better. fuck. fucking middle english. and other problems etc.
+i wonder what it would take to integrate results from other language wiktionaries....
+actually they seem like they suck? compare eg
+
+https://de.wiktionary.org/wiki/singen
+https://en.wiktionary.org/wiki/singen#German
+https://de.wiktionary.org/wiki/Wort
+https://en.wiktionary.org/wiki/Wort#German
+
+apparently de.wikt just doesn't have reconstructed langs? ? like herkunfts don't have links..? 
+
+however, french does. https://fr.wiktionary.org/wiki/Reconstruction:indo-europ%C3%A9en_commun/*p%E1%B9%93ds
+do we get additional info from fr.wikt over en.wikt?
+
+jesus christ. wtf to do with polyiamond / hook 
+http://radix.ink/word/lang:en/hook
+https://en.wiktionary.org/wiki/polyiamond#English
+
+should mark non-first sense. eg "sold" in http://radix.ink/word/lang:en/solid is something weird. maybe also show def.[ 
+
+in print summaries, show multiple senses separately? probably better...
+http://radix.ink/word/lang:en/unreserved
+
+this sense split with defendere isn't really a sense split very much. though picking either one should be fine? going backward that is. 
+http://radix.ink/word/lang:en/defend
+
+highlight home like random?  a bit less flashy both
+
+bro...
+ └ᐸLa ob-┬La obolus
+ http://radix.ink/word/lang:en/obtain
+
+kind of bad to not include affixes.......
+really we want to allow affixes, but... somehow cut things off... how do we cut things off futureward? have to avoid huge word trees. 
+
+why wordlist
+http://radix.ink/word/lang:ine-pro&sensenum:1/*up%C3%B3
+different from 
+http://radix.ink/word/lang:en/subsume
+
+why do we have an extra sense here? terrible 
+https://en.wiktionary.org/wiki/sub-#Latin
+
+240717    02:46:39    
+i want to include affixes in some indirect way.... like ... we record them... we include them in the pastward but not the futureward...
+
+240718    08:55:22    
+unblock http://radix.ink/word/lang:en/coalition
+tortfeasor
+
+240718    12:23:00    
+can do ... display affixs as thing + affix. lol. and gray out the affix/s. 
+senseids
+single-best-guess doctrine?? what about with like multiple parts of speech and shit? 
+glosses for defs!
+inspection reports for futureward
+write more pages
+reinstate juemp
+add search and redirects. eg arbeit -> Arbeit de. 
+poooossibly a setting for search priority... but that's not for me...
+visaully set off initial root/s from the etymology. eg in http://radix.ink/word/lang:en/word
+should use initial roots as checksums for pastward tree... at least to search for anomaolys. 
+
+in eg http://radix.ink/word/lang:en/word, why are we linking to "profine sense 0"?? wtf? 
+
+the hover popup sometimes comes up too low, so it over laps the word. wtf? maybe just the very first time gettig a hover? loading the thing? should we local strorage the things? but why arent't they preloaded 
+
+
+display doublets and cogs and such ? http://radix.ink/word/lang:en/radix
+
+wtf is up with profane?????? oh nvm we're on old machine
+
+hm: https://en.wiktionary.org/wiki/Template:surface_analysis
+eg http://localhost/word/lang:en/dictionary
+
+ordering here is annoying: http://radix.ink/word/lang:en/dictionary
+we would want to instead have the tight diamonds be grouped.... simple rule? eg put excluded guys at the end; put together guys with shared futuures...
+
+240718    14:14:21    
+http://radix.ink/word/lang:en/bed
+get rid of [[]] shit somehow.
+{{inh|en|gem-pro|-}}  --> proto-germanic or whatever`
+{{rel-bottom}} {{rel-top
+
+for output.... i guess it would be nice to have actual examples... but it's a bit hard...
+
+check that _output does show def for PIE
+
+http://radix.ink/word/lang:en/wind
+why is this not rendered? {{inh|en|ine-pro||*h₂wéh₁n̥tos|wind}}
+
+240718    16:42:31    
+http://radix.ink/word/lang:en/adrenaline
+disputed origin, example
+
+240718    16:56:04    
+make this thing with @@ more systematic lol.
+get the curent full db on old mac. 
+
+
+240722    05:03:15    
+deal with sense 0
+
+
+240722    05:33:39    
+maybe ◊ instead of ; for nontrivial diamonds?
+gray background....
+
+240722    06:42:24    
+can we use action=render to render defs and etym and such?
+https://en.wikipedia.org/w/index.php?title=Elephant&action=render
+https://stackoverflow.com/questions/2770547/how-can-i-retrieve-wiktionary-word-content
+https://en.wiktionary.org/api/rest_v1/#/Page%20content/get_page_definition__term_
+
+240722    13:05:53    
+http://radix.ink/word/lang:la&sensenum:1/destino
+https://en.wiktionary.org/wiki/destino#Latin
+whack.... we actually lose the "de-" in the etymology section on radix. bad
+
+
+240724    16:12:40    
+in general want settings that are like "have section X open / closed by default" . eg defs, wikt, other senses, etym, etc. options are : show open; show, but closed (with open button); don't show at all
+
+
+240725    07:50:27    
+fuck. what's up with haimaz / haimazriks ? http://radix.ink/word/lang:en/home
+maybe a cycle? but why is it a cycle? and we should show this in inspection somehow.
+Haimarīks
+
+
+240725    15:38:20    
+maybe make fonts a setting? other stuff? generalize / unify settings :/
+verdana isn't bad, if we leave monospace...
+
+240725    16:22:39    
+how to deal with defs??
+maybe put them in hover. def put in click. maybe press d to toggle or increment amount of defs. also want to toggle lang. but both of these require moving away from the tree spacing model to a flexible thingy. 
+
+why two senses here: hel PIE http://localhost/word/lang:en/coalesce
+can we just show different senses separately? not that many multi-sense....??
+there's all these annoying multisense latin words that are just like slightly different inflections of the same word, basically.
+a possible treatment would be: if the thing has one of its senses s1 such that for any other sense sk, and any word W in future of sk, also W in future of s1.... 
+wait i'm fucking insane, we don't even track which senses are future of which othrer ones. fuck me. 
+
+whoa. http://localhost/word/lang:en/coalesce
+scrolling rightward makes the hover popup move leftward ?????
+pprint(Word_Parsed(Word('oboe', 'en')))
+
+jesus . deal with um sense 0s. at laest exclude when all refs are bad / unrec. better maybe would be check if there's any etymology or def sections; if no, then fuckit right?
+
+why does latin elementum in initial etym section link to sense 0???
+http://localhost/word/lang:en&sensenum:1/elementary
+
+slightly annoyind that words that are rendered in the wiktionary at begin don't show template type...
+
+can look at /sandbox/test.html for ideas
+maybe we should center non-word pages
+maybe have background be dark, and have the text boxes be slightly light
+cringe that text leaks out of headers
+maybe have headers just black bars, and also margin is black; or dark. so it looks like the headers are floating, and then the thingies  like trees and etylogyies are objects with lighter background, floatin.g... maybe stars in the background. maybe randomly pick a position, a direction, a lenght, perhaps a tint?, a brightness; then have a little guy fade in and fade out. perhaps the point gets slightly bigger as it fadse in, then smaller as fades out... are curves feasible? 
+
+240726    03:29:22    
+Different widths for different things. Still centered. Maybe things in side. Maybe differentiate mobile
+Maybe settings for definitions cutoff, hidden, and likewise for radix cognates. Cut off by count or by frequency. though that's Bad interestingness measure--better one? How to improve though. llms lol
+Could have expand everything button /  key
+probably do "show all def summaries" key? 
+
+ladders. like 'abstract'. possible detect?
+
+240727    04:30:59    
+i guess do the flexible width thing? 
+
+
+240727    06:21:51    
+should be able to cache word summaries and etymonline, right? then we get to do them async with the full tree. faster which is nice, and also we get to not even do most of the work, if client doesn't request full tree. settings for that. 
+
+localhost the images i think...
+
+request: derived terms somewhere. maybe in popups? 
+https://en.wiktionary.org/wiki/User_talk:Ioaxxere#c-CitationsFreak-20240727080700-T039mwftulnm0l-20240720182000
+
+laser through {{glossary| }}. 
+
+inspection for pastwards should say why excluded . eg why pheme excluded?? http://localhost/word/lang:en/prophet
+240729    03:49:39    
+inspection for futureward should give a full walkthrough. ideally. but computationally expensive? no its not... we just have to get intersection? not exactly. sense posets aren't symmetric :(
+hm. in theory we could do weak future/pastward senseposets, and then intersect their opinions???
+
+hm. in theory could try to identify the specific shared morpheme. eg on http://localhost/word/lang:en/confer we highlight the "fer" (or the "tol")
+
+240729    11:24:07    
+maybe would be better to wrap content between headers in a div. 
+
+hm. we should have diamonds take precedence over alreadys, assuming the reverse is what's happening here: http://localhost/word/lang:en/wish
+
+ok so maybe we can do sizing more semantically. a root and all the spacing below it will be one big element. etc. 
+
+240730    03:45:12    
+redo reset button hopefully w/o pseudo elements.. ::before
+
+240730    17:21:04    
+have a settings thing that saves all the info -- eg as a localstorage dict? also have css version... or maybe single point of export.
+
+have a reminder panel for controls, like google . press h or ?
+collapsible things... lots of other settings like margins etc.....
+
+have to do some license thing. see maybe here for ex. https://ninjawords.com/
+maybe add radix to : https://en.wiktionary.org/wiki/Wiktionary:Websites_that_use_Wiktionary
+https://en.wiktionary.org/wiki/Wiktionary:Mirrors
+https://en.wikipedia.org/wiki/Wikipedia:GFDL_Compliance
+https://en.wikipedia.org/wiki/GNU_Free_Documentation_License
+
+240730    18:40:30    
+deleted,maybe do later:
+## Bro why are the explanations on different pages
+Ok here: å_allå.
+
+todo. why is sing pastward wrapping here? http://localhost/_output
+more importantly, make cmd+* not activate controls-- eg cmd+L
+
+see eg http://localhost/word/lang:en/abstract  ; look in pastward; the lines aren't perfect :( maybe fix
+
+in http://localhost/word/lang:en/dictionary , the excluded guys are getting big blobs, not goood. 
+
+240731    09:05:30    
+https, not http
+inspections futureward
+other senses
+searching?
+help overlay? tool tips? collapsing sections?
+
+font setting
+make defs be all just return like 100 chars, but then set the width somehow; on mouseover, maybe expand? unclear because that could make it annoying if mousing over to the left... could just put in popup..?
+
+for sense 0, it's a real sense only if it has a senseid/etymid, or it has any recognized reflinks in it.  (eta: or defs!)
+
+hmmmmmmmmm..........
+could have different sense rules for different langs. eg for, say, en and enm, could require 1 best sense unless there's really no info or something . otoh for other guys, require 
+
+maybe show full lang name and defs in popups / inspections
+
+precompute defs and short defs. 
+
+maybe little arrows depending on pastward/futureward
+
+could have a toggle that shows full lang, shortened lang, no lang.
+could have defs toggle be like show all, show only for old langs, show none. though there's other settings... eg show if it's sense > 1? 
+
+we need to think about the pastward tree here . http://localhost/word/lang:en/side
+need to do positioning of click-popu based on top of clicked, not botoom, because big window.... or have word element more tight...
+
+am i supopesed to use this lol ? https://en.wikipedia.org/wiki/JQuery
+
+use this to make dashboard for showing sense links ????? https://stackoverflow.com/a/35493737
+
+make sense-elements for starting sense and other sense, and for guys in inspections.
+
+setting to hide banner?
+put banner always in center
+maybe make word page and doc page look different somehow? 
+maybe put settings and controls ? in right side of panel
+maybe put starting word in banner?
+
+maybe display sense number (and def?) if it's not 1
+
+240801    14:03:02    
+maybe pads on right and left  top bottom which , when moused, scroll left right up down
+
+
+laser through {{gloss| }}. 
+
+240801    16:31:31    
+if word in starting_included_senses:
+   word_includesenses_update(word, starting_included_senses[word])
+elif all(len(ClusionWord_Senses['included'][prior_word])==0 for prior_word in poset.immediate_priors[word]):
+   word_includesenses_update(word, set())
+
+ok i think technically this is n't correct. it could in theory be the case that we have A>B>C; A included; B excluded; but actually C should be included. reason being that A has two senses. A1 points to C1. A2 points to B, B points to C2. A2 excluded, A1 included. or something like that. 
+
+sigh.... ok maybe it is time. time to make tests. tests which say guys that should and shouldn't be in various sense posets. 
+
+oh btw: we maybe can do a consistency check like so: given sense S we look at the pastward senseposet; take a pastmost P ; get the futuresenseposet; within Futureposet(P) we restrict to Past(S); compare that to Future(P) in Pastposet(S); they should maybe be the same??
+
+
+240802    04:31:25    
+todo: in def WordposetWordsenses_Includedsenses(poset, starting_included_senses):
+first set up testing
+then test when : elif (not word_explicitly_covered_by(word, 'included')) and word_explicitly_covered_by(word, 'excluded'):
+does anything . then try killing words that are linked to by excluded guys, and not by included guys... i guess like find all the guys who say that this word is linked to by any of its immedeiate priors, and look at the sources of those links? 
+
+fuuuuck. why is sīdǭ excluded?? and just, how to deal with all this situation
+http://localhost/word/lang:en/side
+
+... maybe need to have debug mode, where we show the full pastward but show words in red or other in order to indicate when they have been excluded; and put eclusion reason in popup; return from the word clusion finder thingy...
+
+240804    13:34:34    
+laser {{w|Gallo-Romance languages}}, but reinforced as a [[w:Carolingian|Carolingian]]
+
+sigh :(
+idk. should maybe do a couple housepkeeeping things.... finish senseids, and get rid of empty senses. then try debugging again.....
+or... just open source it...... and ask for help.....
+
+.... ok so there's this blaringly obvious thing which is somethin glike, if we go to an english word, don't we do *better* if we *just* look at the etym section?????
+
+... for debugging, should maybe just show the damn SENSE tree!! .... except this has way toooo meany links because we don't know which are which ... :(
+
+in the long etymologies like from from from, theres an improtatnt piece of information: they refere to fixed senses, so we are getting a chain of senes-senses links. 
+
+siiiiigh. todo:
+understand how radix is using templates.  in particular, does "bad ref" or "unrecognized" matter, and how; and does / how no/empty wordtexts matters. 
+ideally rename 'ref' to template ? 
+rename sense to etymon ????
+finish senseid, sid, etymid (anchor?)
+then have to add ids
+clean up parsearticle ????
+
+add system for recording when a tree is good / bad / which part ??????????
+maybe better to do automatically? eg if an entry's own etym section maentions various words, then those words should show in the thing...
+
+240804    15:27:44    
+... oh to test changes to , say, parsearticle, we can test against the existing guy...
+
+240805    05:48:38    
+supposed to allow numbered args??
+https://www.mediawiki.org/wiki/Help:Templates#Parameters
+appears alot for sv
+
+todo... integrate one of these? https://www.mediawiki.org/wiki/Alternative_parsers
+or at least test one to see what it does
+https://github.com/earwig/mwparserfromhell/
+
+
+240805    15:27:21    
+ok so pretty sure this
+https://mwparserfromhell.readthedocs.io/en/latest/usage.html
+does not solve the article parsing, just the template parsing. well no it also does the equality thing. 
+does parsoid or anything else solve the article parsing?
+does anything solve the lua wordtext rectification thing?
+
+
+how does mwparser work with wplink== bulllshit? 
+
+could maybe use mwp output to better print wikt stuff...
+
+todo: test mwp with nested templates, since that would be one of the main points
+then test with the whole thing....
+
+240806    10:50:29    
+fuuuck. does mwparser even matter at all? it doesn't give me the args labeled , right? so it's just the current functionality. *might* be nicer. but could be slower. and it would take worrrrk 
+find out if *anyone* gives the args!! or just fucking don't
+
+from https://www.mediawiki.org/wiki/Alternative_parsers   searching "lua";
+https://github.com/tatuylonen/wiktextract?tab=readme-ov-file
+https://github.com/tatuylonen/wikitextprocessor/
+https://github.com/axkr/info.bliki.wikipedia_parser
+https://github.com/LuaWiki/LuaWiki
+where in here is template processing?? https://www.mediawiki.org/wiki/Parsoid
+but i'm not sure i understand any of this... i think what might be happening is basically that the point of templates is like function calls. so there are args, but they aren't generally considerde the point. the point is the inputs (for editing) and the outputs (the rendered template). in particular, there aren't *trying to be* any general semantics to arguments of templates. no one is trying to have it be the case that when a word gets linked to, the argument that says which lang the linked word is in, is somehow highlighted or denoted or registered as being that sort of argument. 
+unless there's some big nice unifying extractable order in all these fucking filesss
+https://en.wiktionary.org/wiki/Module:etymology/templates/descendant
+https://en.wiktionary.org/wiki/Module:etymology/templates/inherited
+https://en.wiktionary.org/wiki/Module:root
+https://en.wiktionary.org/wiki/Module:affix/templates
+
+likewise for etymon section separation
+
+240806    18:32:37    
+note: sometimes cognate etmplates list multiple langs. couuuuuld try to get this info......
+{'text': '{{cog|gl,pt,es|palmo}}', 'kind': 'bad reference', 'lang': 'gl,pt,es', 'wordtexts': ['palmo']}
+
+ok! so the new thing seems to basically work? test perf? then replace??
+
+240807    13:50:16    
+wtf... why does normal text and word elements display offset baseline?????
+
+todo: 
+add gloss stuff. i.e. gloss / t / glossN / tN argumetns
+https://en.wiktionary.org/wiki/Template:descendant
+https://en.wiktionary.org/wiki/Template:mention
+note that gloss1 etc are still used plently often
+done. add logging the actual words...
+
+todo: figure out new senseposets given ... senseids
+
+240808    09:47:53    
+maybe go nonlinear--use inferences rules or whatever. maybe after reaching fixpoint, we... ah... we have a hierarchy of rules... we apply the highest priority until fixed. then we apply the next lowest and so on-- but only until we get 1 change. then restart. 
+maybe generally think of it in terms of narrowing--track both in /exclusions, increasing both sets...
+combining these automatically gives us some reasonable priority of rules...
+
+see:
+../notes/senseposet_inference_theory.txt
+
+240809    03:06:06    
+figure out rules, includeding using senseids
+figure out how to test
+go through misorderings to see what the problems are... fix the big regex
+
+eventually: rename ref -> template, sense -> etymon
+
+GET RID OF GARBAGE INITIAL SENSE
+also pet sense 0 last, not first...
+
+sigh. ok so it does occur that affixes link to futureward langs. this is bad. definitely don't want these. 
+it ococures that affixes link to same lang, or to past langs; probably good. 
+it also ococures that affixes link to past langs, but not direct past. eg english to old french, ancient greek, proto celtic. what to do with these??
+a pooooossibility would be to always direction-correct links??? no that doesn't work-- you get OE loppestre in the past of english lob, -ster 
+i gues for now... just include them-- but could exclude guys whose langs are  temporally futureward.... idk
+ok for now just excluding specifically futureward affixes
+   return [] if 'affixes' in ref and PIE_langcode_poset.prior_to(sense.word.lang, ref['lang']) else [ref]
+
+http://radix.ink/word/lang:en/cunt
+quentye thing is probalby BS ... how to avoid????
+
+at some point read 
+https://en.wiktionary.org/wiki/Category:Etymology_templates
+and other such categories
+
+todo: make better inspection--also show pedigree of equivalents... jessus
+
+what ?? why does clicking on word in inspection work to open wikt, but not to click on the lang element of the word elemnt???
+
+sigh. todo:
+main thing is look at ../scanning/scan_words.py outputs and follow up more. later going to continue with sense things--but want to first redo precompute up to before pastsense poset finding, and then you know play around with the pastsense posets and different rules  
+why the fuck is http://localhost/word/lang:itc-pro/*mowetos
+empty, even though it shows up in scan words????? how is that possible? if it's a word, didn't it get its own pastwardssense posets???? i gotta be able to inspection this stuff!!!!!
+it even shows up in futureward of http://localhost/word/lang:la/moveo
+
+240810    08:35:36    
+this is kinda cringe... editing
+from {{der|en|non|litmosi||moss used for dyeing}}, from {{m|non|lita||to dye, stain}}, from {{m|non|litr||colour, dye, blee}}, from {{der|en|gem-pro|*wlitiz}}, {{m|gem-pro|*wlituz||appearance, blee}}, from {{der|en|ine-pro|*wel-||to see}} + {{m|non|mosi||moss}}.
+
+
+240810    17:19:56    
+keep implementing ReportPage. make it possible to have folds, some auto open some auto close. 
+the explore http://localhost/word/lang:itc-pro/*mowetos
+and other scanning words...
+
+240811    16:09:02    
+ok great now we have
+http://localhost/word/lang:itc-pro&mode:report/*fr%C5%ABktos
+idk what to do. i think next to is to make things more easily inspectable? 
+i.e. make it more modular--like we just pass "inspection target" if we want, and then it is yeah. rather than looking up starting sense or whatevere . 
+
+240812    19:03:29    
+yay. we got better inspections. ok so now what ? now we go back to : main thing is look at ../scanning/scan_words.py outputs and follow up more. later going to continue with sense things--but want to first redo precompute up to before pastsense poset finding, and then you know play around with the pastsense posets and different rules  
+....... also the mystery of whhy fruktos doesn't show up at all on radix???
+
+todo: show cycles -quivalent guys. 
+show button for report. 
+also, why not showing stuff for someo words??? http://localhost/word/lang:fro/longue
+
+rate limit IPs, and allow to see reports non-dev??  is it safe? want to prevent scraping. 
+if ppl trying to scrape, ask them to reach out. 
+
+example of PIE etymology AND root https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/pres-
+
+240822    08:10:45    
+hm......  would be nice pehaps to be able to see "all germanic english cognates" or something.... rather than just trunkwise.......
+eg. in:
+http://radix.ink/word/lang:ine-pro&sensenum:1/*h%E2%82%82m%CC%A5b%CA%B0i
+
+see scratch6 for current notes on redoing big connector
+
+240827    11:34:45    
+agh bro look at Ger Denken in wikt... http://radix.ink/word/lang:en&sensenum:1/think
+it's offset upward, wtf
+
+240905    19:16:43    
+add real testing
+then test Aggregator
+then keeping cleaning up, applying python knowledge
+then get back to doing the thing with the thing of the make _inferences and reflinks and the thing of testing exclude and include and etc
+thennn.... rerun the whole thing. 
+thennn.... look at messed up orderings. 
+thennn.... rerun the whole thing. 
+and then, get better senseposets
+
+
+240906    18:21:31    
+done. todo fix ID_elemetn thing.
+
+240907    04:21:30    
+sigh. ok so i guess figure out db_connections. maybe have a sql_db class, and usually there's j8sut the global one. and you can call it to commit, for example . 
+but then sometimes you  make another, eg with precomputing. maybe even make it the main. 
+you can then use , in tests, make another for the privous db. and then compare vereything. 
+
+240907    13:19:25    
+maybe allow multiple construction for senses? like Sense(Word(.., ..)..) -> Sense (..., .. , ..)
+ok so do the above. and then use that to :
+   change names : sense -> etymon, reference -> template
+   fix parsing
+... and THEN get to the redoing linsk thing... and tHEN sense inference.
+
+options instead of sense (some obviously bad):
+sense
+etym
+etymon
+lemma
+lexeme
+morph
+morpheme
+form
+word
+reflex
+stem 
+root
+seme
+sememe
+word family
+gram 
+graph
+
+https://www.reddit.com/r/asklinguistics/comments/tqvf6a/what_is_and_what_isnt_a_lemma/
+I think it is wrong to define a word based on characters. To start with, there are many languages that have no written form, although they do have words.
+Also, a sentence is a sequence of characters. And so is "ajsusjsijsjjs8866ajsiskksnj" and that's not a word.
+Also, "centre" and "center" are different sequences of characters but they're the same word.
+https://zenodo.org/records/225844
+
+maybe should call word->graph, sense->word
+word->gram, sense->word makes more sense; graph is instrument, gram is result. though sounds less cool
+problem is... sorta confusing to say "here are more words (sense2, sense3)"...
+could say in that context "here are more homograms"
+hm. the words is "homograph"--implying we shouldn say graph instead of graph
+nonzero internet people say "homogram" but gtrends says no, and it's not in wikt or OED
+
+240907    23:47:19    
+ok so... fix db connection. then enable multi db. then make testing. 
+then fix formatting in sql (and test it). then goto above
+sigh. may have to rerun runall. because want to overhaul naming and such--before adding more refs code. 
+at some point get basic parsing :( eg just excising balanced outer pairs of parents :(
+
+240908    00:21:49    
+pre-sql refactor checkpoint:
+mill-initial-24.09.07-04_08_47.db
+
+240908    03:59:57    
+todo:
+move cache_select inside something
+then make testing, and test a gainst checkpoint? 
+then fix all the sql names... :/ 
+then somethin. evntually separate out ...
+
+
+240908    11:40:19    
+todo: fix open( without with as
+8:exec(open('scripts/test_script.py').read())
+41:      exec(open(path).read())
+44:exec(open('src/radix.py').read())
+in many precomputings 
+and debug_tree
+
+240908    14:36:45    
+maybe change << to := ?? maybe impossible
+anyway also add use of :=
+https://peps.python.org/pep-0572/
+
+240909    01:19:08    
+sheesh. 
+ok so sorta did word-> gram
+next:
+sense -> word
+then reestablish testing...
+reference -> template
+
+reorganize printing
+establish dev on remote
+run current on the whole wikt to prep for next steps
+
+rename Poset->GramPoset
+
+240909    02:06:14    
+ok did sense -> word. got checkpoints. 
+
+240909    03:30:29    
+classes.py is messy. maybe read through everything lol.
+
+
+240910    02:34:18    
+todo: make tests for inspections. then clean up. 
+cleaned up up to ordering. that's next. except inspections.
+
+240910    12:20:46    
+at laest follow _ conventions in files?
+
+240911    11:59:19    
+do ref -> template
+run big on mac only up to parsed. then do the experiments
+btw, can now efficientize, and can fix parsing
+
+why isn't root showing up in http://radix.ink/word/lang:en&sensenum:1/radix
+go through notes
+
+240911    23:38:54    
+#problem: *** {{desc|grc|ὅμηρος}} (with {{l|grc|ὁμός}}, {{l|grc|ὁμοῦ}})
+240912    00:17:55    
+oog. ok so:
+look at inspecting.py. it shoudl share code with scanning. 
+get scanning working basically: just to print curret p_big. 
+then start modifying p_big. 
+
+240912    20:08:38    
+... do modules??
+fix file targets for wiktionaries xml and db 
+
+
+240913    05:22:33    
+
+sigh. what is up with handy in mill-initial. maybe make subuniverse on handy?
+
+240913    05:34:04    
+.... WAT the fuCK. how did the bug just disappear..??????? 
+are we overwriting the checkpoint somehow?
+240913    16:48:46    
+yeah idk probaly accidentally ran fullreset. doesn't explain the cyrillic bug though. 
+
+
+240913    17:20:45    
+TODO: _GRAM_StrictPastwardset -> _GRAM_StrictPastwards
+but after subuniverse -> testing handle, en
+
+240913    19:23:29    
+except for 
+try    : G_Gramtitle_Redirect = DB._GramtitleRedirect.OneValue()
+except : pass
+
+parsearticles is independent of db, and so could go before it... etc. also the only reason this line is here, is so that pre/a can execute parsearticle, even thouhg it doesn't actually need it. no one needs it really--though we do want to be able to experiment. could perhaps only load it if db_gramtitle exists???
+
+240914    00:14:40    
+maybe add concurrency. profile first
+
+240914    02:20:33    
+eh... fuck it idk... executive decision time? don't care about the handy bug and the [wiki, xto] 'инсæй' bug for now?
+
+240914    03:46:38    
+hm. maybe we actually can modulify? still not sure it's worth it. but maybe. we'd have to just put the DB in a shared state module .. always import it... and .. always unpack it... pretty lame..... like
+from global_state import DBs
+DB = DB[0]
+or some shit.
+wait. that doesn't work. you'd have to always write DB[0] instead of DB, because we have to be pointing at the thing. or we chould have a wrapper, where DB is like 
+class wrapper:
+   def set(db):
+      self.db = db
+   def ... somehow intercept .property calls and call self.db... 
+   idk if that is possible
+anyway then use 
+DB = wrapper()
+in shared_state, and to activate use set, and can just write DB. ... in other places. with 
+from global_state import DB
+sigh. what's the benefit, really? seems like we add complexity, and boilerplate, and idk what the benefit is. we can use scalene? error messages actually say where the code is lol?
+
+240914    04:25:33    
+uuuuughhh. STILL not able to do the testing subuniverse thing!!? ! . we have to get the appropriate db file--not just "most recent"--or rather, yes most recent but starting with subuniverse etc.... really "stem " is just two totally separate things :( generally parallel ... in particular for creating the new db file name , parallel with regular name create. . 
+
+240914    19:36:30    
+todo:
+track down current bug with testing in subuniverse
+then make testing subuniverse against checkpiont
+then use this to understand handle and wiki xto bugs in mill-initial
+
+then 
+want concurrency. but that requires testing. 
+want conc before reruning the whole thing. i guess. 
+want to rerun the whole thing after fixing sql name Pastwardset
+
+240914    22:53:30    
+or rather, multithreading = concurrency might be helpful to do sql fetches and compute at the same time; but doesn't do multiprocessing
+https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing
+
+240915    02:38:58    
+not clear whether to use nonstrict or strictself. i think we just want to standardize on strictself--but this causes a problem whenever we *compute* a poset, because it has to then exclude equivalents. this is sthe source of the "handy" bug: when we do
+         restricted_pastward_poset = pastward_poset if gram==gram_exploring else GramPoset_Ulteriorsubposet(gram, pastward_poset)
+where the exception is to save time, we actually are being inconsistent. whereas 
+def GramPoset_Ulteriorsubposet(gram, poset):
+   return PosetCloseddomain_Restricted(poset, poset.strictself_ulteriors(gram))
+is excluding equivalents, using raw computed pastward_poset will include them
+generally unclear which is better but 1. seems like we're already basically standardized on excluding equivalents, 2. that makes more sense in that the cycle is presumably mistaken one way or the other. 
+
+deleting:
+   def nonstrict_ulteriors (self, gram): return self.strict_ulteriors[gram] | self.item_equivalents[gram] 
+
+240915    03:28:46    
+hmmmmmmm.......
+apparently maybe having equivalents in a poset helps to eliminate words..??? maybe??? like the equivalent is around, but it gets excluded, and that helps exclude other stuff? idk...
+
+240915    14:32:37    
+crazy idea: move interface to the word and gram objects. bad to put so much there... but it would shorten a lot?
+... but it would mess up autocomplete. would have to get python lsp thingy first. 
+
+
+
+240915    17:28:01    
+copy from 240905    19:16:43    
+then keeping cleaning up, applying python knowledge
+then get back to doing the thing with the thing of the make _inferences and reflinks and the thing of testing exclude and include and etc
+thennn.... rerun the whole thing. 
+thennn.... look at messed up orderings. 
+thennn.... rerun the whole thing. 
+and then, get better senseposets
+
+240918    04:26:09    
+cython, pypy, numba, compiling, multiproc
+
+240924    11:25:08    
+...modulify? then put interface into classes
+
+240926    14:46:44    
+pip install -e .
+
+240927    15:46:23    
+#TODO: restore clear_user_globals for large runs. but have to fix something about importing or something; it messes up something... i guess it maybe forces reimporting by deleting modules, possibly???
+
+240927    16:22:10    
+todo: figure out the current error
+continue modulify
+move os. to subprocess. ? https://stackoverflow.com/questions/44730935/advantages-of-subprocess-over-os-system
+change runall to use subproc, not exec , instead of clear globals. but, efficiency? ... also want to make sure we are truly testing things....
+maybe revamp testing.....
+
+
+240928    10:01:51    
+have to just refactor printing a bunch... can't modulify before that :(
+
+
+240929    09:42:24    
+rename legend header
+
+240929    09:59:52    
+need to check the gunicorn and nginx setup. especually 
+G_usually_excluded_pastmost_words = set()
+Ensure_usually_excluded_loaded()
+ 
+240929    11:33:50    
+keep modulifying. precompute, tests (pull out) 
+processify runall
+precisify import? 
+refactor printing? eg json interface..
+refactor "interface"
+add more comprehensive endpoint testing--send queries to the server directly..? i mean call the server functions.
+
+240929    16:46:04    
+right in the middle of wiktionary_autoconfig.py
+figure out sql_db_activate(G_Wiktionary_db_file) and wiktioanry setup...
+
+240930    01:20:04    
+use queues for aggregator, and then coolify Tuples_HTMLtable? i feel like there was some reason queues are bad...
+
+240930    02:52:15    
+log files currently BROKEN
+
+240930    13:21:44    
+alright log files fixed i think.
+modulified!
+
+240930    16:35:29    
+merged interface with classes!
+todo: better testing? like send requests....
+go back and look at notes lol....
+
+
+241001    16:22:42    
+multiproc
+cleanup
+scalene
+
+sigh. need to fix Cachewipes, caches in general. because of multiproc. also reorgaize CACHE?
+
+241002    00:56:06    
+fix current error
+add fuller testing... use server
+scalene. pip upgrade
+refactor...
+multiproc / async?
+inference...
+
+can we simplify sharedstate by including it in DB somehow? like just reinitialize... problem i guess is being able to initialize empty..?
+
+
+241002    12:56:22    
+default should be without defs...
+
+241002    15:56:59    
+arg. 
+want to make startup fast and such. maybe should omit / glom together many tail event words? trying to inspect _cache eng sortky.... but stymied
+... can i get rid of this sharedstate shit? just reinitialize the DB directly???
+cleanup precomputing/T_gramorder_sortkey.py
+cleanup sql.py
+
+241002    18:48:09    
+todo: refactor languagecodes. and lots of stuff :p
+
+241003    03:54:05    
+i don't understand sqlite multithreading yet.. eg i don't understand if i have to change any settings...
+https://www.sqlite.org/threadsafe.html
+https://docs.python.org/3/library/sqlite3.html
+https://sqlite.org/wal.html
+
+241003    07:06:39    
+problems:
+getting and apportioning the stuff to be operated on. ideally would want to use indexing. but is sql deterministic that way? 
+another possible issue is writing--though maybe that's not a problem, maybe sqlite just works.
+a bigger problem is things that are two-pass, where we build a datastructure and then write. one issue is losing the benefit of caching. another big issue is that to build the state, we have to keep passing stuff back and forth-- which adds a whole extra pickling dealio... which is not good. 
+is it indeed the case that the globals will get copied to new processes, but only when they start? so generally we don't auto get updates---unless the pool is restarted?
+
+241003    08:07:41    
+shared memory
+possibly should starte  with https://docs.python.org/3/library/multiprocessing.html#managers ?
+https://github.com/FI-Mihej/InterProcessPyObjects
+https://docs.python.org/3/library/multiprocessing.shared_memory.html
+
+241003    09:08:18    
+todo:
+first we have to make logs better. specifically we have to be able to extract summaries. that way we can tell how long each precompute chunk takes, going back over time.
+precomputing/multi_coordinator.py
+
+hm. modules are like just big objects. maybe replace some classes in that way. eg move logger to logging, and just import logging
+
+241003    15:28:37    
+sigh. ... so to do multi, i think:
+ XXX pick c_ parse to start with--relatively simple... though it does have caching...
+actually, dirt simple: precomputing/K_C_parsed_realgivenwords.py
+first thing: figure how to divide up the dgenerator-- i.e., how to get from sql table everything, but pass to each process only a slice, covering + nonoverlappin-- but as index / instructions, i.e. without copying the fhole fucking thing
+how the fuck does multiprocess actuall specificaly work. likewhat exactly gets forked. jesus. 
+python src/read_logs.py history mill-initial _WORD_OwnFuturewardGramlinks
+python src/read_logs.py history mill-initial _WORD_OwnFuturewardGramlinks
+
+1 second
+about 25 seconds
+_WORD_OwnFuturewardGramlinks
+precomputing/E_C_parse_linksrefs.py
+
+_GRAM_RealGivenWords
+precomputing/K_C_parsed_realgivenwords.py
+
+precomputing/C_AB_xmls_parse.py
+
+maybe get script to make nice full report on logs, highlighting most recent. 
+anyway, START WITH precomputing/E_C_parse_linksrefs.py
+
+241003    16:16:47    
+check if WAL is on?
+postgres better for many writes..???
+....ooooh. maybe we're supposed to batch the writes??
+
+241003    16:22:45    
+PyPy??
+other stuff.. sql settings, ... https://avi.im/blag/2021/fast-sqlite-inserts/
+
+241008    09:09:54    
+is this relevant? somehow batch executes?
+https://github.com/sparklemotion/sqlite3-ruby/issues/343
+... maybe use prepared statements? 
+https://avi.im/blag/2021/fast-sqlite-inserts/
+
+241009    02:22:46    
+still not satisfied with the read_logs... well actually the logs are fine, but... 
+
+241009    05:54:46    
+for sql ... 
+use the LIMIT SQL statement for single get?
+https://remusao.github.io/posts/few-tips-sqlite-perf.html
+executemany
+connection.execute('PRAGMA synchronous = OFF')
+connection.execute('PRAGMA journal_mode = WAL')
+Consider changing isolation_level to DEFERRED or IMMEDIATE.
+use row_factory?
+https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory
+
+241009    07:56:37    
+stack:
+looking at why this 2xs the time!!!
+https://github.com/tsvibt/radix/commit/31faf4a2670a326b8ebcd84c90c1bf868af5dfaa
+
+then... do executemany
+then, do multiproc or something. or check more sql opts.
+
+241009    10:08:19    
+apparently executemany is exacly the same ? therefore no reason to have the added xomplexity
+https://www.sqlite.org/lockingv3.html
+sqlalchemy for multiproc..?
+
+241009    18:47:11    
+ok, keep going with multiproc...
+look at precomputing/E_C_parse_linksrefs.py
+maybe copy to multiproc coordinator
+
+241010    18:57:22    
+geez. what can be passed to multiprocessing
+keep going with precomputing/E_C_parse_linksrefs.py
+precomputing/multi_coordinator.py
+um... try changing todos to indicate names of tables, not tables... might not work though because idk if the functions are pickleable... they mention DB... idk what gets pickled... 
+guess is: it executes __main__ file, but with name not = main; and then executes the function, having been pickled.......
+
+
+241011    18:01:43    
+getting db locked errors on mill-initial.
+probably want concurrent writes / queueing...
+postgresql
+MongoDB 
+Cassandra
+Neo4j
+redis
+
+
+omg. maybe we save a bunch of space by just adding columns instead of ...
+no the point is that we don't want to retrieve by row, we only want some columns. if some db allows that then sure.
+
+hm. generally want to prioritize reads over writes?
+in theory could use server db thing for precompute, then sqlite for server?
+
+> MySQL, however, performs poorly when you execute bulk INSERT operations, or you want to perform full-text search operations.
+
+241014    04:25:39    
+brew install postgresql@16
+pip install  "psycopg[binary]"
+pg_ctl (without brew)
+brew services start postgresql@16
+brew services stop postgresql@16
+
+pip install rocksdict
+https://congyuwang.github.io/RocksDict/rocksdict.html
+
+brew install rocksdb
+
+
+241014    18:35:37    
+python3 -m pip install --upgrade  python-rocksdb --trusted-host pypi.org --trusted-host files.pythonhosted.org
+
+pip install diskcache
+
+https://grantjenks.com/docs/diskcache/api.html#diskcache.Index.items
+https://grantjenks.com/docs/diskcache/tutorial.html
+
+241015    16:20:47    
+batching
+restore caching
+
+241015    18:55:01    
+# try BytesIO() on the value field..?
+jeez. seems like we need to manually serialize the fuckin keys...
+
+
+241015    20:35:40    
+ok. mostly fixed. for some unknown reason, still about 2x slower than some region previously. but fuck it. 
+so here is da plan.
+we want to redo stuff like precomputing/G_F_grampastmosts.py. and everything. we redo it so that: we Get in BATCHES whenever possible. see if it is faster. might be a lot faster.
+but FIRST we have to 
+1. track down the BUG
+2. ideally, CHECK AGAINST PREVIOUS. 
+and then we can MERGE or whatever (or rather, save sqlite separately)
+and THEN we can multiprocessing
+and THEN get back to the MAIN SHIT 
+
+
+241015    21:14:32    
+... lol right ok. the reason for the "slowdown" is that it did not slow down lol. we just did 
+CALL([to_do_1, ], to_profile=False)
+>>> 
+CALL([to_do_1, ], to_profile=True)
+stuff. that's it. 
+
+
+241016    06:18:25    
+check against other branch
+then batchify pre/n_
+
+241016    21:39:05    
+keep multiprocing. 
+variable batch size depending on wiktionary xml? why isn't p_o speeding up with multiproc?
+maybe instead of config, just pass an argument? or allow either..? or always default to 40k?
+
+241016    22:00:21    
+NOTE: TINY BATCHSIZE makes pre/p_o faster , at least with 40k!! (why?? write blocking? make asynch queue or something????? i mean just make writing asynch...)
+
+241016    22:17:07    
+python src/precomputing/P_O_pastmostword_futurewordposet.py
+omg. what in the fuck is up with this? why failing on so many? why didn't that raise an errors before ????
+what's up with the error?
+hm. what if we're hitting a size limit? would we know? does diskcache throw errors?
+but why would it error at the end???? makes no sense... maybe the multiproc blocks it? but why does it come through ... idk none of it makes sense...
+maybe should compare against old version just to be sure our tests work...
+
+
+241017    06:53:29    
+maybe get rid of all the caching, and then later maybe add back?
+
+241017    15:40:27    
+continue really checking.
+
+241018    17:52:44    
+there's two batchsizes:
+1. how many keys / tasks each subproc gets as 1 chunk
+2. how often a given table will write /insert
+
+both shouldn't be too big--want to distribute work well. if 2 is too big, then we write evreything at the end, steping on toes. bad. 
+really at least the write batchsize should depend on the size of the wiktionary. could automatically set it from Disk_ object, and check the db_file (the stem). manually code for 40k, mill, and other. also be able to override...
+
+241018    21:34:38    
+maybe use imap and chunksize to avoid batching? not sure if we avoid it
+
+241018    21:58:52    
+fuck me i still don't get it. 
+
+241019    13:44:52    
+oh. get/setstate are bad, they don't give the actual same object, so mutating the reference in an object's field is bad
+todo:
+keep multiprocing. 
+profiling.
+tune the batchsizes , mabye depending on which xml.
+speed up startup even more?
+clean up the different kinds of queues
+clean up set thing..? idk. i don't like the table name _word_all...
+
+maybe use async for writes?
+
+figure out dict-set-acum.
+
+241022    06:45:17    
+figure more efficient storage of things? example is mapping words to numbers...
+speed up startup even more?
+
+
+241026    00:05:02    
+fix the appendict thing so it's actually faster. 
+be able to test single precompute files very conveniently. 
+
+241027    00:26:04    
+test different params. number of processes, batchsizes... can vary per table. 
+use scalene on precompute
+optimize thread startup moar. 
+
+already, keep using ../scripts/profile_startup.py
+
+
+241027    09:19:31    
+try to get rid of Unpickler business
+try to put more things in a db? avoid Write
+
+241027    10:35:35    
+sigh. fix problem with asynch, i.e. check server with 'dictionary'. then make tests that would have caught this. sigh...
+
+sigh. i guess make an auxilliary index? lightweight, just straight key value pair... then move the computed file thingies there? 
+like _G_code_age = DictFun_Map(Codelangs, _Langname_age)
+and language codes. and PIE tree? except...
+oh i guess make it a global thing...? no but then it is less functional... idk. 
+
+
+241030    01:20:46    
+fuck . we have a circular dependency between 
+languagecodes, classes, db.
+
+241101    01:22:12    
+make Execute_AppendictUpdates better. use the thing with the db for counts , for the things to append, and then after everything do the appending....
+possibly later use these https://github.com/grantjenks/python-diskcache/blob/master/diskcache/recipes.py to get row-level locks?
+https://grantjenks.com/docs/diskcache/api.html#diskcache.Lock
+
+
+241102    06:04:44    
+.... sigh. ok so the apppenddict thing sucks. 
+learn to profile inside subprocesses. 
+either get rid of appendict, or optimize somehow. maybe using key-level locks for one or more of the tables. 
+
+241102    23:03:46    
+https://redis.io/docs/latest/commands/append/
+
+

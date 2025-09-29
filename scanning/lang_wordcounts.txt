@@ -1,0 +1,1745 @@
+1261187 en English
+845446 la Latin
+758455 es Spanish
+587798 it Italian
+427786 ru Russian
+401197 fr French
+377363 pt Portuguese
+373267 de German
+260639 sv Swedish
+204148 gl Galician
+193458 ca Catalan
+162124 pl Polish
+154217 nl Dutch
+126889 lv Latvian
+120993 ro Romanian
+82624 el Greek
+75524 nb Norwegian Bokmål
+69812 sh Serbo-Croatian
+68127 mk Macedonian
+66447 nn Norwegian Nynorsk
+65763 grc Ancient Greek
+61208 cs Czech
+59617 uk Ukrainian
+58506 enm Middle English
+56693 bg Bulgarian
+54999 da Danish
+47809 xcl Old Armenian
+42773 ga Irish
+37162 ang Old English
+34540 is Icelandic
+31270 ast Asturian
+30741 hi Hindi
+29796 lt Lithuanian
+26336 cy Welsh
+23293 hy Armenian
+23172 got Gothic
+19973 fa Persian
+19092 sa Sanskrit
+18162 gd Scottish Gaelic
+18122 non Old Norse
+17635 fro Old French
+15169 sk Slovak
+13410 sq Albanian
+13194 sla-pro Proto-Slavic
+12648 fo Faroese
+12094 bn Bengali
+12069 af Afrikaans
+11895 dum Middle Dutch
+11847 nrf Norman
+11790 yi Yiddish
+10922 oc Occitan
+10581 gem-pro Proto-Germanic
+10579 cu Old Church Slavonic
+10421 goh Old High German
+10277 gmh Middle High German
+10196 sl Slovene
+9771 be Belarusian
+9194 sco Scots
+9174 pi Pali
+8857 ur Urdu
+8704 gv Manx
+8695 lb Luxembourgish
+8674 frm Middle French
+8514 ar Arabic
+8372 gmw-pro Proto-West Germanic
+8179 sga Old Irish
+8066 kmr Northern Kurdish
+7970 ine-pro Proto-Indo-European
+7401 pa Punjabi
+6715 gu Gujarati
+6621 dsb Lower Sorbian
+6618 osx Old Saxon
+6582 gml Middle Low German
+6524 odt Old Dutch
+6083 lld Ladin
+6042 scn Sicilian
+5875 vec Venetian
+5842 fy West Frisian
+5820 zlw-opl Old Polish
+5459 as Assamese
+4668 rup Aromanian
+4608 gmq-osw Old Swedish
+4470 ofs Old Frisian
+4359 roa-opt Old Galician-Portuguese
+4262 mr Marathi
+4230 inc-pra Prakrit
+4197 nds-de German Low German
+4192 cim Cimbrian
+4153 zlw-ocs Old Czech
+4032 orv Old East Slavic
+3930 pdt Plautdietsch
+3879 tr Turkish
+3837 ja Japanese
+3817 no Norwegian
+3717 hu Hungarian
+3712 li Limburgish
+3230 br Breton
+3229 ota Ottoman Turkish
+3183 rm Romansch
+3164 wa Walloon
+3150 csb Kashubian
+3128 stq Saterland Frisian
+3116 hsb Upper Sorbian
+3044 nds Low German
+3031 id Indonesian
+2949 ush Ushojo
+2946 kw Cornish
+2910 bar Bavarian
+2907 iir-pro Proto-Indo-Iranian
+2819 sc Sardinian
+2817 fur Friulian
+2805 yol Yola
+2739 hrx Hunsrik
+2682 pms Piedmontese
+2662 phl Phalura
+2654 gmw-ecg East Central German
+2640 he Hebrew
+2637 gsw Alemannic German
+2632 szl Silesian
+2617 mga Middle Irish
+2612 osp Old Spanish
+2607 cel-pro Proto-Celtic
+2594 txb Tocharian B
+2573 dcr Negerhollands
+2399 ne Nepali
+2387 inc-pro Proto-Indo-Aryan
+2332 zle-ort Old Ruthenian
+2324 lij Ligurian
+2306 pap Papiamentu
+2169 lad Ladino
+2140 tg Tajik
+2104 ira-pro Proto-Iranian
+2083 pdc Pennsylvania German
+2037 nap Neapolitan
+2029 cmn Mandarin
+2010 or Odia
+1993 ine-bsl-pro Proto-Balto-Slavic
+1987 dv Dhivehi
+1972 itc-pro Proto-Italic
+1942 ps Pashto
+1869 tpi Tok Pisin
+1800 fi Finnish
+1796 pro Old Occitan
+1793 ht Haitian Creole
+1788 mul Translingual
+1774 ks Kashmiri
+1767 an Aragonese
+1706 omr Old Marathi
+1690 wym Vilamovian
+1648 frp Franco-Provençal
+1621 rgn Romagnol
+1621 wlm Middle Welsh
+1595 lmo Lombard
+1591 sd Sindhi
+1563 az Azerbaijani
+1563 ka Georgian
+1550 kok Konkani
+1542 pal Middle Persian
+1527 ckb Central Kurdish
+1472 tl Tagalog
+1470 cel-bry-pro Proto-Brythonic
+1459 ae Avestan
+1459 gmw-cfr Central Franconian
+1389 axm Middle Armenian
+1387 kk Kazakh
+1342 sqj-pro Proto-Albanian
+1308 rom Romani
+1289 egl Emilian
+1280 co Corsican
+1274 grk-pro Proto-Hellenic
+1272 gmq-oda Old Danish
+1252 te Telugu
+1248 os Ossetian
+1247 frr North Frisian
+1212 dlm Dalmatian
+1156 kea Kabuverdianu
+1150 ta Tamil
+1084 zza Zazaki
+1083 si Sinhalese
+1083 ms Malay
+1060 ko Korean
+1032 th Thai
+964 roa-oca Old Catalan
+926 srn Sranan Tongo
+909 eo Esperanto
+906 mfe Mauritian Creole
+879 pox Polabian
+867 zlw-slv Slovincian
+837 uz Uzbek
+811 rue Rusyn
+808 eu Basque
+799 fax Fala
+795 peo Old Persian
+791 cel-gau Gaulish
+786 izh Ingrian
+782 mwl Mirandese
+781 ceb Cebuano
+773 mag Magahi
+766 ml Malayalam
+753 ovd Elfdalian
+737 lou Louisiana Creole
+736 kn Kannada
+714 jvn Caribbean Javanese
+697 jam Jamaican Creole
+696 et Estonian
+682 ltg Latgalian
+682 roa-brg Bourguignon
+681 mai Maithili
+659 mzs Macanese
+644 rmw Welsh Romani
+630 zh Chinese
+629 roa-tar Tarantino
+627 km Khmer
+622 hit Hittite
+619 my Burmese
+614 inc-ogu Old Gujarati
+609 inc-ash Ashokan Prakrit
+603 xbm Middle Breton
+597 gmq-gut Gutnish
+593 brc Berbice Creole Dutch
+593 ug Uyghur
+581 kls Kalasha
+564 xto Tocharian A
+559 prg Old Prussian
+559 gmw-jdt Jersey Dutch
+556 sog Sogdian
+554 bho Bhojpuri
+537 sah Yakut
+530 syl Sylheti
+524 xpr Parthian
+516 arc Aramaic
+515 sdc Sassarese
+514 bal Baluchi
+506 syc Classical Syriac
+494 ist Istriot
+486 gmq-pro Proto-Norse
+475 roa-leo Leonese
+455 pcd Picard
+447 ky Kyrgyz
+444 vi Vietnamese
+426 nci Classical Nahuatl
+426 mt Maltese
+420 tly Talysh
+417 obt Old Breton
+416 djk Aukan
+412 xum Umbrian
+410 vls West Flemish
+406 mn Mongolian
+405 urj-fin-pro Proto-Finnic
+403 mwr Marwari
+398 owl Old Welsh
+388 yue Cantonese
+383 rmf Kalo Finnish Romani
+382 pov Guinea-Bissau Creole
+378 sw Swahili
+377 tpw Old Tupi
+373 crs Seychellois Creole
+364 mzn Mazanderani
+363 tk Turkmen
+359 cbk Chavacano
+357 gmq-scy Scanian
+351 plk Kohistani Shina
+351 mni Manipuri
+350 inc-oas Early Assamese
+349 gmy Mycenaean Greek
+347 mi Maori
+344 io Ido
+342 cop Coptic
+340 nrn Norn
+340 ext Extremaduran
+329 srm Saramaccan
+327 mhn Mòcheno
+325 ba Bashkir
+316 skr Saraiki
+314 oge Old Georgian
+314 zle-ono Old Novgorodian
+310 ruq Megleno-Romanian
+310 egy Egyptian
+308 kaw Old Javanese
+307 ine-toc-pro Proto-Tocharian
+307 tt Tatar
+304 grk-mar Mariupol Greek
+301 nds-nl Dutch Low Saxon
+300 pey Petjo
+300 xaa Andalusian Arabic
+296 haw Hawaiian
+295 gcf Antillean Creole
+293 lo Lao
+292 oco Old Cornish
+292 crh Crimean Tatar
+287 roa-gal Gallo
+287 rhg Rohingya
+282 akk Akkadian
+275 khw Khowar
+275 hns Caribbean Hindustani
+268 osc Oscan
+266 pnt Pontic Greek
+263 sdh Southern Kurdish
+261 skw Skepi Creole Dutch
+260 wbk Waigali
+259 sjd Kildin Sami
+259 gmw-rfr Rhine Franconian
+257 bsh Kamkata-viri
+256 awa Awadhi
+248 kfr Kachchi
+247 yai Yagnobi
+235 zlw-osk Old Slovak
+231 bra Braj
+230 scl Shina
+223 bgc Haryanvi
+219 trk-pro Proto-Turkic
+216 ia Interlingua
+213 rmy Vlax Romani
+211 ruo Istro-Romanian
+211 sdn Gallurese
+210 raj Rajasthani
+210 qu Quechua
+208 xme-ker Kermanic
+208 jv Javanese
+207 wbl Wakhi
+201 inc-ohi Old Hindi
+200 swg Swabian
+198 cnx Middle Cornish
+196 inc-opa Old Punjabi
+189 hil Hiligaynon
+188 bi Bislama
+188 sgs Samogitian
+187 inc-mbn Middle Bengali
+186 kfy Kumaoni
+183 grk-ita Italiot Greek
+178 ask Ashkun
+178 xbc Bactrian
+176 klj Khalaj
+173 yo Yoruba
+172 ttt Tat
+171 vgr Vaghri
+170 chg Chagatai
+169 iir-nur-pro Proto-Nuristani
+169 xme-old Old Median
+168 hac Gurani
+167 bo Tibetan
+164 ccp Chakma
+164 pgd Gandhari
+161 hif Fiji Hindi
+158 gmq-jmk Jamtish
+158 kpv Komi-Zyrian
+156 arw Arawak
+155 bqi Bakhtiari
+153 gmq-ogt Old Gutnish
+149 bcl Bikol Central
+149 elx Elamite
+146 gbm Garhwali
+142 xfa Faliscan
+141 vic Virgin Islands Creole
+140 crp-rsn Russenorsk
+139 smi-pro Proto-Samic
+139 kl Greenlandic
+137 sgh Shughni
+136 lrc Northern Luri
+134 se Northern Sami
+134 car Galibi Carib
+134 zu Zulu
+133 doi Dogri
+133 am Amharic
+132 tcs Torres Strait Creole
+131 roa-bbn Bourbonnais-Berrichon
+130 pcm Nigerian Pidgin
+128 lki Laki
+128 pra-niy Niya Prakrit
+124 roa-poi Poitevin-Saintongeais
+124 svm Slavomolisano
+122 fay Southwestern Fars
+122 prn Prasuni
+121 xlu Luwian
+120 krl Karelian
+118 rmq Caló
+117 lzz Laz
+117 ilo Ilocano
+116 roa-lor Lorrain
+115 jvd Javindo
+115 mxi Mozarabic
+110 udi Udi
+110 rmo Sinte Romani
+110 ett Etruscan
+109 mup Malvi
+107 afb Gulf Arabic
+107 ltc Middle Chinese
+105 xvn Vandalic
+104 lah Lahnda
+101 ydg Yidgha
+100 glk Gilaki
+99 vah Varhadi
+99 inc-kho Kholosi
+98 rop Kriol
+97 rmc Carpathian Romani
+97 roa-cha Champenois
+97 mcm Kristang
+96 gme-cgo Crimean Gothic
+95 haj Hajong
+95 kmb Kimbundu
+94 zea Zealandic
+92 roa-fcm Franc-Comtois
+91 roa-oan Navarro-Aragonese
+88 ary Moroccan Arabic
+88 xh Xhosa
+88 rme Angloromani
+88 mg Malagasy
+87 ine-ana-pro Proto-Anatolian
+87 bh Bihari
+84 roa-ole Old Leonese
+84 arz Egyptian Arabic
+83 phn Phoenician
+82 ha Hausa
+81 rmn Balkan Romani
+81 kho Khotanese
+81 xsv Sudovian
+80 trw Torwali
+80 gn Guaraní
+80 bzj Belizean Creole
+78 mhr Eastern Mari
+78 pam Kapampangan
+77 xmf Mingrelian
+77 rmg Traveller Norwegian
+77 txh Thracian
+76 dty Doteli
+76 tsd Tsakonian
+76 war Waray-Waray
+75 xlc Lycian
+75 bua Buryat
+74 xsc-pro Proto-Scythian
+74 pgl Primitive Irish
+74 tnq Taíno
+73 xco Khwarezmian
+73 ce Chechen
+73 pis Pijin
+73 nah Nahuatl
+72 bhd Bhadrawahi
+72 nhg Tetelcingo Nahuatl
+72 gmq-mno Middle Norwegian
+72 kri Krio
+70 sux Sumerian
+69 tyv Tuvan
+69 jdt Judeo-Tat
+68 inc-obn Old Bengali
+68 und Undetermined
+68 dra-pro Proto-Dravidian
+68 sm Samoan
+67 xme-mid Middle Median
+67 gju Gojri
+67 rkt Kamta
+66 srh Sarikoli
+66 yah Yazghulami
+66 kbc Kadiwéu
+66 nag Naga Pidgin
+66 gmw-tsx Transylvanian Saxon
+66 pih Pitcairn-Norfolk
+65 rml Baltic Romani
+65 xld Lydian
+65 tet Tetum
+65 arn Mapudungun
+65 cpi Chinese Pidgin English
+64 inc-sap Sauraseni Apabhramsa
+64 st Sotho
+63 mnw Mon
+63 tri Trió
+62 xme-ott Old Tati
+62 oos Old Ossetic
+62 sem-pro Proto-Semitic
+61 mtr Mewari
+61 xcr Carian
+61 acw Hijazi Arabic
+61 ban Balinese
+61 idb Indo-Portuguese
+60 gwc Kalami
+60 roa-ang Angevin
+59 mnj Munji
+59 kap Bezhta
+59 cv Chuvash
+57 ahr Ahirani
+57 lez Lezgi
+57 xce Celtiberian
+56 xka Kalkoti
+56 liv Livonian
+56 vo Volapük
+56 tkl Tokelauan
+56 mh Marshallese
+55 sms Skolt Sami
+55 oj Ojibwe
+55 khb Lü
+54 qwm Kipchak
+54 prc Parachi
+54 bpy Bishnupriya Manipuri
+54 wo Wolof
+53 xag Aghwan
+52 vot Votic
+52 xil Illyrian
+52 aii Assyrian Neo-Aramaic
+52 xcb Cumbric
+51 luz Southern Luri
+51 nog Nogai
+51 vep Veps
+51 nv Navajo
+50 xsc-sak-pro Proto-Saka
+50 cpg Cappadocian Greek
+50 xdc Dacian
+50 olo Livvi
+50 ln Lingala
+50 iu Inuktitut
+50 so Somali
+49 ppl Pipil
+49 kum Kumyk
+49 kg Kongo
+49 rmu Tavringer Romani
+49 urj-pro Proto-Uralic
+48 ny Chichewa
+47 kww Kwinti
+47 su Sundanese
+47 shn Shan
+46 alt Southern Altai
+46 udm Udmurt
+46 ch Chamorro
+46 olt Old Lithuanian
+46 fj Fijian
+46 to Tongan
+45 umu Munsee
+45 sn Shona
+44 itk Judeo-Italian
+44 xpg Phrygian
+44 gez Ge'ez
+43 hrz Harzani
+43 trm Tregami
+43 vmf East Franconian
+43 xpi Pictish
+43 trk-oat Old Anatolian Turkish
+42 inc-mas Middle Assamese
+42 pre Principense
+41 avd Alviri-Vidari
+41 gmw-gts Gottscheerish
+41 yua Yucatec Maya
+41 unm Unami
+41 mnc Manchu
+41 tn Tswana
+40 kgn Karingani
+40 gul Gullah
+39 spx South Picene
+39 oru Ormuri
+39 sma Southern Sami
+39 aeb Tunisian Arabic
+39 cr Cree
+39 xpu Punic
+38 ira-sym-pro Proto-Shughni-Yazghulami-Munji
+38 ira-shy-pro Proto-Shughni-Yazghulami
+38 pgn Paelignian
+38 rjs Rajbanshi
+38 bkk Brokskat
+38 pml Sabir
+38 ig Igbo
+38 egx-dem Demotic
+37 av Avar
+37 tcy Tulu
+37 yxg Yagara
+37 myv Erzya
+37 ak Akan
+37 arq Algerian Arabic
+36 inh Ingush
+36 crg Michif
+36 mch Maquiritari
+36 dz Dzongkha
+36 cmg Classical Mongolian
+35 xsc-skw-pro Proto-Saka-Wakhi
+35 hop Hopi
+35 cri Sãotomense
+35 kmv Karipúna Creole French
+35 rmt Domari
+35 nod Northern Thai
+34 mdf Moksha
+34 otk Old Turkic
+34 xng Middle Mongol
+33 xve Venetic
+33 xdk Dharug
+32 ira-shr-pro Proto-Shughni-Roshani
+32 xal Kalmyk
+32 kaa Karakalpak
+32 mrw Maranao
+32 pag Pangasinan
+32 gcr Guianese Creole
+32 xmk Ancient Macedonian
+32 alg-pro Proto-Algonquian
+31 siy Sivandi
+31 inc-mgu Middle Gujarati
+31 hyx-pro Proto-Armenian
+31 bns Bundeli
+31 dml Dameli
+31 kjh Khakas
+30 gwt Gawar-Bati
+30 dra-okn Old Kannada
+30 koi Komi-Permyak
+30 ab Abkhaz
+30 new Newar
+30 ty Tahitian
+29 esu Yup'ik
+29 ira-mpr-pro Proto-Medo-Parthian
+28 sgr Sangisari
+28 xhu Hurrian
+28 brx Bodo (India)
+28 xpq Mohegan-Pequot
+28 mos Moore
+28 os-pro Proto-Ossetic
+27 sat Santali
+27 lbe Lak
+27 xlp Lepontic
+27 okz Old Khmer
+27 oty Old Tamil
+26 inc-gup Gurjar Apabhramsa
+26 abe Abenaki
+26 poz-pol-pro Proto-Polynesian
+25 ira-pat-pro Proto-Pathan
+25 ady Adyghe
+25 gag Gagauz
+25 vkp Korlai Creole Portuguese
+25 wes Cameroon Pidgin
+25 chn Chinook Jargon
+24 eve Even
+24 twf Taos
+24 zpq Zoogocho Zapotec
+24 fab Annobonese
+24 nys Nyunga
+24 ee Ewe
+24 yux Southern Yukaghir
+24 sdg Savi
+24 kld Gamilaraay
+24 poz-pro Proto-Malayo-Polynesian
+24 wam Massachusett
+23 ira-sgc-pro Proto-Sogdic
+23 psi Southeast Pashayi
+23 mrj Western Mari
+23 cpe-spp Samoan Plantation Pidgin
+23 kyj Karao
+23 pln Palenquero
+23 cho Choctaw
+23 ss Swazi
+23 ay Aymara
+23 pim Powhatan
+22 ctg Chittagonian
+22 sts Shumashti
+22 pea Peranakan Indonesian
+22 evn Evenki
+22 nhe Eastern Huasteca Nahuatl
+22 aoa Angolar
+22 ti Tigrinya
+22 gmw-stm Sathmar Swabian
+22 xnt Narragansett
+21 saz Saurashtra
+21 krc Karachay-Balkar
+21 jut Jutish
+21 fng Fanagalo
+21 ccs-pro Proto-Kartvelian
+20 mvy Indus Kohistani
+20 mus Creek
+20 alq Algonquin
+20 nan Min Nan
+19 lud Ludian
+19 noe Nimadi
+19 pnb Western Panjabi
+19 bfy Bagheli
+19 tsg Tausug
+19 abq Abaza
+19 czk Knaanic
+19 mjy Mahican
+19 abs Ambonese Malay
+19 ts Tsonga
+19 ie Interlingue
+19 gil Gilbertese
+19 xur Urartian
+18 lrl Larestani
+18 min Minangkabau
+18 sva Svan
+18 gyn Guyanese Creole English
+18 ksd Tolai
+18 ote Mezquital Otomi
+18 nhx Mecayapan Nahuatl
+18 nov Novial
+17 umc Marrucinian
+17 phr Pahari-Potwari
+17 sgy Sanglechi
+17 zum Kumzari
+17 dar Dargwa
+17 inc-kam Kamarupi Prakrit
+17 stp Southeastern Tepehuan
+17 kab Kabyle
+17 yrl Nheengatu
+17 hak Hakka
+16 xvo Volscian
+16 shd Kundal Shahi
+16 wsv Wotapuri-Katarqalai
+16 bbl Bats
+16 uum Urum
+16 dng Dungan
+16 kdr Karaim
+16 geh Hutterisch
+16 ood O'odham
+16 wuu Wu
+16 aa Afar
+16 rw Rwanda-Rundi
+16 naq Khoekhoe
+16 niu Niuean
+16 xgn-pro Proto-Mongolic
+16 mic Mi'kmaq
+15 cdj Churahi
+15 jns Jaunsari
+15 pgg Pangwali
+15 hne Chhattisgarhi
+15 kbd Kabardian
+15 cms Messapic
+15 mjb Makalero
+15 rcf Réunion Creole French
+15 xlo Loup A
+15 apc North Levantine Arabic
+15 yog Yogad
+15 mdh Maguindanao
+15 acm Iraqi Arabic
+15 wrh Wiradhuri
+15 ccc Chamicuro
+15 fon Fon
+15 ff Fula
+14 ira-mny-pro Proto-Munji-Yidgha
+14 smy Semnani
+14 bjn Banjarese
+14 glh Northwest Pashayi
+14 dcc Deccani
+14 jbo Lojban
+14 iba Iban
+14 gur Farefare
+13 xme-taf Tafreshi
+13 isk Ishkashimi
+13 ims Marsian
+13 plq Palaic
+13 tra Tirahi
+13 shi Tashelhit
+13 euq-pro Proto-Basque
+13 dlg Dolgan
+13 yrk Tundra Nenets
+13 roo Rotokas
+13 poe San Juan Atzingo Popoloca
+13 ki Kikuyu
+13 lg Luganda
+13 ryu Okinawan
+12 dmk Domaaki
+12 aee Northeast Pashayi
+12 kgp Kaingang
+12 njt Ndyuka-Trio Pidgin
+12 bsg Bashkardi
+12 vro Võro
+12 gmw-vog Volga German
+12 mih Chayuco Mixtec
+12 ajp South Levantine Arabic
+12 urj-prm-pro Proto-Permic
+12 chk Chuukese
+12 ohu Old Hungarian
+12 bnt-pro Proto-Bantu
+12 mnk Mandinka
+11 lax Tiwa
+11 bsk Burushaski
+11 myz Classical Mandaic
+11 ace Acehnese
+11 gmw-zps Zipser German
+11 xtm Magdalena Peñasco Mixtec
+11 nhi Zacatlán-Ahuacatlán-Tepetzintla Nahuatl
+11 bm Bambara
+11 map-pro Proto-Austronesian
+11 rad Rade
+11 ale Aleut
+11 tum Tumbuka
+11 dak Dakota
+11 och Old Chinese
+10 kfs Bilaspuri
+10 wne Waneci
+10 nli Grangali
+10 xga Galatian
+10 srz Shahmirzadi
+10 smj Lule Sami
+10 xls Lusitanian
+10 brh Brahui
+10 pua Purepecha
+10 msb Masbatenyo
+10 sth Shelta
+10 pau Palauan
+10 mia Miami
+10 aho Ahom
+9 nwc Classical Newar
+9 hnd Southern Hindko
+9 jpr Judeo-Persian
+9 acx Omani Arabic
+9 gor Gorontalo
+9 kfx Kullu Pahari
+9 mjc San Juan Colorado Mixtec
+9 rap Rapa Nui
+9 ulk Meriam
+9 chl Cahuilla
+9 aoc Pemon
+9 lkt Lakota
+9 chr Cherokee
+9 cic Chickasaw
+9 tli Tlingit
+9 pjt Pitjantjatjara
+9 mel Central Melanau
+9 way Wayana
+9 poz-oce-pro Proto-Oceanic
+9 kxd Brunei Malay
+8 tks Ramandi
+8 crk Plains Cree
+8 esh Eshtehardi
+8 cjs Shor
+8 yej Yevanic
+8 xbo Bulgar
+8 xmm Manado Malay
+8 ik Inupiaq
+8 ems Alutiiq
+8 xct Classical Tibetan
+8 ain Ainu
+8 wba Warao
+8 kj Kwanyama
+8 der Deori
+8 cab Garifuna
+8 moh Mohawk
+8 jac Jakaltek
+8 cta Tataltepec Chatino
+8 zhx-tai Taishanese
+8 ckt Chukchi
+8 nr Southern Ndebele
+8 luy Luhya
+8 aot Atong (India)
+8 gmw-bgh Bergish
+8 dtp Central Dusun
+8 ase American Sign Language
+8 tzm Central Atlas Tamazight
+7 lsa Lasgerdi
+7 cel-gal Gallaecian
+7 dis Dimasa
+7 kjj Khinalug
+7 cak Kaqchikel
+7 rmi Lomavren
+7 ayl Libyan Arabic
+7 lsd Lishana Deni
+7 crp-tpr Taimyr Pidgin Russian
+7 huu Murui Huitoto
+7 moe Montagnais
+7 ve Venda
+7 ccs-gzn-pro Proto-Georgian-Zan
+7 tab Tabasaran
+7 pon Pohnpeian
+7 xib Iberian
+7 akl Aklanon
+7 igs Glosa
+7 zdj Ngazidja Comorian
+7 roa-gis Gallo-Italic of Sicily
+7 esx-esk-pro Proto-Eskimo
+7 mad Madurese
+7 lut Lushootseed
+7 plo Oluta Popoluca
+7 fwe Fwe
+7 huv Huave
+7 see Seneca
+7 ncj Northern Puebla Nahuatl
+7 cro Crow
+7 xlg Ancient Ligurian
+7 poz-mly-pro Proto-Malayic
+7 gug Paraguayan Guaraní
+7 bft Balti
+7 tew Tewa
+7 sem-wes-pro Proto-West Semitic
+6 paq Parya
+6 urj-mdv-pro Proto-Mordvinic
+6 xae Aequian
+6 xnr Kangri
+6 xqa Karakhanid
+6 unk Enawené-Nawé
+6 sbv Sabine
+6 gnc Guanche
+6 mid Mandaic
+6 emx Erromintxela
+6 uby Ubykh
+6 mww White Hmong
+6 rng Ronga
+6 shu Chadian Arabic
+6 xsb Sambali
+6 wlo Wolio
+6 rif Tarifit
+6 trf Trinidadian Creole English
+6 roa-orl Orléanais
+6 xas Kamassian
+6 kmk Limos Kalinga
+6 azg San Pedro Amuzgos Amuzgo
+6 tar Central Tarahumara
+6 cks Tayo
+6 om Oromo
+6 nfr Nafaanra
+6 inc-tak Takka Apabhramsa
+6 ake Akawaio
+6 pqm Malecite-Passamaquoddy
+6 sid Sidamo
+6 crd Coeur d'Alene
+6 nso Northern Sotho
+6 poi Highland Popoluca
+6 crn Cora
+6 chb Chibcha
+6 zai Isthmus Zapotec
+6 its Itsekiri
+6 sai-car-pro Proto-Cariban
+6 sit-pro Proto-Sino-Tibetan
+6 luo Luo
+6 azc-nah-pro Proto-Nahuan
+5 rah Rabha
+5 xmb Mbonga
+5 grt Garo
+5 trp Kokborok
+5 tmh Tuareg
+5 kry Kryts
+5 bdk Budukh
+5 gon Gondi
+5 mjl Mandeali
+5 vav Varli
+5 kfb Kolami
+5 hlb Halbi
+5 gaa Ga
+5 miq Miskito
+5 bug Buginese
+5 smn Inari Sami
+5 hno Northern Hindko
+5 bin Edo
+5 sac Fox
+5 nhn Central Nahuatl
+5 ibb Ibibio
+5 mfy Mayo
+5 sei Seri
+5 bnt-phu Phuthi
+5 uln Unserdeutsch
+5 yey Yeyi
+5 kck Kalanga
+5 sjt Ter Sami
+5 za Zhuang
+5 tft Ternate
+5 ykh Khamnigan Mongol
+5 nch Central Huasteca Nahuatl
+5 ivv Ivatan
+5 mpm Yosondúa Mixtec
+5 hid Hidatsa
+5 xsl South Slavey
+5 tig Tigre
+5 xkz Kurtöp
+5 mak Makasar
+5 cdo Min Dong
+5 kln Kalenjin
+5 bol Bole
+5 nd Northern Ndebele
+5 aer Eastern Arrernte
+5 wls Wallisian
+5 akz Alabama
+5 afa-pro Proto-Afroasiatic
+5 mkh-pro Proto-Mon-Khmer
+5 qya Quenya
+5 nuk Nootka
+5 wya Wyandot
+5 cad Caddo
+4 fan Fang (Bantu)
+4 bhh Bukhari
+4 ira-wnj Vanji
+4 kvx Parkari Koli
+4 gem-bur Burgundian
+4 rge Romani Greek
+4 mjw Karbi
+4 mun-pro Proto-Munda
+4 any Anyi
+4 xvs Vestinian
+4 cau-nec-pro Proto-Northeast Caucasian
+4 ike Eastern Canadian Inuktitut
+4 shh Shoshone
+4 ine-pae Paeonian
+4 imy Milyan
+4 xmr Meroitic
+4 xwo Written Oirat
+4 shm Shahrudi
+4 fit Meänkieli
+4 azc-pro Proto-Uto-Aztecan
+4 sje Pite Sami
+4 sea Semai
+4 agx Aghul
+4 kim Tofa
+4 mge Mango
+4 dep Pidgin Delaware
+4 bjj Kannauji
+4 gvl Gulay
+4 ctz Zacatepec Chatino
+4 aak Ankave
+4 kfa Kodava
+4 urj-kya Komi-Yazva
+4 phi-pro Proto-Philippine
+4 ibg Ibanag
+4 zkt Khitan
+4 zav Yatzachi Zapotec
+4 men Mende
+4 jpx-pro Proto-Japonic
+4 amu Guerrero Amuzgo
+4 sia Akkala Sami
+4 ayn Yemeni Arabic
+4 uga Ugaritic
+4 swb Maore Comorian
+4 map-bms Banyumasan
+4 anp Angika
+4 cjm Eastern Cham
+4 crp-mpp Macau Pidgin Portuguese
+4 one Oneida
+4 fkv Kven
+4 yaq Yaqui
+4 bem Bemba
+4 pot Potawatomi
+4 iru Irula
+4 gwi Gwich'in
+4 jmx Western Juxtlahuaca Mixtec
+4 zor Rayón Zoque
+4 bno Asi
+4 nhm Morelos Nahuatl
+4 hwc Hawaiian Creole
+4 wth Wathaurong
+4 tvl Tuvaluan
+4 fud East Futuna
+4 mer Meru
+4 na Nauruan
+4 kam Kamba
+4 gmw-fin Fingallian
+4 awd-pro Proto-Arawak
+4 fpe Pichinglis
+4 myh Makah
+4 css Southern Ohlone
+4 hur Halkomelem
+4 xww Wemba-Wemba
+3 goq Gorap
+3 xhe Khetrani
+3 xaw Kawaiisu
+3 sqo Sorkhei
+3 vmw Makhuwa
+3 xtq Tumshuqese
+3 luv Luwati
+3 clh Chilisso
+3 xbr Kambera
+3 cdh Chambeali
+3 itl Itelmen
+3 nef Nefamese
+3 art-dtk Dothraki
+3 sju Ume Sami
+3 chh Chinook
+3 cnk Khumi Chin
+3 mfr Marrithiyel
+3 mas Maasai
+3 bht Bhattiyali
+3 nay Ngarrindjeri
+3 pmt Tuamotuan
+3 kdd Yankunytjatjara
+3 kac Jingpho
+3 umb Umbundu
+3 maz Central Mazahua
+3 tep Tepecano
+3 anq Jarawa
+3 sce Dongxiang
+3 sty Siberian Tatar
+3 ng Ndonga
+3 dif Dieri
+3 rut Rutul
+3 opt Opata
+3 bdy Bandjalang
+3 bhw Biak
+3 cia Cia-Cia
+3 yka Yakan
+3 cay Cayuga
+3 bjs Bajan
+3 efi Efik
+3 tao Yami
+3 oui Old Uyghur
+3 cps Capiznon
+3 bkd Binukid
+3 ckv Kavalan
+3 quc K'iche'
+3 xpo Pochutec
+3 lzh Literary Chinese
+3 pos Sayula Popoluca
+3 nup Nupe
+3 cyo Cuyunon
+3 plw Brooke's Point Palawano
+3 sas Sasak
+3 bbc Toba Batak
+3 niv Nivkh
+3 mkn Kupang Malay
+3 atv Northern Altai
+3 ysc Jassic
+3 abv Baharna Arabic
+3 ctu Chol
+3 urj-ugr-pro Proto-Ugric
+3 abx Inabaknon
+3 coc Cocopa
+3 ksp Kaba
+3 uve West Uvean
+3 apw Western Apache
+3 zun Zuni
+3 sjw Shawnee
+3 msy Aruamu
+3 tub Tübatulabal
+3 lus Mizo
+3 miy Ayutla Mixtec
+3 shs Shuswap
+3 ojp Old Japanese
+3 tuw-sol Solon
+3 for Fore
+3 ttj Tooro
+3 fos Siraya
+3 rar Rarotongan
+3 yur Yurok
+3 sks Maia
+3 aig Antigua and Barbuda Creole English
+3 bah Bahamian Creole
+3 kla Klamath-Modoc
+3 oka Okanagan
+3 iow Chiwere
+3 lre Laurentian
+3 blt Tai Dam
+2 wbp Warlpiri
+2 ktz Juǀ'hoan
+2 gld Nanai
+2 inc-mor Middle Odia
+2 xpc Pecheneg
+2 scp Yolmo
+2 emn Eman
+2 mto Totontepec Mixe
+2 hts Hadza
+2 wub Wunambal
+2 trc Copala Triqui
+2 syb Central Subanen
+2 ill Iranun
+2 nsk Naskapi
+2 xkc Khoini
+2 wbr Wagdi
+2 kha Khasi
+2 obr Old Burmese
+2 gjn Gonja
+2 cih Chinali
+2 mby Memoni
+2 xme-kls Kalasuri
+2 ciy Chaima
+2 mui Musi
+2 omx Old Mon
+2 slr Salar
+2 mov Mojave
+2 sjn Sindarin
+2 qwe-kch Kichwa
+2 yag Yámana
+2 sg Sango
+2 byn Blin
+2 sem-srb Old South Arabian
+2 sgz Sursurunga
+2 pao Northern Paiute
+2 akm Aka-Bo
+2 apq A-Pucikwar
+2 ono Onondaga
+2 gza Ganza
+2 tem Temne
+2 sml Central Sama
+2 veo Ventureño
+2 shy Tachawit
+2 kjq Western Keres
+2 tnv Tangchangya
+2 atj Atikamekw
+2 mfa Pattani Malay
+2 din Dinka
+2 xrr Raetic
+2 cau-cir-pro Proto-Circassian
+2 tkr Tsakhur
+2 tfn Dena'ina
+2 mbc Macushi
+2 zkh Khorezmian Turkic
+2 yms Mysian
+2 kht Khamti
+2 huz Hunzib
+2 ddo Tsez
+2 grk-cal Calabrian Greek
+2 duo Dupaningan Agta
+2 sht Shasta
+2 kme Bakole
+2 urh Urhobo
+2 trs Chicahuaxtla Triqui
+2 sip Sikkimese
+2 rki Rakhine
+2 tlh Klingon
+2 apd Sudanese Arabic
+2 lmn Lambadi
+2 ykg Northern Yukaghir
+2 acy Cypriot Arabic
+2 sne Bau Bidayuh
+2 psh Southwest Pashayi
+2 dwu Dhuwal
+2 suk Sukuma
+2 kde Makonde
+2 hz Herero
+2 chc Catawba
+2 bfz Mahasu Pahari
+2 ho Hiri Motu
+2 gal Galoli
+2 aib Aynu
+2 trl Traveller Scottish
+2 kmz Khorasani Turkish
+2 jiv Shuar
+2 amw Western Neo-Aramaic
+2 xuu Khwe
+2 tiw Tiwi
+2 ndc Ndau
+2 klw Lindu
+2 tdt Tetun Dili
+2 bla Blackfoot
+2 kwk Kwak'wala
+2 bew Betawi
+2 xme-klt Kilit
+2 omk Omok
+2 mgh Makhuwa-Meetto
+2 tzo Tzotzil
+2 tnc Tanimuca-Retuarã
+2 tzh Tzeltal
+2 aaq Penobscot
+2 cpe-mar Maroon Spirit Language
+2 cuo Cumanagoto
+2 gun Mbyá Guaraní
+2 xta Alcozauca Mixtec
+2 lmw Lake Miwok
+2 caq Car Nicobarese
+2 poz-pep-pro Proto-Eastern Polynesian
+2 pwm Molbog
+2 man Mandingo
+2 tup-gua-pro Proto-Tupi-Guarani
+2 nmn ǃXóõ
+2 alr Alutor
+2 awk Awabakal
+2 pqe-pro Proto-Eastern Malayo-Polynesian
+2 ktu Kituba
+2 yij Yindjibarndi
+2 bdr West Coast Bajau
+2 apj Jicarilla
+2 loz Lozi
+2 kxm Northern Khmer
+2 vor Voro
+2 par Panamint
+2 drl Baagandji
+2 tok Toki Pona
+2 scx Sicel
+2 okm Middle Korean
+2 rai Ramoaaina
+2 apy Apalaí
+2 cuk Kuna
+2 kru Kurukh
+2 esx-inu-pro Proto-Inuit
+2 ctp Western Highland Chatino
+2 paw Pawnee
+2 otw Ottawa
+2 ket Ket
+2 ksw S'gaw Karen
+2 qyp Quiripi
+2 xna Ancient North Arabian
+2 ane Xârâcùù
+2 tbh Thurawal
+2 njm Angami
+2 dgr Dogrib
+2 top Papantla Totonac
+2 azz Highland Puebla Nahuatl
+2 xul Ngunawal
+2 win Winnebago
+2 mxb Tezoatlán Mixtec
+2 jra Jarai
+2 bzk Nicaraguan Creole
+2 icr Islander Creole English
+2 crb Island Carib
+2 poz-pnp-pro Proto-Nuclear Polynesian
+2 sky Sikaiana
+2 zku Kaurna
+2 bbn Uneapa
+2 dyu Dyula
+2 pwn Paiwan
+2 adt Adnyamathanha
+2 gcl Grenadian Creole English
+2 apk Plains Apache
+2 mop Mopan Maya
+2 ute Ute
+2 srr Serer
+2 xhc Hunnic
+2 str Saanich
+2 oma Omaha-Ponca
+2 was Washo
+2 kky Guugu Yimidhirr
+2 ber-pro Proto-Berber
+1 xeb Eblaite
+1 tcx Toda
+1 gup Gunwinggu
+1 wtm Mewati
+1 ii Sichuan Yi
+1 huc ǂHoan
+1 avu Avokaya
+1 kxv Kuvi
+1 aav-pro Proto-Austroasiatic
+1 mjz Majhi
+1 lhu Lahu
+1 plc Central Palawano
+1 xmy Mayaguduna
+1 sjp Surjapuri
+1 hoj Hadothi
+1 suz Sunwar
+1 srb Sora
+1 khn Khandeshi
+1 dso Desiya
+1 zko Kott
+1 cau-nkh-pro Proto-Nakh
+1 mth Munggui
+1 mme Mae
+1 bpu Bongu
+1 hoc Ho
+1 nyu Nyungwe
+1 roa-gib Gallo-Italic of Basilicata
+1 ved Veddah
+1 msk Mansaka
+1 srx Sirmauri
+1 gbk Gaddi
+1 ahn Àhàn
+1 rzh Razihi
+1 tuq Tedaga
+1 lla Lala-Roba
+1 glj Kulaal
+1 ulc Ulch
+1 sqt Soqotri
+1 hss Harsusi
+1 gdq Mehri
+1 hoh Hobyót
+1 bhm Bathari
+1 nlm Mankiyali
+1 kbu Kabutra
+1 ssi Sansi
+1 ggg Gurgula
+1 ghr Ghera
+1 mhj Mogholi
+1 gdx Godwari
+1 lrk Loarki
+1 kxp Wadiyara Koli
+1 gjk Kachi Koli
+1 odk Od
+1 bhe Bhaya
+1 jnd Jandavra
+1 gig Goaria
+1 deh Dehwari
+1 jat Jakati
+1 prx Purik
+1 btv Bateri
+1 bgq Bagri
+1 nty Mantsi
+1 gwf Gowro
+1 sbn Sindhi Bhil
+1 lss Lasi
+1 esx-tut Tunumiisut
+1 bba Baatonum
+1 xcu Curonian
+1 mgl Maleu-Kilenge
+1 igl Igala
+1 xth Yitha Yitha
+1 clw Chulym
+1 cbd Carijona
+1 wbj Alagwa
+1 alh Alawa
+1 mam Mam
+1 rou Runga
+1 mep Miriwung
+1 sqn Susquehannock
+1 tbq-bdg-pro Proto-Bodo-Garo
+1 kgj Gamale Kham
+1 lbj Ladakhi
+1 yuy East Yugur
+1 syd-pro Proto-Samoyedic
+1 ser Serrano
+1 wlc Mwali Comorian
+1 puy Purisimeño
+1 and Ansus
+1 skd Southern Sierra Miwok
+1 eya Eyak
+1 gnh Lere
+1 stw Satawalese
+1 lmy Laboya
+1 clc Chilcotin
+1 gmn Gimnime
+1 xme-ttc-pro Proto-Tatic
+1 tyl Thu Lao
+1 sjm Mapun
+1 krm Krim
+1 xyt Mayi-Thakurti
+1 ktl Koroshi
+1 goz Gozarkhani
+1 omq-mxt-pro Proto-Mixtec
+1 cjy Jin
+1 qfa-cka-pro Proto-Chukotko-Kamchatkan
+1 mtt Mota
+1 obm Moabite
+1 nhk Cosoleacaque Nahuatl
+1 ikx Ik
+1 gay Gayo
+1 csi Coast Miwok
+1 bgi Giangan
+1 obo Obo Manobo
+1 bgs Tagabawa
+1 rdb Rudbari
+1 aus-guw Guwar
+1 nxq Naxi
+1 lic Hlai
+1 bhb Bhili
+1 sak Sake
+1 nxm Numidian
+1 xgf Gabrielino-Fernandeño
+1 sjo Xibe
+1 cau-ava-pro Proto-Avaro-Andian
+1 ani Andi
+1 akv Akhvakh
+1 kpt Karata
+1 cji Chamalal
+1 ibl Ibaloi
+1 cpx Puxian
+1 kyk Kamayo
+1 smp Samaritan Hebrew
+1 lep Lepcha
+1 chp Chipewyan
+1 spv Sambalpuri
+1 sai-ctq Catuquinaru
+1 sds Tunisian Berber
+1 slm Pangutaran Sama
+1 nyn Nyankole
+1 nru Narua
+1 poz-ssw-pro Proto-South Sulawesi
+1 tog Tonga (Malawi)
+1 zap Zapotec
+1 bea Beaver
+1 nus Nuer
+1 sai-qmb Quimbaya
+1 ato Atong (Cameroon)
+1 sem-tay Taymanitic
+1 azc-caz Cazcan
+1 nqo N'Ko
+1 mhi Ma'di
+1 anu Anuak
+1 kuz Kunza
+1 npl Southeastern Puebla Nahuatl
+1 xtb Chazumba Mixtec
+1 tts Isan
+1 kkh Khün
+1 ybe Western Yugur
+1 ynd Yandruwandha
+1 pit Pitta-Pitta
+1 xni Ngarigu
+1 cau-tsz-pro Proto-Tsezian
+1 nmu Northeast Maidu
+1 sel-nor Northern Selkup
+1 wrr Wardaman
+1 dus Dumi
+1 bdq Bahnar
+1 mng Eastern Mnong
+1 ksb Shambala
+1 ish Esan
+1 cbs Cashinahua
+1 swi Sui
+1 mlv Mwotlap
+1 bum Bulu (Cameroon)
+1 mnl Tiale
+1 cid Chimariko
+1 azc-tak-pro Proto-Takic
+1 ard Arabana
+1 tiv Tiv
+1 gmg Magiyi
+1 con Cofán
+1 art-bsp Black Speech
+1 wyi Woiwurrung
+1 nnt Nanticoke
+1 irk Iraqw
+1 tjw Chaap Wuurong
+1 cku Koasati
+1 teh Tehuelche
+1 nrc Noric
+1 gsm Guatemalan Sign Language
+1 bue Beothuk
+1 ncl Michoacán Nahuatl
+1 aud Anuta
+1 tzl Talossan
+1 auc Huaorani
+1 cwd Woods Cree
+1 bkz Bungku
+1 txr Tartessian
+1 cau-nwc-pro Proto-Northwest Caucasian
+1 tnk Kwamera
+1 quv Sacapulteco
+1 sfw Sehwi
+1 mrg Mising
+1 mhd Mbugu
+1 amj Amdang
+1 dtd Ditidaht
+1 hei Heiltsuk
+1 nij Ngaju
+1 kfc Konda-Dora
+1 nzi Nzima
+1 juc Jurchen
+1 tuw-pro Proto-Tungusic
+1 abz Abui
+1 bdl Indonesian Bajau
+1 crp-bip Basque-Icelandic Pidgin
+1 wiy Wiyot
+1 eso Estonian Sign Language
+1 itz Itzá
+1 crr Carolina Algonquian
+1 kjb Q'anjob'al
+1 rms Romanian Sign Language
+1 dta Daur
+1 haa Hän
+1 plu Palikur
+1 esx-ink Inuktun
+1 poz-cet-pro Proto-Central-Eastern Malayo-Polynesian
+1 kuj Kuria
+1 ach Acholi
+1 grm Kota Marudu Talantang
+1 kju Kashaya
+1 gin Hinukh
+1 bhi Bhilali
+1 nai-mus-pro Proto-Muskogean
+1 leo Leti (Cameroon)
+1 hax Southern Haida
+1 mgs Manda (Tanzania)
+1 aqc Archi
+1 bdz Badeshi
+1 sgw Sebat Bet Gurage
+1 kio Kiowa
+1 ldn Láadan
+1 tru Turoyo
+1 lua Luba-Kasai
+1 wni Ndzwani Comorian
+1 nll Nihali
+1 txu Kayapó
+1 pwi Patwin
+1 max North Moluccan Malay
+1 nly Nyamal
+1 hus Wastek
+1 api Apiaká
+1 ngh Nǀuu
+1 dra-mkn Middle Kannada
+1 rkh Rakahanga-Manihiki
+1 pkp Pukapukan
+1 yum Yuma
+1 muy Muyang
+1 srt Sauri
+1 hai Haida
+1 arh Arhuaco
+1 urj-koo Old Komi
+1 gbw Gabi
+1 wkw Wakawaka
+1 guu Yanomamö
+1 nai-kum Kumeyaay
+1 crp-gep West Greenlandic Pidgin
+1 drg Rungus
+1 kqr Kimaragang
+1 zoc Copainalá Zoque
+1 kpy Koryak
+1 ili Ili Turki
+1 jct Krymchak
+1 huy Hulaulá
+1 pcc Bouyei
+1 cst Northern Ohlone
+1 mav Sateré-Mawé
+1 rtm Rotuman
+1 pga Juba Arabic
+1 ynn Yana
+1 mjv Mannan
+1 nyy Nyakyusa
+1 omc Mochica
+1 ayp North Mesopotamian Arabic
+1 ttg Tutong
+1 bsb Brunei Bisaya
+1 gas Adiwasi Garasia
+1 mir Isthmus Mixe
+1 ijc Izon
+1 mfz Mabaan
+1 bac Badui
+1 ikt Inuvialuktun
+1 khv Khvarshi
+1 wmw Mwani
+1 mjr Malavedan
+1 nlc Nalca
+1 lac Lacandon
+1 kgg Kusunda
+1 amq Amahai
+1 unn Kurnai
+1 atk Ati
+1 hch Huichol
+1 kyh Karok
+1 bjv Bedjond
+1 mki Dhatki
+1 bfq Badaga
+1 gan Gan
+1 hsn Xiang
+1 cea Lower Chehalis
+1 gsl Gusilay
+1 gqn Kinikinao
+1 rub Gungu
+1 lml Raga
+1 lnl South Central Banda
+1 ars Najdi Arabic
+1 nhw Western Huasteca Nahuatl
+1 mtq Muong
+1 mql Mbelime
+1 nko Nkonya
+1 keu Akebu
+1 nmz Nawdm
+1 wlx Wali (Ghana)
+1 xqt Qatabanian
+1 yec Yeniche
+1 jje Jeju
+1 qui Quileute
+1 onw Old Nubian
+1 teo Ateso
+1 zos Francisco León Zoque
+1 ngz Ngungwel
+1 nse Nsenga
+1 yao Yao
+1 cja Western Cham
+1 csm Central Sierra Miwok
+1 ksk Kansa
+1 bwa Bwatoo
+1 amf Hamer-Banna
+1 ses Koyraboro Senni
+1 dje Zarma
+1 bqj Bandial
+1 sgd Surigaonon
+1 cod Cocama
+1 bks Masbate Sorsogon
+1 srv Waray Sorsogon
+1 prq Ashéninka Perené
+1 rol Romblomanon
+1 jup Hupdë
+1 guc Wayuu
+1 woe Woleaian
+1 btn Ratagnon
+1 prh Porohanon
+1 krj Kinaray-a
+1 mig San Miguel el Grande Mixtec
+1 cts Northern Catanduanes Bicolano
+1 cgc Kagayanen
+1 smk Bolinao
+1 caa Ch'orti'
+1 cal Carolinian
+1 xaq Aquitanian
+1 zab San Juan Guelavía Zapotec
+1 aht Ahtna
+1 bfm Mmen
+1 qwc Classical Quechua
+1 koy Koyukon
+1 wim Wik-Mungkan
+1 sai-chn Chaná
+1 cag Nivaclé
+1 msn Vurës
+1 mzb Northern Saharan Berber
+1 toj Tojolabal
+1 loo Lombo
+1 lew Ledo Kaili
+1 ski Sika
+1 bpl Broome Pearling Lugger Pidgin
+1 pic Pinji
+1 nuz Tlamacazapa Nahuatl
+1 cir Tiri
+1 bvb Bube
+1 tfr Teribe
+1 aji Ajië
+1 qfa-kor-pro Proto-Koreanic
+1 moz Mukulu
+1 inz Ineseño
+1 bnn Bunun
+1 dru Rukai
+1 sxr Saaroa
+1 ami Amis
+1 blh Kuwaa
+1 art-vlh High Valyrian
+1 mba Higaonon
+1 zgh Moroccan Amazigh
+1 sio-pro Proto-Siouan
+1 chf Tabasco Chontal
+1 brm Barambu
+1 ndl Ndolo
+1 dra-ote Old Telugu
+1 dhv Drehu
+1 yuc Yuchi
+1 mik Mikasuki
+1 mue Media Lengua
+1 oko Old Korean
+1 otb Old Tibetan
+1 lfn Lingua Franca Nova
+1 gvf Golin
+1 ntp Northern Tepehuan
+1 ngf-pro Proto-Trans-New Guinea
+1 drq Dura
+1 kek Q'eqchi
+1 brg Baure
+1 nzd Nzadi
+1 nee Kumak
+1 mxh Mvuba
+1 taa Lower Tanana
+1 ivb Ibatan
+1 inc-vra Vracada Apabhramsa
+1 urk Urak Lawoi'
+1 arp Arapaho
+1 wuh Wutunhua
+1 ari Arikara
+1 tgh Tobagonian Creole English
+1 uvl Lote
+1 chy Cheyenne
+1 mcq Ese
+1 smq Samo
+1 akr Araki
+1 akt Akolet
+1 kyu Western Kayah
+1 ojw Western Ojibwa
+1 cow Cowlitz
+1 csw Swampy Cree
+1 mez Menominee
+1 too Xicotepec de Juárez Totonac
+1 tos Highland Totonac
+1 osa Osage
+1 nez Nez Perce
+1 khy Ekele
+1 bor Borôro
+1 szv Isubu
+1 wyb Ngiyambaa
+1 yuf Havasupai-Walapai-Yavapai
+1 snm Southern Ma'di
+1 kr Kanuri
+1 snk Soninke
+1 sai-yao Yao (South America)
+1 duc Duna
+1 qfa-hur-pro Proto-Hurro-Urartian
+1 tkn Toku-No-Shima
+1 eee E
+1 xan Xamtanga
+1 fla Montana Salish
+1 meu Motu
+1 tdd Tai Nüa

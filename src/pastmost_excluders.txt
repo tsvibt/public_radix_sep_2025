@@ -1,0 +1,22 @@
+co-,la,0
+-aris,la
+-ier,fro
+in-,la,1
+in-,la,2
+in-,la,3
+en-,en
+εὐ-,grc
+-icus,la
+-ella,la,0
+-en, en
+ad-,la
+bi-, en
+#*-ónts, ine-pro not working... but shouldn't all pastmosts have gotten a senseposet..>????z
+ex-, la
+re-,la
+ob,la
+sub-,la
+pro, la 
+-arium, la
+
+

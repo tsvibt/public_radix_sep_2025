@@ -1,0 +1,115 @@
+
+<link rel="preload" href="/images/TriangleArrow-Down.svg" as="image">
+<link rel="preload" href="/images/En.wiktionary_favicon.svg" as="image">
+<link rel="preload" href="/images/En.wiktionary_favicon.svg" as="image">
+<link rel="preload" href="/images/radix_favicon.ico" as="image">
+<link rel="preload" href="/images/etymonline_icon.png" as="image">
+
+<style>
+
+.link-button {
+   width: 21px; 
+   height: 21px;
+   margin-left: .5px; 
+   margin-right: .5px;
+   background-repeat: no-repeat;
+   background-size: contain; 
+   background-position: center; 
+   border: none;
+   cursor: pointer; 
+}
+
+.jump-button {
+   color: rgb(230, 160, 50);
+}
+
+.jump-button-without-symbol {
+   background-image: url('/images/TriangleArrow-Down.svg');
+}
+
+.wiktionary-button {
+   background-image: url('/images/En.wiktionary_favicon.svg');
+}
+
+.wiktionary-symbol{
+   display: inline-block;
+   width: 1.2em; 
+   height: 1.2em;
+   margin-left: .5px; 
+   margin-right: .5px;
+   background-repeat: no-repeat;
+   background-size: contain; 
+   background-position: center; 
+   border: none;
+   background-image: url('/images/En.wiktionary_favicon.svg');
+}
+
+
+.radix-button {
+   background-image: url('/images/radix_favicon.ico');
+}
+
+.etymonline-button {
+   background-image: url('/images/etymonline_icon.png');
+}
+
+
+</style>
+
+<script>
+
+function Element_Buttonpanel(parent) {
+   return ElementKind_Button(parent, 'wiktionary') + ElementKind_Button(parent, 'radix') + ElementKind_Button(parent, 'etymonline') + Element_jumpButton(parent)
+};
+
+function ElementKind_Button(element, kind){
+   if ((kind === 'etymonline' && !('etymonline_url' in element.dataset))
+         || (kind === 'jump' && element.dataset.include_jump_down === 'False') ) {
+      return ''
+   };
+   return `<button data-parent_id="${element.id}" class="link-button ${kind}-button"></button>`; 
+}
+
+function Element_jumpButton(element){
+   var button =  ElementKind_Button(element, 'jump');
+   if (button === '') {return button;} else {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = button;
+      tempDiv.firstElementChild.classList.add('jump-button-without-symbol');
+      const newText = tempDiv.firstElementChild.outerHTML;
+      return newText; 
+   };
+}
+
+
+function Element_scrollTo(element) {
+    if (element) {
+        if (!isElementInView(element)) {
+            element.scrollIntoView({ block: "start"  });
+            var rect = element.getBoundingClientRect();
+            if (rect.top <= 10) {
+                window.scrollBy(0, -50); 
+} } } }
+
+function isElementInView(element) {
+   var rect = element.getBoundingClientRect();
+   var viewTypeHeight = window.innerHeight || document.documentElement.clientHeight;
+   return (rect.top >= 0 && rect.bottom <= viewTypeHeight);
+}
+
+function flashElement(element) {
+   console.log(element);
+   const old_background = element.style.backgroundColor;
+   console.log(old_background);
+
+   element.style.transition = 'none'; 
+   element.style.background = 'white'; 
+   setTimeout(() => {
+      element.style.transition = 'background 4s'; 
+      element.style.background = old_background; 
+   }, 0); 
+}
+
+</script>
+
+

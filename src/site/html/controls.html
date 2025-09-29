@@ -1,0 +1,37 @@
+
+<style>
+
+:root { --def_element_display: inline;}
+.def_element {
+   display: var(--def_element_display);
+}
+
+:root { --lang_element_display: inline;}
+.lang_element {
+   display: var(--lang_element_display);
+}
+
+
+</style>
+
+<script>
+
+document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' || event.keyCode === 27) {
+         document.getElementById("universal_click_popup").style.display = "none";
+         document.getElementById("universal_hover_popup").style.display = "none";
+      } else if (event.key === 'd' && !(event.metaKey) && !(event.ctrlKey)) {
+         const value = getComputedStyle(document.documentElement).getPropertyValue('--def_element_display').trim();
+         document.documentElement.style.setProperty('--def_element_display', value === 'none' ? 'inline' : 'none');
+      } else if (event.key === 'l' && !(event.metaKey) && !(event.ctrlKey)) {
+         const value = getComputedStyle(document.documentElement).getPropertyValue('--lang_element_display').trim();
+         document.documentElement.style.setProperty('--lang_element_display', value === 'none' ? 'inline' : 'none');
+
+      };
+
+});
+
+
+</script>
+
+

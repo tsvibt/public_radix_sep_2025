@@ -1,0 +1,2028 @@
+
+first draft of getting links:
+def DictRoot(indict):
+   d = copy.deepcopy(indict)
+   derivation = []
+   undoneNodes = True
+   while undoneNodes:
+      undoneNodes = False
+      if 'Etymology' in d or 'Etymology 1' in d:
+         if 'Etymology' in d:
+            et = d['Etymology']
+         if 'Etymology 1' in d:
+            et = d['Etymology 1']
+         for tok in TextRefTokens(et):
+            ref = tok['content']
+            if ref['kind'] in ['inh', 'inherited']:
+               d = WordLangDict(ref['word'], ref['lang'])
+               derivation.append(d)
+               undoneNodes = True
+      else:
+         text = ''
+         for p in PartsOfSpeech:
+            if p in d:
+               text = d[p]
+            if p + ' 1' in d:
+               text = d[p + ' 1']
+         for tok in TextRefTokens(text):
+            ref = tok['content']
+            if ref['kind'] == 'inflection of':
+               d = WordLangDict(ref['word'], ref['lang'] )
+               derivation.append(d)
+               undoneNodes = True
+   return derivation
+
+
+to get samle of kaikki:
+t = open('klid-kaikki.json').read()
+import json
+ds=[json.loads(x) for x in t.split('\n') if x.strip() !='']
+w = {}
+for d in ds:
+   n=d['lang'] + "--" + d['word']
+   if n not in w:
+      w[n] = 0
+   else: 
+      print(n)
+      w[n]  += 1
+
+#langs with > 50000 words, and an alphabet (no zh or ja): 
+['en', 'sv', 'ca', 'fr', 'de', 'pt', 'ro', 'sh', 'es', 'fi', 'la', 'eo', 'it', 'nb', 'nn', 'hu', 'pl', 'nl', 'lv', 'ru', 'el']
+
+def ListCount(xs):
+   d={}
+   for x in xs:
+      if x in d:
+         d[x]+=1
+      else:
+         d[x]=1
+   return d
+
+SplitIndex = {}
+js = []
+for key in Index.keys():
+   lang = key.split('--')[0]
+   if '-' in lang:
+      js.append(lang)
+
+
+so i have the bigass index. i want to write to many indices.
+split-index-attempt3/ 
+for each lang in above, for each letter in [4], put the words in there... 
+
+
+
+
+
+#sigh....
+#okay so what we do is.... 
+#we lex it. so we go through character by character; if we see "==" we start getting the thing... etc. etc. so wee have a series of things that are either text; or ==XXXX==; or ===XXXX===. then we parse that into list of langs, each lang has list of stuffs. 
+# seems like the ==Lang== pattern works (well... checked for English, and some things have ===English=== but they're not real entries), but there's things that are ====X====, and even with 5 maybe more. so.... 
+
+
+#
+#ah okay the arguments are given in pages like this:
+#https://en.wiktionary.org/wiki/Template:derived
+#
+
+
+
+##t= are optional arguments. why sometimes definitions come after || , some after |t= ? maybe it's the same argument, but t= says to skip the next arg
+##{{m|language|word|t=definition, definition|definition?}} no, i just don't know what the arg after the word is.
+#
+#suffix: 
+#{{suffix|lang|stem|suffix}}
+#chalybite {{der|en|grc|χάλυψ||steel}} {{suffix|en||ite}}
+#38:{{suffix|nrf|avantageux|gloss1=advantageous|ment}}
+#19:From {{suffix|gem-pro|*snīþaną|*-janą|id2=causative}}.
+#20:Apparently from {{suffix|en|hard|el|pos2=diminutive suffix}}.
+#
+#prefix seems the same, but with the suffixe first
+#miscollocation.xml 18:{{prefix|en|mis|collocation}}
+#diagenèse.xml 21:{{prefix|fr|dia|genèse|gloss2=genesis}}
+#
+#der
+#{{der|descendant lang?|parent lang|parent word||gloss}}
+#note can have LL (late latin) with or without period. not lowercase though...
+#{{der|en|LL.|protocollum|
+#{{der|en|LL|infinitivus||unlimited, indefinite}}
+#
+
+#
+#main things are inh (inherited). also bor and der. also compound i guess. 
+#cog gives siblings. 
+#ignore m (mention) for now. ignore prefix and suffix and affix. 
+#what about etyl?
+#
+#gotta get descendants and derivatives!
+#
+
+# reference headers by frequency
+#[('m', 53009), ('suffix', 49603), ('prefix', 46844), ('der', 23758), ('bor', 14694), ('cog', 14207), ('etyl', 11095), ('compound', 10993), ('inh', 10577), ('af', 6758), ('w', 4755), ('confix', 4354), ('rfe', 3159), ('root', 3089), ('affix', 2996), ('blend', 2573), ('doublet', 2048), ('l', 1627), ('etystub', 998), ('zh-l', 959), ('suf', 842), ('glossary', 699), ('R:OED Online', 533), ('lena', 457), ('R:Lexico', 440), ('noncog', 356), ('calque', 343), ('unk', 321), ('com', 312), ('wikipedia', 247), ('clipping', 222), ('cite-book', 220), ('coin', 212), ('R:Etymonline', 209), ('R:MED Online', 204), ('taxlink', 201), ('R:Online Etymology Dictionary', 174), ('pre', 173), ('named-after', 171), ('back-form', 160), ('gloss', 144), ('sense', 137), ('m+', 126), ('IPAchar', 121), ('ISBN', 119), ('lbor', 100), ('multiple images\n', 91), ('cite-web', 87), ('PIE word', 87), ('ncog', 87), ('nb...', 85), ('cite-journal', 83), ('R:Dictionary.com', 74), ('back-formation', 74), ('onomatopoeic', 71), ('rel-bottom', 71), ('rel-top', 71), ('translit', 69), ('cal', 67), ('zh-m', 66), ('coinage', 61), ('borrowed', 53), ('derived', 49), ('clipping of', 49), ('cite-book\n', 48), ('cite book', 48), ('qualifier', 48), ('lang', 44), ('unknown', 43), ('q', 42), ('abbreviation of', 42), ('ja-r', 40), ('attention', 39), ('defdate', 37), ('...', 36), ('R:MWO', 34), ('R:Merriam-Webster Online', 32), ('rfv-etym', 31), ('clq', 30), ('R:MW3 1976', 30), ('R:OED', 30), ('C.', 29), ('refn', 29), ('cite-web\n', 28), ('circa2', 27), ('R:Phrase Finder', 27), ('ubor', 27), ('cite-web ', 25), ('ko-l', 24), ('dbt', 22), ('R:Merriam Webster Online', 22), (',', 21), ('cite web', 20), ('R:Oxford English Dictionary', 20), ('lit', 20), ('R:SOED5', 19), ('R:World Wide Words', 19), ('contraction of', 17), ('acronym of', 17), ('partial calque', 17), ('learned borrowing', 16), ('unadapted borrowing', 15), ('he-m', 15), ('dercat', 15), ('R:King James Version', 14), ('ellipsis', 14), ('B.C.E.', 14), ('rfp', 14), ('transliteration', 13), ('ll', 13), ('rfi', 12), ('nonlemma', 11), ('attn', 10), ('cite web ', 10), ('pedialite', 10), ('R:KJV', 10), ('ja-l', 10), ('reduplication', 10), ('ltc-l', 9), ('R:TLFi', 9), ('R:ine:IEW', 9), ('R:GNV', 9), ('Wikipedia', 8), ('nc', 8), ('slim-wikipedia', 8), ('cite-journal\n', 8), ('ref', 8), ('cognate', 8), ('catlangname', 7), ('lb', 7), ('R:Century 1911', 7), ('wp', 7), ('wikispecies', 6), ('R:RHCD', 6), ('listen', 5), ('short for', 5), ('partial translation', 5), ('rfc', 5), ('cite journal', 4), ('R:en:DAFN', 4), ('backform', 4), ('onom', 4), ('cite', 3)]
+
+
+#Subheadings by frequency
+#[('PRE', 197673), ('Verb', 86293), ('Noun', 63868), ('Pronunciation', 37391), ('Etymology', 37263), ('Adjective', 28521), ('Anagrams', 15910), ('Participle', 10211), ('Proper noun', 9382), ('Further reading', 8760), ('Declension', 8260), ('Related terms', 7348), ('References', 7029), ('Derived terms', 6930), ('Translations', 6511), ('Alternative forms', 5792), ('Synonyms', 4600), ('See also', 3531), ('Descendants', 3405), ('Conjugation', 2696), ('Adverb', 2447), ('Etymology 1', 1693), ('Etymology 2', 1692), ('Inflection', 1411), ('Statistics', 1392), ('Usage notes', 1354), ('Antonyms', 940), ('Coordinate terms', 502), ('Pronoun', 402), ('Hyponyms', 387), ('Hypernyms', 386), ('Suffix', 341), ('Interjection', 338), ('Etymology 3', 293), ('Phrase', 261), ('Prefix', 248), ('Romanization', 214), ('Letter', 208), ('Numeral', 205), ('Preposition', 199), ('Quotations', 181), ('Mutation', 159), ('Prepositional phrase', 133), ('Conjunction', 125), ('Determiner', 100), ('Proverb', 99), ('Symbol', 82), ('Alternative scripts', 81), ('Etymology 4', 79), ('Contraction', 70), ('Root', 48), ('Holonyms', 47), ('Article', 45), ('Particle', 41), ('Meronyms', 37), (' Pronunciation ', 34), ('Compounds', 28), ('Etymology 5', 23), ('Pronunciation 1', 17), ('Number', 16), ('Pronunciation 2', 16), ('Adjective 2', 15), ('Adjective 1', 15), ('Alternative reconstructions', 14), ('Various', 14), ('Notes', 13), ('Postposition', 13), ('Noun 2', 11), ('Punctuation mark', 10), ('Ordinal number', 10), ('Noun 1', 10), ('Citations', 9), ('Etymology 6', 9), ('Trivia', 6), ('Verb 2', 5), ('Verb 1', 5), ('Abbreviations', 5), ('Gallery', 5), ('Gerund', 5), (' Etymology ', 4), (' Proper noun ', 4), ('Description', 4), ('Borrowed terms', 4), ('Syllable', 3), (' Related terms ', 3), (' Alternative forms ', 3), (' Translations ', 3), ('Usage note', 3), ('Root 2', 3), ('Root 1', 3), ('Metonyms', 3), ('External links', 3), ('Paronyms', 3), ('Participle 2', 3), ('Participle 1', 3), ('Interfix', 3), (' Synonyms ', 3), ('Other', 2), ('Example sentences', 2), ('Archetypes', 2), ('Classifier', 2), ('Reconstruction notes', 2), ('Alternative spellings', 2), (' Noun ', 2), ('Idiom', 2), ('See also ', 2), ('Idioms', 2), ('Etymology 8', 2), ('Etymology 7', 2), ('Vote', 1), ('Conclusion', 1), ('POS', 1), ('Celestial objects', 1), (' Multiple ways to tackle this ', 1), (' my own conclusion ', 1), (' Interjection ', 1), ('Preverb', 1), ('Separate proposal', 1), (' Coordinate terms ', 1), ('Extensions', 1), ('Archaic case forms', 1), ('TTBC', 1), ('word', 1), ('Noun 3', 1), (' Test run #2', 1), (' Test run ', 1), ('X terms', 1), ('Reconstruction', 1), (' Verb ', 1), ('Alternate forms', 1), ('Infix', 1), (' Conjugation ', 1)]
+
+#{'prefix': 46844, 'compound': 10993, 'suffix': 49603, 'bor': 14694, 'affix': 2996, 'w': 4755, 'cite-book': 220, '...': 36, 'blend': 2573, 'der': 23758, 'm': 53009, 'l': 1627, 'etyl': 11095, 'doublet': 2048, 'inh': 10577, 'cog': 14207, 'taxlink': 201, 'af': 6758, 'rfe': 3159, 'zh-l': 959, 'confix': 4354, 'sense': 137, 'suf': 842, 'lena': 457, 'named-after': 171, 'gloss': 144, 'root': 3089, 'wikipedia': 247, 'etystub': 998, 'lang': 44, 'clipping': 222, 'nb...': 85, 'R:MED Online': 204, 'glossary': 699, 'R:OED Online': 533, 'R:Lexico': 440, 'calque': 343, 'zh-m': 66, 'lit': 20, 'qualifier': 48, 'pre': 173, 'm+': 126, 'R:Etymonline': 209, 'ncog': 87, 'cognate': 8, 'back-formation': 74, 'cite book ': 3, 'R:OED': 30, 'R:World Wide Words': 19, 'back-form': 160, 'PIE word': 87, 'com': 312, 'noncog': 356, 'abbreviation of': 42, 'R:ine:EIEC': 1, 'rfp': 14, 'ubor': 27, 'unk': 321, 'borrowed': 53, 'cite book': 48, 'rel-top': 71, 'rel-bottom': 71, 'ISBN': 119, 'R:SOED5': 19, 'R:MW3 1976': 30, 'R:RHCD': 6, 'R:pt:Ferreira 1986': 1, 'defdate': 37, 'R:Wilkinson 1901': 1, 'multiple images\n': 91, 'refn': 29, 'clq': 30, 'reduplication': 10, 'obor': 1, 'wp': 7, 'swp': 3, 'coinage': 61, 'attention': 39, 'onom': 4, 'R:MWO': 34, 'R:Phrase Finder': 27, 'cite-web': 87, 'dercat': 15, 'wikispecies': 6, 'cal': 67, 'tl': 1, 'translit': 69, 'R:Merriam-Webster Online': 32, 'cite-book\n': 48, 'R:GNV': 9, 'circumfix': 3, 'ja-l': 10, 'partial calque': 17, 'init of': 2, '1': 2, 'lbor': 100, 'clipping of': 49, 'rfc': 5, 'R:Dictionary.com': 74, 'R:Century 1911': 7, 'ref': 8, 'coin': 212, 'R:Merriam Webster Online': 22, 'he-m': 15, 'R:Online Etymology Dictionary': 174, 'cite-journal': 83, 'unadapted borrowing': 15, 'R:KJV': 10, 'R:ang:BT': 1, 'IPAchar': 121, 'R:MED': 3, 'Ier': 1, 's-': 1, 'B.C.E.': 14, 'R:ine:IEW': 9, 'backform': 4, 'ellipsis': 14, 'B.C.': 1, 'nonlemma': 11, 'cite-journal\n': 8, 'acronym of': 17, 'rfv-etym': 31, 'R:King James Version': 14, 'R:Oxford English Dictionary': 20, 'partial translation': 5, 'circa2': 27, 'onomatopoeic': 71, 'ko-l': 24, 'R:en:DAFN': 4, 'R:LSJ': 2, '-a-o-x': 2, 'cite journal ': 3, 'slim-wikipedia': 8, 'cite journal': 4, 'senseid': 2, 'senseid-close': 2, 'ja-r': 40, ',': 21, 'll': 13, 'learned borrowing': 16, 'rfi': 12, 'sub': 1, 'C.': 29, 'eggcorn of': 1, 'pedialite': 10, 'BCE': 3, 'transliteration': 13, 'derived': 49, 'lb': 7, 'unknown': 43, 'nc': 8, 'short for': 5, 'R:TLFi': 9, 'Wikipedia': 8, 'cite-web\n': 28, 'q': 42, 'ltc-l': 9, 'obsolete spelling of': 2, 'cite-web ': 25, 'listen': 5, 'dbt': 22, 'citation ': 1, '-a-o-@': 3, 'catlangname': 7, 'R:ira:Iranica': 1, 'contraction of': 17, 'frac': 2, 'sl': 1, 'R:en:DAFN ': 1, 'cite': 3, 'cite web': 20, 'cite web ': 10, 'attn': 10
+
+
+
+#def ListSubheadings():
+#   index = Read('ls-attempt2.txt').split('\n')
+#   subs = {}
+#   for x in index:
+#      print(subs)
+#      x=x.strip()
+#      try:
+#         if len(x)>4:
+#            text = Read(wikiDir + x)
+#            d = TokensDict(TextTokens(text))
+#            for _,v in d.items():
+#               for sub,_ in v.items():
+#                  if sub in subs:
+#                     subs[sub]+=1
+#                  else:
+#                     subs[sub]=1
+#      except:
+#         pass
+#
+
+# to list the starting tags in references
+#def ListTags():
+#   index = Read('ls-attempt2.txt').split('\n')
+#   tags = {}
+#   for x in index:
+#      x=x.strip()
+#      try:
+#         if len(x)>4:
+#            print(tags)
+#            text = Read(wikiDir + x)
+#            d = TokensDict(TextTokens(text))
+#            if 'English' in d:
+#               de = d['English']
+#               ets = []
+#               if 'Etymology' in de:
+#                  ets = TextRefSet(de['Etymology'])
+#               if 'Etymology 1' in de:
+#                  ets = TextRefSet(de['Etymology 1'])
+#               for et in ets:
+#                  tag = et.split('|')[0]
+#                  if tag in tags:
+#                     tags[tag]+=1
+#                  else: 
+#                     tags[tag]=1
+#      except:
+#         pass
+#
+
+def sampletemps(kind, amount=20):
+   l=[k['text'] for k in td[kind][:amount]]
+   for x in l:
+      print(x)
+   return l
+
+####TODO: XXXXXXXXXX ....and before doing this nonsense, actually write the backbone thing, just using what's in family.
+####TODO: XXXXXXXXX stop this.... first, make it more compact via standard forms, and a function that standardizes names. second, should be also recording how to use them, since that involves thinking about the meaning, which is good to do when i've loaded the wiktionary template page.
+#uh oh... i'm conflating anything i might want to parse, with things that are links etween words... eg IPA and translations might be helpful!
+#idk it's fine... just later do a separate thing for those... links is a real concept
+#macro to read name
+0t'ivt'hCOlet @+='en.wiktionary.org/wiki/Template:'.@+e
+A included√
+A exclude√
+#[('inflection of', 842863), included
+# ('head', 577769), exclude
+# ('t+', 407491), exclude
+# ('t', 403504), exclude
+# ('l', 356674), included
+# ('plural of', 203333), included
+# ('es-verb form of', 187897), included
+# ('lb', 178430), exclude
+# ('la-verb-form', 144258), exclude
+# ('en-noun', 130792), exclude
+# ('also', 118454), included (suspicious though)
+# ('audio', 108529), exclude
+# ('m', 95902), included   
+# ('desc', 95055), included
+# ('IPA', 91770), exclude: not a link, though will be useful elsewhere!
+# ('anagrams', 79340), exclude lol
+# ('suffix', 56575), included
+# ('trans-bottom', 56388), exclude
+# ('trans-mid', 56008), exclude
+# ('es-IPA', 55766), exclude, maybe useful
+# ('la-part-form', 55252), exclude
+# ('de-adj form of', 54515), included
+# ('trans-top', 53886), exclude
+# ('en-adj', 51124), exclude
+# ('prefix', 50567), included
+# ('der', 48911), included
+# ('inh', 43772), included
+# ('wikipedia', 42974), exclude
+# ('cog', 38389), included
+# ('es-compound of', 38027), exclude (but could include, just complicated...)
+# ('verb form of', 37557), included
+# ('quote-book', 35315), exclude
+# ('homophones', 33358), exclude
+# ('bor', 33053), included
+# ('qualifier', 32534), exclude
+# ('w', 31212), exclude
+# ('fr-IPA', 29311), exclude useful
+# ('la-adj-form', 26775), exclude
+# ('en-proper noun', 26530), exclude
+# ('quote-journal', 23698), exclude
+# ('present participle of', 23614), included
+# ('alternative form of', 22800), included
+# ('place', 21295), exclude
+# ('a', 21281), exclude
+# ('es-noun', 20729), exclude
+# ('el-form-of-nounadj', 20483), included
+# ('gloss', 20227), exclude
+# ('en-verb', 20206), exclude
+# ('ws', 19574), exclude maybe useful
+# ('surname', 19493), exclude
+# ('syn', 19389), exclude , maybe useful
+# ('rhymes', 19287), exclude
+# ('alt form', 18473), included
+# ('ux', 18280), exclude
+# ('la-noun-form', 18259), exclude
+# ('hyphenation', 17341), exclude
+# ('alter', 16376), included
+# ('af', 16109), included
+# ('q', 15955), exclude
+# ('t-needed', 15824), exclude
+# ('compound', 15250), included
+# ('etyl', 15195), exclude, doesn't give link, but could be useful for parsing.
+# ('fr-noun', 14752), exclude
+# ('C', 13429), exclude
+# ('sense', 13239), exclude
+# ('de-noun', 13189), exclude
+# ('de-verb form of', 13086), exclude ; deprecated, no instances left. 
+# ('la-IPA', 12244), useful exclude
+# ('R:Duden', 12016), exclude
+# ('taxlink', 11674), exclude
+# ('el-noun-form', 11617), exclude
+# ('R:TLFi', 11600), exclude
+# ('en-past of', 10805), included
+# ('...', 10470), exclude
+# ('tt', 10275), exclude
+# ('feminine plural of', 10244), included
+# ('en-third-person singular of', 10007), included
+# ('es-adj', 9763), exclude
+# ('pt-verb-form-of', 9586), included
+# ('alternative spelling of', 9522), included
+# ('tt+', 9383), exclude
+# ('R:Gaffiot', 9178), exclude
+# ('grc-IPA', 9143),
+# ('feminine singular of', 9075), included
+# ('masculine plural of', 8637), included
+# ('given name', 8395),
+# ('R:L&amp;S', 8300),
+# ('la-adecl', 8227),
+# ('adj form of', 8221), included
+# ('en-adv', 7796),
+# ('la-part', 7706), exclude
+# ('rfe', 7556), exclude
+# ('Webster 1913', 7396),
+# ('hyph', 6852), exclude
+# ('R:DRAE', 6799),
+# ('root', 6569), included
+# ('la-ndecl', 6509),
+# ('Q', 6313), exclude
+# ('past participle of', 5982), included
+# ('pedia', 5965), exclude
+# ('synonym of', 5944), exclude
+# ('wp', 5895), exclude
+# ('ISBN', 5850),
+# ('quote-text', 5812),
+# ('affix', 5762), included
+# ('t+check', 5652),
+# ('ca-verb form of', 5514), included
+# ('la-noun', 5471), exclude
+# ('topics', 5409), exclude
+# ('fr-adj', 5402), exclude
+# ('g', 5357), exclude
+# ('initialism of', 5197),  included
+# ('t-check', 5050),
+# ('vern', 4858), exclude
+# ('uxi', 4759), exclude
+# ('confix', 4436), included
+# ('it-IPA', 4405),
+# ('rfdef', 4385), exclude
+# ('el-noun', 4307),
+# ('desctree', 4141), included
+# ('R:Elementary Lewis', 4086),
+# ('de-adj', 3990),
+# ('trans-see', 3983),
+# ('es-conj', 3787),
+# ('el-adj-form', 3772), exclude
+# ('pedialite', 3767), exclude
+# ('de-decl-noun-m', 3767), exclude
+# ('reconstructed', 3750), exclude
+# ('ang-IPA', 3714),
+# ('es-adj-old', 3711),
+# ('de-verb', 3671),
+# ('R:du Cange', 3644),
+# ('es-verb', 3586),
+# ('la-proper noun', 3571),
+# ('grc-decl', 3527),
+# ('R:LSJ', 3523),
+# ('de-decl-noun-f', 3521), exclude
+# ('pt-noun', 3472),
+# ('misspelling of', 3462), included
+# ('la-adj', 3449),
+# ('it-noun', 3415),
+# ('feminine plural past participle of', 3402), included
+# ('de-decl-noun-n', 3335),
+# ('female equivalent of', 3307), included
+# ('abbreviation of', 3275), included
+# ('feminine singular past participle of', 3241), included
+# ('masculine plural past participle of', 3234), included
+# ('bottom', 3170), exclude
+# ('es-adj-inv', 3160),
+# ('R:Bailly', 3132),
+# ('doublet', 3122), included
+# ('fr-verb', 3032), exclude
+# ('quote-book', 3029), exclude
+# ('nbsp', 2980), exclude
+# ('defdate', 2961), exclude
+# ('cln', 2848), exclude
+# ('ca-IPA', 2728),
+# ('R:DWDS', 2659),
+# ('pt-pp', 2628),
+# ('ws beginlist', 2568),
+# ('enPR', 2548),
+# ('c', 2542), exclude
+# ('ws endlist', 2514),
+# ('obsolete form of', 2512), included
+# ('el-form-of-verb', 2495), included
+# ('de-conj', 2444), exclude
+# ('grc-noun', 2396),
+# ('grc-conj', 2374),
+# ('ant', 2366),
+# ('pt-verb form of', 2352), included
+# ('de-decl-adj-notcomp', 2277),
+# ('gerund of', 2269), included
+# ('ast-verb form', 2257),
+# ('n-g', 2250),
+# ('der3', 2248), included
+# ('la-verb', 2242),
+# ('non-gloss definition', 2238),
+# ('temp', 2205),
+# ('R:en:DAFN', 2188),
+# ('blend', 2171),
+# ('fr-conj-auto', 2147),
+# ('el-verb-form', 2146),
+# ('top2', 2080),
+# ('col3', 2060),
+# ('quote', 2016),
+# ('infl of', 2012), included
+# ('fr-past participle', 1968),
+# ('checktrans-top', 1959),
+# ('R:Webster 1913', 1940),
+# ('genitive of', 1893), included
+# ('R:MED Online', 1888),
+# ('el-see', 1888),
+# ('superlative of', 1877), included
+# ('tlb', 1833),
+# ('form of', 1825), included
+# ('see desc', 1804),
+# ('grc-verb form', 1789),
+# ('it-adj', 1783),
+# ('es-past participle', 1775),
+# ('obsolete spelling of', 1721), included
+# ('no entry', 1717),
+# ('la-conj', 1687),
+# ('fr-proper noun', 1675),
+# ('nl-noun', 1674),
+# ('sa-IPA', 1647),
+# ('es-proper noun', 1598),
+# ('R:Middle Liddell', 1591),
+# ('en-plural noun', 1584),
+# ('sa-noun', 1580),
+# ('de-decl-adj', 1579),
+# ('synonyms', 1559),
+# ('el-decl-adj', 1557),
+# ('ro-noun', 1540),
+# ('comparative of', 1505), included
+# ('ang-noun', 1501),
+# ('rfquotek', 1490),
+# ('pt-adj', 1488),
+# ('el-adj', 1483),
+# ('participle of', 1476), included
+# ('R:Lexico', 1473),
+# ('R:Woodhouse', 1454),
+# ('der4', 1451), included
+# ('senseid', 1443),
+# ('was wotd', 1421),
+# ('mid2', 1402),
+# ('gl-noun', 1384),
+# ('R:OneLook', 1382),
+# ('gl-verb-form', 1374),
+# ('suf', 1373),
+# ('ca-noun', 1365),
+# ('fr-adv', 1359),
+# ('R:IEC2', 1316),
+# ('nb...', 1301),
+# ('la-proper noun-form', 1288),
+# ('quote-web', 1284),
+# ('nonlemma', 1279),
+# ('el-verb', 1267),
+# ('lang', 1260),
+# ('quote-journal\n', 1260),
+# ('es-conj-ar', 1249),
+# ('seeCites', 1246),
+# ('eo-head', 1242),
+# ('es-adv', 1232),
+# ('R:Century 1911', 1216),
+# ('grc-proper noun', 1215),
+# ('enm-noun', 1206),
+# ('quote-newsgroup', 1201),
+# ('specieslite', 1175),
+# ('R:WebMineral', 1167),
+# ('R:M&amp;A', 1166),
+# ('pl-IPA', 1157),
+# ('R:DGE', 1152),
+# ('fro-noun', 1147),
+# ('de-proper noun', 1137),
+# ('PIE root', 1133),
+# ('label', 1128),
+# ("R:Smith's Geography", 1125),
+# ('rfinfl', 1081),
+# ('pt-proper noun', 1066),
+# ('prefixsee', 1050),
+# ('diminutive of', 1011), included
+# ('grc-adecl', 1006),
+# ('nl-verb form of', 993),
+# ('zh-l', 987),
+# ('Latn-def', 971),
+# ('seemoreCites', 966),
+# ('ja-romanization of', 962),
+# ('R:grc:Beekes', 961),
+# ('R:DRAE 2001', 945),
+# ('dative plural of', 944), included
+# ('R:Autenrieth', 939),
+# ('rel3', 934),
+# ('suffixsee', 921),
+# ('col4', 914),
+# ('rel-bottom', 906),
+# ('es-adj form of', 904),
+# ('archaic form of', 902), included
+# ('comcatlite', 898),
+# ('grc-cite', 898),
+# ('unk', 894),
+# ('init of', 892), included
+# ('ws sense', 887),
+# ('IPAchar', 873),
+# ('etystub', 872),
+# ('feminine noun of', 864),
+# ('de-verb-weak', 855),
+# ('Wikipedia', 854),
+# ('en-prop', 852),
+# ('ja-romaji', 845),
+# ('pt-IPA', 843),
+# ('R:GDLC', 838),
+# ('en-interj', 832),
+# ('top3', 830),
+# ('ang-verb', 828),
+# ('rfap', 828),
+# ('en-superlative of', 825), included
+# ('alt sp', 820),
+# ('R:DCVB', 817),
+# ('R:ang:BT', 817),
+# ('R:DNV', 816),
+# ('fi-noun', 810),
+# ('ws header', 809),
+# ('R:Cunliffe', 807),
+# ('ro-adj', 803),
+# ('cot', 802),
+# ('sa-alt', 800),
+# ('dative of', 795), included
+# ('glossary', 793),
+# ('der2', 792),
+# ('der-bottom', 790),
+# ('R:NLW', 784),
+# ('ang-conj', 782),
+# ('pt-adj form of', 779),
+# ('it-proper noun', 771),
+# ('pt-conj', 770),
+# ('pt-verb', 766),
+# ('en-phrase', 760),
+# ('lv-inflection of', 755),
+# ('R:Peck', 745),
+# ('suffixusex', 744),
+# ('en-comparative of', 740), included
+# ('la-present participle', 739),
+# ('sv-noun', 739),
+# ('R:PWN', 732),
+# ('R:Roget 1911', 727),
+# ('der-top', 724),
+# ('ro-decl-adj', 723),
+# ('grc-noun form', 721),
+# ('gem-noun', 715),
+# ('R:UniLeipzig', 714),
+# ('com', 709),
+# ('pl-noun', 702),
+# ('gem-decl-noun', 701),
+# ('eo-form of', 696),
+# ('dercat', 694), exclude
+# ('R:The Bokmål Dictionary', 691),
+# ('R:it:Treccani', 691),
+# ('hu-IPA', 688),
+# ('R:gem:EDPG', 683),
+# ('R:Priberam', 679),
+# ('R:DDLG', 675),
+# ('col2', 674),
+# ("R:Strong's", 674),
+# ('da-noun', 669),
+# ('R:TILG', 666),
+# ('qual', 665),
+# ('cite-book', 660),
+# ('en-proper-noun', 658),
+# ('alternative case form of', 653), included
+# ('noun form of', 652), included
+# ('R:Moby II', 645),
+# ('qf', 641),
+# ('enm-adj', 638),
+# ('R:The Nynorsk Dictionary', 633),
+# ('i', 631),
+# ('der-mid', 617),
+# ('R:MW', 616),
+# ('la-adj-1&amp;2', 614),
+# ('quote-book ', 611),
+# ('rfp', 610),
+# ('cs-IPA', 609),
+# ('rel-top', 608),
+# ('acronym of', 602), exclude
+# ('wikispecies', 601),
+# ('&amp;lit', 598),
+# ('la-gerundive', 598),
+# ('syn of', 598), exclude
+# ('en-archaic second-person singular of', 593), included
+# ('R:TLPGP', 589),
+# ('pronunciation spelling of', 587), exclude
+# ('la-adv', 578),
+# ('cs-noun', 565),
+# ('it-verb', 564),
+# ('attention', 563),
+# ('en-irregular plural of', 558), included
+# ('quote-song', 557),
+# ('la-future participle', 556),
+# ('R:OED Online', 556),
+# ('R:MWO', 553),
+# ('frm-noun', 552),
+# ('gem-verb', 548),
+# ('de-adv', 547),
+# ('fi-pronunciation', 530),
+# ('sh-noun', 527),
+# ('grc-verb', 526),
+# ('hi-IPA', 526),
+# ('rel4', 526),
+# ('en-archaic third-person singular of', 526),
+# ('hu-infl-nom', 523),
+# ('fi-form of', 521),
+# ('la-perfect participle', 520),
+# ('hi-ndecl', 519),
+# ('ll', 518),
+# ('en-PP', 513),
+# ('R:Slater', 513),
+# ('sa-a', 507),
+# ('gl', 507),
+# ('slim-wikipedia', 505),
+# ('id-noun', 503),
+# ('R:KBBI Daring', 500),
+# ('rfi', 499),
+# ('quote-web\n', 496),
+# ('R:pl:WSJP', 483),
+# ('ca-adj', 480),
+# ('en-prefix', 478), exclude
+# ('calque', 476),
+# ('ttbc', 475),
+# ('hi-noun', 475),
+# ('l-self', 471),
+# ('swp', 468),
+# ('ro-noun-n', 463),
+# ('R:gl:CX', 461),
+# ('commonscat', 460),
+# ('R:Grimm', 459),
+# ('standard spelling of', 458), included
+# ("R:Smith's Antiquities", 455),
+# ('sa-decl-noun-m', 454),
+# ('eo-IPA', 454),
+# ('grc-adjective form', 454),
+# ('grc-adj-1&amp;2', 453),
+# ('el-noun-proper', 452),
+# ('ro-verb', 449),
+# ('mid3', 448),
+# ('R:mindat', 441),
+# ('en-simple past of', 439), included
+# ('noncog', 434),
+# ('ca-verb', 432),
+# ('R:DDGM', 431),
+# ('trans-top-also', 428),
+# ('nl-noun form of', 424),
+# ('R:SSJC', 423),
+# ('it-pp', 412),
+# ('gl-adj', 412),
+# (',', 412),
+# ('ethnologue', 411),
+# ('cy-mut', 411),
+# ('sv-noun-form-indef-gen', 410),
+# ('mid4', 409),
+# ('ang-adecl', 407),
+# ('User:CodeCat/signature', 406),
+# ('R:itc:EDL', 402),
+# ('io-form of', 399),
+# ('ping', 396),
+# ('clipping', 396),
+# ('ang-adj', 396),
+# ('clipping of', 394),
+# ('dated form of', 390), included
+# ('nonstandard spelling of', 388), included
+# ('R:Godefroy', 388),
+# ('nn-noun-m1', 387),
+# ('RQ:Spenser Faerie Queene', 386),
+# ('lbor', 386),
+# slbor
+# ('ngd', 383),
+# ('ro-noun-m', 381),
+# ('nrf-noun', 374),
+# ('archaic spelling of', 371), included
+# ('m+', 370),
+# ('rel-mid', 369),
+# ('rhyme', 365),
+# ('+aux', 365),
+# ('ellipsis of', 358), included
+# ('sh-decl-noun\n', 358),
+# ('usex', 356),
+# ('pi-alt', 355),
+# ('R:PSJC', 354),
+# ('el-active-see', 353),
+# ('ca-conj-ar', 353),
+# ('R:DRAG', 348),
+# ('da-noun-infl', 346),
+# ('ast-noun', 343),
+# ('R:DSMG', 341),
+# ('rel-mid3', 340),
+# ('nb-noun-m1', 339),
+# ('tl-noun', 337),
+# ('number box', 337),
+# ('el-part-form', 335),
+# ('t-egy', 334),
+# ('romanization of', 334), included
+# ('circa', 332),
+# ('R:BDAG', 331),
+# ('sa-adj', 330),
+# ('el-adv', 328),
+# ('R:gem:HGE', 326),
+# ('R:Dokpro', 325),
+# ('was fwotd', 324),
+# ('sv-proper noun', 324),
+# ('R:Merriam-Webster Online', 323),
+# ('el-nF-α-ες-2b', 322),
+# ('definite singular of', 321), included
+# ('R:it:Trec', 321),
+# ('tl-IPA', 317),
+# ('ang-decl-noun-a-m', 313),
+# ('ws ----', 311),
+# ('rel2', 309),
+# ('io-IPA', 308),
+# ('nl-proper noun', 307),
+# ('cardinalbox', 307),
+# ('attributive form of', 305), included
+# ('gbooks', 301),
+# ('contraction of', 300)] included
+
+211229    21:56:18    
+Cognates('wagon', 'en')
+ 17523523 function calls (17433415 primitive calls) in 101.145 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001  101.145  101.145 <string>:1(<module>)
+    25927    0.028    0.000   48.062    0.002 <string>:100(WordLangRefs)
+   303870    0.081    0.000    0.081    0.000 <string>:107(isPastward)
+    65136    0.010    0.000    0.010    0.000 <string>:110(isFutureward)
+    10780    0.022    0.000    0.035    0.000 <string>:113(ADD)
+    42105    0.303    0.000    0.400    0.000 <string>:119(TokensDict)
+      386    0.001    0.000    0.001    0.000 <string>:12(<genexpr>)
+        1    0.006    0.006    3.233    3.233 <string>:124(WordLangPastwardset)
+   464205    0.097    0.000    0.097    0.000 <string>:138(DictCreateAdd)
+   436265   16.692    0.000   61.846    0.000 <string>:146(TextReftokens)
+   532869   35.596    0.000   35.596    0.000 <string>:15(WordtextLangWord)
+       21    0.244    0.012   95.593    4.552 <string>:187(WordLangFuturewardset)
+  1277086    7.503    0.000   44.689    0.000 <string>:188(ReftextRefdict)
+        1    0.000    0.000    0.001    0.001 <string>:19(TotalRelation)
+  1277086    0.458    0.000    0.458    0.000 <string>:191(<listcomp>)
+  1277086    0.332    0.000    0.332    0.000 <string>:192(<listcomp>)
+    42772    0.052    0.000    0.542    0.000 <string>:21(WordwikiWordfile)
+        1    0.000    0.000    0.003    0.003 <string>:230(Sort)
+       65    0.000    0.000    0.000    0.000 <string>:242(<listcomp>)
+     4087    0.001    0.000    0.001    0.000 <string>:247(<listcomp>)
+     4087    0.001    0.000    0.001    0.000 <string>:248(<listcomp>)
+    51854    0.168    0.000    0.227    0.000 <string>:25(WordwikiWordfilename)
+       21    0.038    0.002    2.295    0.109 <string>:269(Initials)
+     6473    2.233    0.000    2.233    0.000 <string>:272(<listcomp>)
+        1    0.000    0.000  101.144  101.144 <string>:277(Cognates)
+        1    0.000    0.000    0.000    0.000 <string>:28(AntisymmetricRelation)
+        1    0.000    0.000   95.593   95.593 <string>:280(<listcomp>)
+       21    0.021    0.001    0.021    0.001 <string>:284(<listcomp>)
+   509092    0.246    0.000   35.841    0.000 <string>:302(<listcomp>)
+   509092    0.127    0.000    0.127    0.000 <string>:303(<listcomp>)
+    51854    0.020    0.000    0.020    0.000 <string>:307(WordLangWordwiki)
+    42772    0.156    0.000   95.488    0.002 <string>:315(WordLangMaybedict)
+    51854    0.173    0.000    0.353    0.000 <string>:37(FilenameHash)
+    60436    0.013    0.000    0.013    0.000 <string>:41(<lambda>)
+     7696    0.002    0.000    0.002    0.000 <string>:43(<lambda>)
+    16845    0.050    0.000    0.255    0.000 <string>:46(InfInherit)
+     8384    0.016    0.000    0.016    0.000 <string>:48(<listcomp>)
+     1681    0.001    0.000    0.001    0.000 <string>:56(<listcomp>)
+    42772    0.197    0.000   95.315    0.002 <string>:60(WordwikiDict)
+    16845    0.051    0.000   47.936    0.003 <string>:62(WordLangInferchildpars)
+     8384    0.003    0.000    0.003    0.000 <string>:67(<listcomp>)
+    51854    0.100    0.000   12.365    0.000 <string>:7(Read)
+132150/42105    0.356    0.000   62.220    0.001 <string>:72(EntryToks)
+    16845    0.025    0.000    0.047    0.000 <string>:73(WordfilenameWord)
+    42105   21.712    0.001   21.833    0.001 <string>:80(TextHeadtoks)
+     9082    0.043    0.000    2.452    0.000 <string>:81(WordLangInlinkers)
+     3824    0.006    0.000    0.012    0.000 <string>:85(<listcomp>)
+     3824    0.012    0.000    0.059    0.000 <string>:86(<listcomp>)
+        1    0.000    0.000    0.001    0.001 <string>:9(TransitiveClosure)
+    25108    0.143    0.000    0.174    0.000 <string>:91(DictAllRefs)
+    45929    0.064    0.000    0.146    0.000 _bootlocale.py:33(getpreferredencoding)
+     1681    0.001    0.000    0.001    0.000 abstract_regex.py:148(__init__)
+     5043    0.001    0.000    0.001    0.000 abstract_regex.py:156(__init__)
+    13891    0.005    0.000    0.005    0.000 abstract_regex.py:164(__init__)
+     1681    0.010    0.000    0.015    0.000 abstract_regex.py:173(connect)
+     8384    0.009    0.000    0.009    0.000 abstract_regex.py:206(__init__)
+    57896    0.056    0.000    0.164    0.000 abstract_regex.py:210(feedToken)
+    68132    0.057    0.000    0.107    0.000 abstract_regex.py:220(processTransition)
+    68132    0.021    0.000    0.036    0.000 abstract_regex.py:50(test)
+    45929    0.020    0.000    0.020    0.000 codecs.py:260(__init__)
+    45929    0.037    0.000    0.057    0.000 codecs.py:309(__init__)
+    45929    0.091    0.000    0.251    0.000 codecs.py:319(decode)
+     64/1    0.000    0.000    0.000    0.000 copy.py:128(deepcopy)
+       42    0.000    0.000    0.000    0.000 copy.py:182(_deepcopy_atomic)
+        1    0.000    0.000    0.000    0.000 copy.py:200(_deepcopy_list)
+       21    0.000    0.000    0.000    0.000 copy.py:209(_deepcopy_tuple)
+       21    0.000    0.000    0.000    0.000 copy.py:210(<listcomp>)
+        1    0.000    0.000    0.000    0.000 copy.py:242(_keep_alive)
+    45929    0.160    0.000    0.160    0.000 {built-in method _codecs.utf_8_decode}
+    51854    0.079    0.000    0.079    0.000 {built-in method _hashlib.openssl_sha1}
+    45929    0.082    0.000    0.082    0.000 {built-in method _locale.nl_langinfo}
+    51854    0.010    0.000    0.010    0.000 {built-in method builtins.abs}
+     6695    0.024    0.000    0.024    0.000 {built-in method builtins.all}
+        1    0.000    0.000  101.145  101.145 {built-in method builtins.exec}
+       88    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+    78218    0.008    0.000    0.008    0.000 {built-in method builtins.isinstance}
+  3042222    0.246    0.000    0.246    0.000 {built-in method builtins.len}
+     1681    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+     1681    0.001    0.000    0.001    0.000 {built-in method builtins.min}
+      251    0.001    0.000    0.001    0.000 {built-in method builtins.print}
+    51854    4.925    0.000    5.128    0.000 {built-in method io.open}
+    45929    0.303    0.000    0.303    0.000 {method '__exit__' of '_io._IOBase' objects}
+    24671    0.006    0.000    0.006    0.000 {method 'add' of 'set' objects}
+  3906463    0.338    0.000    0.338    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+    51854    0.016    0.000    0.016    0.000 {method 'encode' of 'str' objects}
+    21560    0.009    0.000    0.009    0.000 {method 'endswith' of 'str' objects}
+      128    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+    51854    0.075    0.000    0.075    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
+   498202    0.045    0.000    0.045    0.000 {method 'isupper' of 'str' objects}
+   157393    0.022    0.000    0.022    0.000 {method 'items' of 'dict' objects}
+       22    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+    45929    6.582    0.000    6.834    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+       21    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+    16845    0.003    0.000    0.003    0.000 {method 'removesuffix' of 'str' objects}
+    85544    0.019    0.000    0.019    0.000 {method 'replace' of 'str' objects}
+  1378433    0.476    0.000    0.476    0.000 {method 'split' of 'str' objects}
+    16845    0.005    0.000    0.005    0.000 {method 'startswith' of 'str' objects}
+      157    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+
+
+
+
+Cognates('wagon', 'en') 
+with Lua cache
+
+17523523 function calls (17433415 primitive calls) in 52.314 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001   52.314   52.314 <string>:1(<module>)
+    25927    0.022    0.000   26.378    0.001 <string>:100(WordLangRefs)
+   303870    0.073    0.000    0.073    0.000 <string>:107(isPastward)
+    65136    0.008    0.000    0.008    0.000 <string>:110(isFutureward)
+    10780    0.015    0.000    0.024    0.000 <string>:113(ADD)
+      386    0.001    0.000    0.001    0.000 <string>:12(<genexpr>)
+    42105    0.272    0.000    0.358    0.000 <string>:122(TokensDict)
+        1    0.004    0.004    1.531    1.531 <string>:124(WordLangPastwardset)
+   464205    0.086    0.000    0.086    0.000 <string>:141(DictCreateAdd)
+   436265   15.478    0.000   25.099    0.000 <string>:149(TextReftokens)
+   532869    1.395    0.000    1.395    0.000 <string>:16(WordtextLangWord)
+       21    0.199    0.009   48.356    2.303 <string>:187(WordLangFuturewardset)
+        1    0.000    0.000    0.001    0.001 <string>:19(TotalRelation)
+  1277086    6.483    0.000    9.210    0.000 <string>:191(ReftextRefdict)
+  1277086    0.396    0.000    0.396    0.000 <string>:194(<listcomp>)
+  1277086    0.300    0.000    0.300    0.000 <string>:195(<listcomp>)
+        1    0.000    0.000    0.002    0.002 <string>:230(Sort)
+    42772    0.040    0.000    0.418    0.000 <string>:24(WordwikiWordfile)
+       65    0.000    0.000    0.000    0.000 <string>:242(<listcomp>)
+     4087    0.001    0.000    0.001    0.000 <string>:250(<listcomp>)
+     4087    0.001    0.000    0.001    0.000 <string>:251(<listcomp>)
+       21    0.038    0.002    2.403    0.114 <string>:269(Initials)
+     6473    2.341    0.000    2.341    0.000 <string>:272(<listcomp>)
+        1    0.000    0.000   52.312   52.312 <string>:277(Cognates)
+        1    0.000    0.000    0.000    0.000 <string>:28(AntisymmetricRelation)
+    51854    0.141    0.000    0.189    0.000 <string>:28(WordwikiWordfilename)
+        1    0.000    0.000   48.356   48.356 <string>:280(<listcomp>)
+       21    0.020    0.001    0.020    0.001 <string>:284(<listcomp>)
+   509092    0.169    0.000    1.564    0.000 <string>:305(<listcomp>)
+   509092    0.094    0.000    0.094    0.000 <string>:306(<listcomp>)
+    51854    0.015    0.000    0.015    0.000 <string>:310(WordLangWordwiki)
+    42772    0.122    0.000   48.775    0.001 <string>:318(WordLangMaybedict)
+    51854    0.136    0.000    0.266    0.000 <string>:40(FilenameHash)
+    60436    0.012    0.000    0.012    0.000 <string>:41(<lambda>)
+     7696    0.002    0.000    0.002    0.000 <string>:43(<lambda>)
+    16845    0.041    0.000    0.219    0.000 <string>:46(InfInherit)
+     8384    0.015    0.000    0.015    0.000 <string>:48(<listcomp>)
+     1681    0.001    0.000    0.001    0.000 <string>:56(<listcomp>)
+    16845    0.034    0.000   22.829    0.001 <string>:62(WordLangInferchildpars)
+    42772    0.149    0.000   48.639    0.001 <string>:63(WordwikiDict)
+     8384    0.002    0.000    0.002    0.000 <string>:67(<listcomp>)
+    51854    0.072    0.000    2.061    0.000 <string>:7(Read)
+    16845    0.020    0.000    0.038    0.000 <string>:73(WordfilenameWord)
+132150/42105    0.292    0.000   25.407    0.001 <string>:75(EntryToks)
+     9082    0.029    0.000    0.371    0.000 <string>:81(WordLangInlinkers)
+    42105   20.351    0.000   20.453    0.000 <string>:83(TextHeadtoks)
+     3824    0.004    0.000    0.008    0.000 <string>:85(<listcomp>)
+     3824    0.007    0.000    0.045    0.000 <string>:86(<listcomp>)
+        1    0.000    0.000    0.001    0.001 <string>:9(TransitiveClosure)
+    25108    0.127    0.000    0.155    0.000 <string>:91(DictAllRefs)
+    45929    0.042    0.000    0.097    0.000 _bootlocale.py:33(getpreferredencoding)
+     1681    0.001    0.000    0.001    0.000 abstract_regex.py:148(__init__)
+     5043    0.001    0.000    0.001    0.000 abstract_regex.py:156(__init__)
+    13891    0.004    0.000    0.004    0.000 abstract_regex.py:164(__init__)
+     1681    0.008    0.000    0.013    0.000 abstract_regex.py:173(connect)
+     8384    0.006    0.000    0.006    0.000 abstract_regex.py:206(__init__)
+    57896    0.048    0.000    0.143    0.000 abstract_regex.py:210(feedToken)
+    68132    0.050    0.000    0.095    0.000 abstract_regex.py:220(processTransition)
+    68132    0.020    0.000    0.033    0.000 abstract_regex.py:50(test)
+    45929    0.016    0.000    0.016    0.000 codecs.py:260(__init__)
+    45929    0.028    0.000    0.044    0.000 codecs.py:309(__init__)
+    45929    0.050    0.000    0.161    0.000 codecs.py:319(decode)
+     64/1    0.000    0.000    0.000    0.000 copy.py:128(deepcopy)
+       42    0.000    0.000    0.000    0.000 copy.py:182(_deepcopy_atomic)
+        1    0.000    0.000    0.000    0.000 copy.py:200(_deepcopy_list)
+       21    0.000    0.000    0.000    0.000 copy.py:209(_deepcopy_tuple)
+       21    0.000    0.000    0.000    0.000 copy.py:210(<listcomp>)
+        1    0.000    0.000    0.000    0.000 copy.py:242(_keep_alive)
+    45929    0.111    0.000    0.111    0.000 {built-in method _codecs.utf_8_decode}
+    51854    0.050    0.000    0.050    0.000 {built-in method _hashlib.openssl_sha1}
+    45929    0.055    0.000    0.055    0.000 {built-in method _locale.nl_langinfo}
+    51854    0.007    0.000    0.007    0.000 {built-in method builtins.abs}
+     6695    0.024    0.000    0.024    0.000 {built-in method builtins.all}
+        1    0.000    0.000   52.314   52.314 {built-in method builtins.exec}
+       88    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+    78218    0.007    0.000    0.007    0.000 {built-in method builtins.isinstance}
+  3042222    0.220    0.000    0.220    0.000 {built-in method builtins.len}
+     1681    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+     1681    0.001    0.000    0.001    0.000 {built-in method builtins.min}
+      251    0.001    0.000    0.001    0.000 {built-in method builtins.print}
+    51854    1.191    0.000    1.332    0.000 {built-in method io.open}
+    45929    0.180    0.000    0.180    0.000 {method '__exit__' of '_io._IOBase' objects}
+    24671    0.004    0.000    0.004    0.000 {method 'add' of 'set' objects}
+  3906463    0.297    0.000    0.297    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+    51854    0.015    0.000    0.015    0.000 {method 'encode' of 'str' objects}
+    21560    0.006    0.000    0.006    0.000 {method 'endswith' of 'str' objects}
+      128    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+    51854    0.059    0.000    0.059    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
+   498202    0.037    0.000    0.037    0.000 {method 'isupper' of 'str' objects}
+   157393    0.018    0.000    0.018    0.000 {method 'items' of 'dict' objects}
+       22    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+    45929    0.316    0.000    0.477    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+       21    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+    16845    0.003    0.000    0.003    0.000 {method 'removesuffix' of 'str' objects}
+    85544    0.015    0.000    0.015    0.000 {method 'replace' of 'str' objects}
+  1378433    0.408    0.000    0.408    0.000 {method 'split' of 'str' objects}
+    16845    0.004    0.000    0.004    0.000 {method 'startswith' of 'str' objects}
+      157    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+
+
+
+Cognates('wagon', 'en') 
+with Lua cache and dict cache
+
+
+ 3230759 function calls (3220114 primitive calls) in 8.712 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001    8.712    8.712 <string>:1(<module>)
+    25927    0.015    0.000    0.244    0.000 <string>:100(WordLangRefs)
+   303870    0.070    0.000    0.070    0.000 <string>:107(isPastward)
+    65136    0.007    0.000    0.007    0.000 <string>:110(isFutureward)
+    10780    0.013    0.000    0.020    0.000 <string>:113(ADD)
+      386    0.001    0.000    0.001    0.000 <string>:12(<genexpr>)
+        1    0.002    0.002    0.393    0.393 <string>:124(WordLangPastwardset)
+     6760    0.030    0.000    0.040    0.000 <string>:125(TokensDict)
+    43403    0.010    0.000    0.010    0.000 <string>:144(DictCreateAdd)
+    41525    1.021    0.000    3.163    0.000 <string>:149(TextReftokens)
+    36099    1.201    0.000    1.201    0.000 <string>:16(WordtextLangWord)
+       21    0.093    0.004    5.887    0.280 <string>:187(WordLangFuturewardset)
+        1    0.000    0.000    0.002    0.002 <string>:19(TotalRelation)
+   103599    0.783    0.000    2.105    0.000 <string>:191(ReftextRefdict)
+   103599    0.036    0.000    0.036    0.000 <string>:194(<listcomp>)
+   103599    0.025    0.000    0.025    0.000 <string>:195(<listcomp>)
+        1    0.000    0.000    0.003    0.003 <string>:230(Sort)
+     7059    0.007    0.000    0.072    0.000 <string>:24(WordwikiWordfile)
+       65    0.000    0.000    0.000    0.000 <string>:242(<listcomp>)
+      287    0.000    0.000    0.000    0.000 <string>:250(<listcomp>)
+      287    0.000    0.000    0.000    0.000 <string>:251(<listcomp>)
+       21    0.038    0.002    2.409    0.115 <string>:269(Initials)
+     6473    2.346    0.000    2.346    0.000 <string>:272(<listcomp>)
+        1    0.000    0.000    8.711    8.711 <string>:277(Cognates)
+        1    0.000    0.000    0.000    0.000 <string>:28(AntisymmetricRelation)
+    16141    0.043    0.000    0.057    0.000 <string>:28(WordwikiWordfilename)
+        1    0.000    0.000    5.887    5.887 <string>:280(<listcomp>)
+       21    0.019    0.001    0.019    0.001 <string>:284(<listcomp>)
+    34637    0.016    0.000    1.217    0.000 <string>:305(<listcomp>)
+    34637    0.009    0.000    0.009    0.000 <string>:306(<listcomp>)
+    51854    0.011    0.000    0.011    0.000 <string>:310(WordLangWordwiki)
+    42772    0.026    0.000    5.344    0.000 <string>:318(WordLangMaybedict)
+    16141    0.039    0.000    0.074    0.000 <string>:40(FilenameHash)
+    60436    0.011    0.000    0.011    0.000 <string>:41(<lambda>)
+     7696    0.001    0.000    0.001    0.000 <string>:43(<lambda>)
+    16845    0.035    0.000    0.206    0.000 <string>:46(InfInherit)
+     8384    0.016    0.000    0.016    0.000 <string>:48(<listcomp>)
+     1681    0.001    0.000    0.001    0.000 <string>:56(<listcomp>)
+    16845    0.027    0.000    5.507    0.000 <string>:62(WordLangInferchildpars)
+    42772    0.036    0.000    5.308    0.000 <string>:64(WordwikiDict)
+     8384    0.002    0.000    0.002    0.000 <string>:67(<listcomp>)
+    16141    0.019    0.000    0.507    0.000 <string>:7(Read)
+    16845    0.020    0.000    0.037    0.000 <string>:73(WordfilenameWord)
+17342/6760    0.033    0.000    3.198    0.000 <string>:78(EntryToks)
+     9082    0.025    0.000    0.336    0.000 <string>:81(WordLangInlinkers)
+     3824    0.004    0.000    0.009    0.000 <string>:85(<listcomp>)
+     3824    0.007    0.000    0.044    0.000 <string>:86(<listcomp>)
+     6760    1.627    0.000    1.640    0.000 <string>:86(TextHeadtoks)
+        1    0.000    0.000    0.001    0.001 <string>:9(TransitiveClosure)
+    25108    0.127    0.000    0.157    0.000 <string>:91(DictAllRefs)
+    10584    0.010    0.000    0.023    0.000 _bootlocale.py:33(getpreferredencoding)
+     1681    0.001    0.000    0.001    0.000 abstract_regex.py:148(__init__)
+     5043    0.001    0.000    0.001    0.000 abstract_regex.py:156(__init__)
+    13891    0.004    0.000    0.004    0.000 abstract_regex.py:164(__init__)
+     1681    0.009    0.000    0.015    0.000 abstract_regex.py:173(connect)
+     8384    0.005    0.000    0.005    0.000 abstract_regex.py:206(__init__)
+    57896    0.044    0.000    0.135    0.000 abstract_regex.py:210(feedToken)
+    68132    0.048    0.000    0.090    0.000 abstract_regex.py:220(processTransition)
+    68132    0.017    0.000    0.030    0.000 abstract_regex.py:50(test)
+    10584    0.004    0.000    0.004    0.000 codecs.py:260(__init__)
+    10584    0.007    0.000    0.010    0.000 codecs.py:309(__init__)
+    10584    0.012    0.000    0.027    0.000 codecs.py:319(decode)
+     64/1    0.000    0.000    0.000    0.000 copy.py:128(deepcopy)
+       42    0.000    0.000    0.000    0.000 copy.py:182(_deepcopy_atomic)
+        1    0.000    0.000    0.000    0.000 copy.py:200(_deepcopy_list)
+       21    0.000    0.000    0.000    0.000 copy.py:209(_deepcopy_tuple)
+       21    0.000    0.000    0.000    0.000 copy.py:210(<listcomp>)
+        1    0.000    0.000    0.000    0.000 copy.py:242(_keep_alive)
+    10584    0.015    0.000    0.015    0.000 {built-in method _codecs.utf_8_decode}
+    16141    0.014    0.000    0.014    0.000 {built-in method _hashlib.openssl_sha1}
+    10584    0.013    0.000    0.013    0.000 {built-in method _locale.nl_langinfo}
+    16141    0.002    0.000    0.002    0.000 {built-in method builtins.abs}
+     6695    0.024    0.000    0.024    0.000 {built-in method builtins.all}
+        1    0.000    0.000    8.712    8.712 {built-in method builtins.exec}
+       88    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+    78218    0.006    0.000    0.006    0.000 {built-in method builtins.isinstance}
+   262529    0.021    0.000    0.021    0.000 {built-in method builtins.len}
+     1681    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+     1681    0.001    0.000    0.001    0.000 {built-in method builtins.min}
+      251    0.001    0.000    0.001    0.000 {built-in method builtins.print}
+    16141    0.321    0.000    0.354    0.000 {built-in method io.open}
+    10584    0.041    0.000    0.041    0.000 {method '__exit__' of '_io._IOBase' objects}
+    24671    0.004    0.000    0.004    0.000 {method 'add' of 'set' objects}
+   682514    0.054    0.000    0.054    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+    16141    0.004    0.000    0.004    0.000 {method 'encode' of 'str' objects}
+    21560    0.005    0.000    0.005    0.000 {method 'endswith' of 'str' objects}
+      128    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+    16141    0.016    0.000    0.016    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
+   151048    0.011    0.000    0.011    0.000 {method 'isupper' of 'str' objects}
+    42585    0.005    0.000    0.005    0.000 {method 'items' of 'dict' objects}
+       22    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+    10584    0.066    0.000    0.093    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+       21    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+    16845    0.003    0.000    0.003    0.000 {method 'removesuffix' of 'str' objects}
+    49831    0.007    0.000    0.007    0.000 {method 'replace' of 'str' objects}
+   165944    0.056    0.000    0.056    0.000 {method 'split' of 'str' objects}
+    16845    0.003    0.000    0.003    0.000 {method 'startswith' of 'str' objects}
+      157    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+
+
+
+cProfile.run("Cognates('thesaurus', 'en')")
+got futuresets
+         11227199 function calls (11179546 primitive calls) in 108.911 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.005    0.005  108.910  108.910 <string>:1(<module>)
+    83280    0.073    0.000    1.073    0.000 <string>:100(WordLangRefs)
+   903838    0.267    0.000    0.267    0.000 <string>:107(isPastward)
+   182481    0.027    0.000    0.027    0.000 <string>:110(isFutureward)
+    36032    0.070    0.000    0.117    0.000 <string>:113(ADD)
+       45    0.000    0.000    0.000    0.000 <string>:12(<genexpr>)
+        1    0.005    0.005    1.936    1.936 <string>:124(WordLangPastwardset)
+    33040    0.191    0.000    0.245    0.000 <string>:125(TokensDict)
+   176204    0.054    0.000    0.054    0.000 <string>:144(DictCreateAdd)
+   170047    4.882    0.000   14.254    0.000 <string>:149(TextReftokens)
+   144540    4.770    0.000    4.770    0.000 <string>:16(WordtextLangWord)
+        6    0.733    0.122   48.549    8.092 <string>:187(WordLangFuturewardset)
+        1    0.000    0.000    0.000    0.000 <string>:19(TotalRelation)
+   397874    3.805    0.000    9.199    0.000 <string>:191(ReftextRefdict)
+   397874    0.180    0.000    0.180    0.000 <string>:194(<listcomp>)
+   397874    0.124    0.000    0.124    0.000 <string>:195(<listcomp>)
+        1    0.000    0.000    0.000    0.000 <string>:230(Sort)
+    34251    0.055    0.000    0.600    0.000 <string>:24(WordwikiWordfile)
+       21    0.000    0.000    0.000    0.000 <string>:242(<listcomp>)
+     1170    0.001    0.000    0.001    0.000 <string>:250(<listcomp>)
+     1170    0.000    0.000    0.000    0.000 <string>:251(<listcomp>)
+        6    0.763    0.127   57.283    9.547 <string>:269(Initials)
+    25404   56.083    0.002   56.083    0.002 <string>:272(<listcomp>)
+        1    0.000    0.000  108.905  108.905 <string>:277(Cognates)
+        1    0.000    0.000    0.000    0.000 <string>:28(AntisymmetricRelation)
+    63644    0.244    0.000    0.329    0.000 <string>:28(WordwikiWordfilename)
+        1    0.001    0.001   48.550   48.550 <string>:280(<listcomp>)
+        6    1.136    0.189    1.136    0.189 <string>:285(<listcomp>)
+   140903    0.088    0.000    4.858    0.000 <string>:305(<listcomp>)
+   140903    0.044    0.000    0.044    0.000 <string>:306(<listcomp>)
+   166560    0.047    0.000    0.047    0.000 <string>:310(WordLangWordwiki)
+   137167    0.130    0.000   45.873    0.000 <string>:318(WordLangMaybedict)
+    63644    0.240    0.000    0.507    0.000 <string>:40(FilenameHash)
+   158268    0.040    0.000    0.040    0.000 <string>:41(<lambda>)
+    23537    0.006    0.000    0.006    0.000 <string>:43(<lambda>)
+    53887    0.152    0.000    0.809    0.000 <string>:46(InfInherit)
+    23547    0.069    0.000    0.069    0.000 <string>:48(<listcomp>)
+     4720    0.002    0.000    0.002    0.000 <string>:56(<listcomp>)
+    53887    0.145    0.000   46.439    0.001 <string>:62(WordLangInferchildpars)
+   137167    0.299    0.000   45.702    0.000 <string>:64(WordwikiDict)
+    23547    0.007    0.000    0.007    0.000 <string>:67(<listcomp>)
+    63644    0.268    0.000   22.556    0.000 <string>:7(Read)
+    54034    0.082    0.000    0.149    0.000 <string>:73(WordfilenameWord)
+80675/33040    0.207    0.000   14.477    0.000 <string>:78(EntryToks)
+    29393    0.097    0.000    1.824    0.000 <string>:81(WordLangInlinkers)
+     9331    0.017    0.000    0.039    0.000 <string>:85(<listcomp>)
+     9331    0.028    0.000    0.177    0.000 <string>:86(<listcomp>)
+    33040    8.632    0.000    8.726    0.000 <string>:86(TextHeadtoks)
+        1    0.000    0.000    0.000    0.000 <string>:9(TransitiveClosure)
+    80990    0.495    0.000    0.605    0.000 <string>:91(DictAllRefs)
+    42371    0.089    0.000    0.185    0.000 _bootlocale.py:33(getpreferredencoding)
+     4720    0.002    0.000    0.002    0.000 abstract_regex.py:148(__init__)
+    14160    0.004    0.000    0.004    0.000 abstract_regex.py:156(__init__)
+    41699    0.017    0.000    0.017    0.000 abstract_regex.py:164(__init__)
+     4720    0.032    0.000    0.051    0.000 abstract_regex.py:173(connect)
+    23547    0.027    0.000    0.027    0.000 abstract_regex.py:206(__init__)
+   150662    0.173    0.000    0.507    0.000 abstract_regex.py:210(feedToken)
+   181805    0.180    0.000    0.333    0.000 abstract_regex.py:220(processTransition)
+   181805    0.064    0.000    0.109    0.000 abstract_regex.py:50(test)
+    42371    0.023    0.000    0.023    0.000 codecs.py:260(__init__)
+    42371    0.053    0.000    0.076    0.000 codecs.py:309(__init__)
+    42371    0.144    0.000    0.306    0.000 codecs.py:319(decode)
+     19/1    0.000    0.000    0.000    0.000 copy.py:128(deepcopy)
+       12    0.000    0.000    0.000    0.000 copy.py:182(_deepcopy_atomic)
+        1    0.000    0.000    0.000    0.000 copy.py:200(_deepcopy_list)
+        6    0.000    0.000    0.000    0.000 copy.py:209(_deepcopy_tuple)
+        6    0.000    0.000    0.000    0.000 copy.py:210(<listcomp>)
+        1    0.000    0.000    0.000    0.000 copy.py:242(_keep_alive)
+    42371    0.163    0.000    0.163    0.000 {built-in method _codecs.utf_8_decode}
+    63644    0.117    0.000    0.117    0.000 {built-in method _hashlib.openssl_sha1}
+    42371    0.097    0.000    0.097    0.000 {built-in method _locale.nl_langinfo}
+    63644    0.015    0.000    0.015    0.000 {built-in method builtins.abs}
+    25478    0.437    0.000    0.437    0.000 {built-in method builtins.all}
+        1    0.000    0.000  108.911  108.911 {built-in method builtins.exec}
+       28    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+   210125    0.024    0.000    0.024    0.000 {built-in method builtins.isinstance}
+  1019143    0.108    0.000    0.108    0.000 {built-in method builtins.len}
+     4720    0.001    0.000    0.001    0.000 {built-in method builtins.max}
+     4720    0.003    0.000    0.003    0.000 {built-in method builtins.min}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+    63644    2.463    0.000    2.724    0.000 {built-in method io.open}
+    42371    0.452    0.000    0.452    0.000 {method '__exit__' of '_io._IOBase' objects}
+    77731    0.021    0.000    0.021    0.000 {method 'add' of 'set' objects}
+  2302591    0.227    0.000    0.227    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+    63644    0.024    0.000    0.024    0.000 {method 'encode' of 'str' objects}
+    72064    0.033    0.000    0.033    0.000 {method 'endswith' of 'str' objects}
+       38    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+    63644    0.110    0.000    0.110    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
+   659613    0.067    0.000    0.067    0.000 {method 'isupper' of 'str' objects}
+   161711    0.029    0.000    0.029    0.000 {method 'items' of 'dict' objects}
+        7    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+    42371   18.805    0.000   19.112    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+        6    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+    54034    0.010    0.000    0.010    0.000 {method 'removesuffix' of 'str' objects}
+   171712    0.033    0.000    0.033    0.000 {method 'replace' of 'str' objects}
+   612047    0.287    0.000    0.287    0.000 {method 'split' of 'str' objects}
+    54034    0.014    0.000    0.014    0.000 {method 'startswith' of 'str' objects}
+       53    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+
+
+
+
+
+220214    20:11:50    
+ran on ten-mill, new version
+
+         74464337 function calls (74302065 primitive calls) in 483.481 seconds
+
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     11/3    0.000    0.000    0.014    0.005 <frozen importlib._bootstrap>:1002(_find_and_load)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1033(_handle_fromlist)
+       12    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:112(release)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:152(__init__)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:156(__enter__)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:160(__exit__)
+       12    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:166(_get_module_lock)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:185(cb)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:203(_lock_unlock_module)
+     15/3    0.000    0.000    0.011    0.004 <frozen importlib._bootstrap>:220(_call_with_frames_removed)
+      191    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:231(_verbose_message)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:35(_new_module)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:351(__init__)
+       15    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:385(cached)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:398(parent)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:406(has_location)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:486(_init_module_attrs)
+       10    0.000    0.000    0.006    0.001 <frozen importlib._bootstrap>:558(module_from_spec)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:58(__init__)
+     10/3    0.000    0.000    0.013    0.004 <frozen importlib._bootstrap>:659(_load_unlocked)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:736(find_spec)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:811(find_spec)
+       12    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:87(acquire)
+       44    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:874(__enter__)
+       44    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:878(__exit__)
+       11    0.000    0.000    0.004    0.000 <frozen importlib._bootstrap>:901(_find_spec)
+     11/3    0.000    0.000    0.014    0.005 <frozen importlib._bootstrap>:967(_find_and_load_unlocked)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1006(__init__)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1031(get_filename)
+        5    0.000    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:1036(get_data)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1077(path_stats)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1155(__init__)
+        5    0.000    0.000    0.006    0.001 <frozen importlib._bootstrap_external>:1171(create_module)
+        5    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1179(exec_module)
+      176    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:121(_path_join)
+      176    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:123(<listcomp>)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:127(_path_split)
+       20    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:129(<genexpr>)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1324(_path_hooks)
+       47    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1337(_path_importer_cache)
+       58    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:135(_path_stat)
+       11    0.000    0.000    0.004    0.000 <frozen importlib._bootstrap_external>:1374(_get_spec)
+       11    0.000    0.000    0.004    0.000 <frozen importlib._bootstrap_external>:1406(find_spec)
+       14    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:145(_path_is_mode_type)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1466(__init__)
+        8    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1472(<genexpr>)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1500(_get_spec)
+       38    0.000    0.000    0.003    0.000 <frozen importlib._bootstrap_external>:1505(find_spec)
+       13    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:154(_path_isfile)
+        1    0.000    0.000    0.002    0.002 <frozen importlib._bootstrap_external>:1556(_fill_cache)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1585(<setcomp>)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:159(_path_isdir)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1597(path_hook_for_FileFinder)
+        6    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:175(_path_isabs)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:361(cache_from_source)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:491(_get_cached)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:523(_check_name_wrapper)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:560(_classify_pyc)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:593(_validate_timestamp_pyc)
+       38    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:64(_relax_case)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:645(_compile_bytecode)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:696(spec_from_file_location)
+       15    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:79(_unpack_uint32)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:841(create_module)
+      5/3    0.000    0.000    0.013    0.004 <frozen importlib._bootstrap_external>:844(exec_module)
+        5    0.000    0.000    0.003    0.001 <frozen importlib._bootstrap_external>:916(get_code)
+        1    0.000    0.000    0.000    0.000 <frozen zipimport>:63(__init__)
+215308/58093    0.700    0.000   73.755    0.001 <string>:103(EntryToks)
+    58093   41.080    0.001   41.285    0.001 <string>:111(TextHeadtoks)
+    58093    0.577    0.000    0.762    0.000 <string>:150(TokensDict)
+   853440    0.184    0.000    0.184    0.000 <string>:169(DictCreateAdd)
+   820435    5.600    0.000   73.022    0.000 <string>:174(TextReftokens)
+   859894   33.270    0.000   33.270    0.000 <string>:18(WordtextLangWord)
+        1    0.019    0.019    0.068    0.068 <string>:2(<module>)
+  3080099   25.701    0.000   62.555    0.000 <string>:203(ReftextRefdict)
+  3080099    1.074    0.000    1.074    0.000 <string>:206(<listcomp>)
+  3080099    0.802    0.000    0.802    0.000 <string>:207(<listcomp>)
+     4095    0.002    0.000    0.002    0.000 <string>:262(<listcomp>)
+     4095    0.001    0.000    0.001    0.000 <string>:263(<listcomp>)
+       60    0.000    0.000    0.001    0.000 <string>:31(GetTimestamp)
+   691348    0.395    0.000   33.664    0.000 <string>:317(<listcomp>)
+   691348    0.201    0.000    0.201    0.000 <string>:318(<listcomp>)
+   533064    0.332    0.000    0.332    0.000 <string>:322(WordLangWordwiki)
+       59    0.000    0.000    0.031    0.001 <string>:33(Log)
+   533064    2.161    0.000    2.829    0.000 <string>:42(WordwikiWordfilename)
+   591157    3.084    0.000    5.716    0.000 <string>:56(FilenameHash)
+        1    0.010    0.010    0.034    0.034 <string>:63(CodeLangs)
+     8204    0.010    0.000    0.014    0.000 <string>:67(<listcomp>)
+        1    0.000    0.000    0.001    0.001 <string>:79(LangCodes)
+        1    0.001    0.001    0.001    0.001 <string>:80(<dictcomp>)
+        3    0.000    0.000    0.006    0.002 <string>:9(Read)
+        1    0.000    0.000    0.000    0.000 __future__.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 __future__.py:81(_Feature)
+       10    0.000    0.000    0.000    0.000 __future__.py:83(__init__)
+        1    0.000    0.000    0.005    0.005 __init__.py:1(<module>)
+        1    0.000    0.000    0.004    0.004 __init__.py:8(_try_import_with_global_library_symbols)
+       11    0.000    0.000    0.000    0.000 __init__.py:83(find_spec)
+        9    0.000    0.000    0.000    0.000 __init__.py:88(<lambda>)
+   591211    0.897    0.000    2.016    0.000 _bootlocale.py:33(getpreferredencoding)
+   591205    0.330    0.000    0.330    0.000 codecs.py:186(__init__)
+       58    0.000    0.000    0.000    0.000 codecs.py:214(setstate)
+        6    0.000    0.000    0.000    0.000 codecs.py:260(__init__)
+        6    0.000    0.000    0.000    0.000 codecs.py:309(__init__)
+    40154    0.073    0.000    0.420    0.000 codecs.py:319(decode)
+    40150    0.021    0.000    0.021    0.000 codecs.py:331(getstate)
+        1    0.000    0.000    0.002    0.002 datetime.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 datetime.py:1145(tzinfo)
+        1    0.000    0.000    0.000    0.000 datetime.py:1214(IsoCalendarDate)
+        1    0.000    0.000    0.000    0.000 datetime.py:1245(time)
+        2    0.000    0.000    0.000    0.000 datetime.py:1270(__new__)
+        1    0.000    0.000    0.000    0.000 datetime.py:1594(datetime)
+        3    0.000    0.000    0.000    0.000 datetime.py:1602(__new__)
+        1    0.000    0.000    0.000    0.000 datetime.py:2216(timezone)
+        3    0.000    0.000    0.000    0.000 datetime.py:2236(_create)
+       35    0.000    0.000    0.000    0.000 datetime.py:383(_check_int_field)
+        5    0.000    0.000    0.000    0.000 datetime.py:415(_check_date_fields)
+        5    0.000    0.000    0.000    0.000 datetime.py:428(_check_time_fields)
+        5    0.000    0.000    0.000    0.000 datetime.py:445(_check_tzinfo_arg)
+        3    0.000    0.000    0.000    0.000 datetime.py:45(_days_before_year)
+        1    0.000    0.000    0.000    0.000 datetime.py:473(timedelta)
+       12    0.000    0.000    0.000    0.000 datetime.py:492(__new__)
+        5    0.000    0.000    0.000    0.000 datetime.py:50(_days_in_month)
+        2    0.000    0.000    0.000    0.000 datetime.py:665(__neg__)
+        1    0.000    0.000    0.000    0.000 datetime.py:793(date)
+        2    0.000    0.000    0.000    0.000 datetime.py:823(__new__)
+        2    0.000    0.000    0.000    0.000 enum.py:358(__call__)
+        2    0.000    0.000    0.000    0.000 enum.py:670(__new__)
+        1    0.000    0.000    0.000    0.000 enum.py:977(__and__)
+   596160    0.578    0.000    5.523    0.000 genericpath.py:16(exists)
+   130805    0.165    0.000    0.705    0.000 genericpath.py:39(isdir)
+        1    0.000    0.000    0.000    0.000 genericpath.py:48(getsize)
+       14    0.000    0.000    0.001    0.000 hashlib.py:126(__get_openssl_constructor)
+        1    0.000    0.000    0.004    0.004 hashlib.py:5(<module>)
+        2    0.000    0.000    0.001    0.000 hashlib.py:82(__get_builtin_constructor)
+596161/591161    1.568    0.000   68.270    0.000 os.py:200(makedirs)
+   654258    1.775    0.000    3.019    0.000 posixpath.py:100(split)
+   654258    0.263    0.000    0.474    0.000 posixpath.py:41(_get_sep)
+   820435    0.473    0.000    4.206    0.000 re.py:223(split)
+   820435    0.447    0.000    0.684    0.000 re.py:289(_compile)
+        1    0.000    0.000    0.000    0.000 sre_compile.py:249(_compile_charset)
+        1    0.000    0.000    0.000    0.000 sre_compile.py:276(_optimize_charset)
+        3    0.000    0.000    0.000    0.000 sre_compile.py:453(_get_iscased)
+      2/1    0.000    0.000    0.000    0.000 sre_compile.py:461(_get_literal_prefix)
+        1    0.000    0.000    0.000    0.000 sre_compile.py:492(_get_charset_prefix)
+        1    0.000    0.000    0.000    0.000 sre_compile.py:536(_compile_info)
+        2    0.000    0.000    0.000    0.000 sre_compile.py:595(isstring)
+        1    0.000    0.000    0.000    0.000 sre_compile.py:598(_code)
+        3    0.000    0.000    0.000    0.000 sre_compile.py:65(_combine_flags)
+      4/1    0.000    0.000    0.000    0.000 sre_compile.py:71(_compile)
+        1    0.000    0.000    0.000    0.000 sre_compile.py:759(compile)
+        4    0.000    0.000    0.000    0.000 sre_parse.py:111(__init__)
+        8    0.000    0.000    0.000    0.000 sre_parse.py:160(__len__)
+       17    0.000    0.000    0.000    0.000 sre_parse.py:164(__getitem__)
+        6    0.000    0.000    0.000    0.000 sre_parse.py:172(append)
+      5/2    0.000    0.000    0.000    0.000 sre_parse.py:174(getwidth)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:224(__init__)
+       10    0.000    0.000    0.000    0.000 sre_parse.py:233(__next)
+        9    0.000    0.000    0.000    0.000 sre_parse.py:249(match)
+        5    0.000    0.000    0.000    0.000 sre_parse.py:254(get)
+        5    0.000    0.000    0.000    0.000 sre_parse.py:286(tell)
+        2    0.000    0.000    0.000    0.000 sre_parse.py:288(seek)
+      2/1    0.000    0.000    0.000    0.000 sre_parse.py:435(_parse_sub)
+      3/1    0.000    0.000    0.000    0.000 sre_parse.py:493(_parse)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:76(__init__)
+        4    0.000    0.000    0.000    0.000 sre_parse.py:81(groups)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:84(opengroup)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:921(fix_flags)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:937(parse)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:96(closegroup)
+        1    0.000    0.000    0.000    0.000 version.py:1(<module>)
+    58217    0.061    0.000    0.061    0.000 xml-wiki-dump-parsing.py:173(excludeTitle)
+      920    0.000    0.000    0.000    0.000 xml-wiki-dump-parsing.py:18(<lambda>)
+        1    0.000    0.000    0.000    0.000 xml-wiki-dump-parsing.py:19(<listcomp>)
+        1    0.124    0.124  483.484  483.484 xml-wiki-dump-parsing.py:2(<module>)
+   591146    1.411    0.000  106.575    0.000 xml-wiki-dump-parsing.py:44(Write)
+    58093    0.184    0.000    0.239    0.000 xml-wiki-dump-parsing.py:57(TitleToFile)
+        1  177.547  177.547  483.281  483.281 xml-wiki-dump-parsing.py:71(main)
+       22    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x102232410}
+    40154    0.347    0.000    0.347    0.000 {built-in method _codecs.utf_8_decode}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_md5}
+   591158    1.154    0.000    1.154    0.000 {built-in method _hashlib.openssl_sha1}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha224}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha256}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha384}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha3_224}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha3_256}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha3_384}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha3_512}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha512}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_shake_128}
+        1    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_shake_256}
+        5    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
+       67    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
+        5    0.006    0.001    0.006    0.001 {built-in method _imp.create_dynamic}
+        5    0.000    0.000    0.001    0.000 {built-in method _imp.exec_dynamic}
+        9    0.000    0.000    0.000    0.000 {built-in method _imp.is_builtin}
+       11    0.000    0.000    0.000    0.000 {built-in method _imp.is_frozen}
+       67    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
+   591211    1.120    0.000    1.120    0.000 {built-in method _locale.nl_langinfo}
+        1    0.000    0.000    0.000    0.000 {built-in method _sre.compile}
+   130794    0.028    0.000    0.028    0.000 {built-in method _stat.S_ISDIR}
+       22    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+       24    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+        8    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+   591253    0.122    0.000    0.122    0.000 {built-in method builtins.abs}
+       60    0.000    0.000    0.000    0.000 {built-in method builtins.divmod}
+      7/1    0.003    0.000  483.484  483.484 {built-in method builtins.exec}
+       81    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+       14    0.000    0.000    0.000    0.000 {built-in method builtins.globals}
+       59    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+  1479972    0.449    0.000    0.449    0.000 {built-in method builtins.isinstance}
+721406/721402    0.117    0.000    0.117    0.000 {built-in method builtins.len}
+        9    0.000    0.000    0.000    0.000 {built-in method builtins.locals}
+       12    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+       11    0.000    0.000    0.000    0.000 {built-in method builtins.min}
+        4    0.000    0.000    0.000    0.000 {built-in method builtins.ord}
+    69900    0.277    0.000    0.277    0.000 {built-in method builtins.print}
+       12    0.000    0.000    0.000    0.000 {built-in method builtins.round}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.setattr}
+       15    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+        5    0.000    0.000    0.000    0.000 {built-in method io.open_code}
+   591211   60.165    0.000   62.511    0.000 {built-in method io.open}
+        5    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
+       60    0.000    0.000    0.000    0.000 {built-in method now}
+   654278    0.125    0.000    0.125    0.000 {built-in method posix.fspath}
+        9    0.000    0.000    0.000    0.000 {built-in method posix.getcwd}
+        1    0.002    0.002    0.002    0.002 {built-in method posix.listdir}
+   596161   57.453    0.000   57.453    0.000 {built-in method posix.mkdir}
+   727024    5.457    0.000    5.457    0.000 {built-in method posix.stat}
+        1    0.000    0.000    0.000    0.000 {built-in method sys.getdlopenflags}
+        2    0.000    0.000    0.000    0.000 {built-in method sys.setdlopenflags}
+   591214   42.003    0.000   42.003    0.000 {method '__exit__' of '_io._IOBase' objects}
+       24    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.lock' objects}
+   843151    0.137    0.000    0.137    0.000 {method 'add' of 'set' objects}
+  8745995    0.799    0.000    0.799    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+   591157    0.241    0.000    0.241    0.000 {method 'encode' of 'str' objects}
+       15    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+        4    0.000    0.000    0.000    0.000 {method 'extend' of 'list' objects}
+        5    0.000    0.000    0.000    0.000 {method 'find' of 'bytearray' objects}
+       10    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
+       25    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+   591157    0.965    0.000    0.965    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
+  5949858    0.551    0.000    0.551    0.000 {method 'isupper' of 'str' objects}
+   669631    0.139    0.000    0.139    0.000 {method 'items' of 'dict' objects}
+   533239    0.189    0.000    0.189    0.000 {method 'join' of 'str' objects}
+   215309    0.027    0.000    0.027    0.000 {method 'keys' of 'dict' objects}
+        4    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+       10    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+        5    0.002    0.000    0.002    0.000 {method 'read' of '_io.BufferedReader' objects}
+        4    0.006    0.001    0.007    0.002 {method 'read' of '_io.TextIOWrapper' objects}
+ 10008206    2.930    0.000    3.369    0.000 {method 'readline' of '_io.TextIOWrapper' objects}
+    93614    0.027    0.000    0.027    0.000 {method 'removeprefix' of 'str' objects}
+    93614    0.021    0.000    0.021    0.000 {method 'removesuffix' of 'str' objects}
+   823529    0.589    0.000    0.589    0.000 {method 'replace' of 'str' objects}
+   654268    0.366    0.000    0.366    0.000 {method 'rfind' of 'str' objects}
+   591157    0.150    0.000    0.150    0.000 {method 'rjust' of 'str' objects}
+       70    0.000    0.000    0.000    0.000 {method 'rpartition' of 'str' objects}
+   654619    0.176    0.000    0.176    0.000 {method 'rstrip' of 'str' objects}
+   820435    3.048    0.000    3.048    0.000 {method 'split' of 're.Pattern' objects}
+  3152971    1.157    0.000    1.157    0.000 {method 'split' of 'str' objects}
+        8    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+       60    0.001    0.000    0.001    0.000 {method 'strftime' of 'datetime.date' objects}
+ 10057278    1.329    0.000    1.329    0.000 {method 'strip' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'union' of 'set' objects}
+   591264    0.679    0.000    0.679    0.000 {method 'write' of '_io.TextIOWrapper' objects}
+
+
+
+
+
+def TEST():
+   for entry in ['ship', 'learn','snow', 'might', 'open', 'close', 'snap', 'flat', 'house', 'help', 'grip', 'house', 'near', 'full', 'stand', 'down', 'up', 'see', 'say', 'do', ]:
+      print('doing', entry)
+      CacheDict = {}
+      Cognates(entry, 'en')
+
+WITHOUT ensuring cache parallel
+
+      127013244 function calls (125676311 primitive calls) in 708.456 seconds
+
+   Ordered by: internal time
+   List reduced from 565 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   487739  400.633    0.001  402.451    0.001 {built-in method io.open}
+   335938   85.412    0.000   87.142    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+   248309   58.915    0.000   59.529    0.000 <string>:195(TextHeadtoks)
+  1166362   39.491    0.000   39.491    0.000 <string>:24(WordtextLangWord)
+  2630928   29.740    0.000   73.536    0.000 <string>:287(ReftextRefdict)
+  1292793    6.653    0.000   86.653    0.000 <string>:258(TextReftokens)
+   712622    4.781    0.000    5.690    0.000 <string>:444(DictAllRefs)
+   232278    4.517    0.000  691.501    0.003 <string>:159(EntryDirectionEntries)
+  2148936    4.417    0.000    6.134    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+       40    4.205    0.105   12.154    0.304 <string>:14(dev_DAGTransitiveClosure)
+  8390025    3.570    0.000    7.325    0.000 <string>:146(RefDirection)
+  1292793    3.545    0.000    3.545    0.000 {method 'split' of 're.Pattern' objects}
+  8390025    2.725    0.000    2.725    0.000 <string>:101(isPastward)
+   487376    2.605    0.000    4.687    0.000 <string>:66(FilenameHash)
+   494313    2.539    0.000   12.402    0.000 <string>:67(InfInherit)
+   336322    2.538    0.000    2.538    0.000 {method '__exit__' of '_io._IOBase' objects}
+  4537091    2.230    0.000    2.230    0.000 {method 'split' of 'str' objects}
+ 19432475    1.983    0.000    1.983    0.000 {method 'append' of 'list' objects}
+   248309    1.969    0.000    2.362    0.000 <string>:234(TokensDict)
+  1754859    1.922    0.000    8.056    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:210(feedToken)
+
+
+Sat Feb 19 22:10:15 2022    cProfile_aux.stats
+
+         127013244 function calls (125676311 primitive calls) in 708.456 seconds
+
+   Ordered by: cumulative time
+   List reduced from 565 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     22/1    0.000    0.000  708.534  708.534 {built-in method builtins.exec}
+        1    0.320    0.320  708.534  708.534 <stdin>:1(TEST)
+       20    0.046    0.002  708.204   35.410 <string>:204(Cognates)
+       40    1.315    0.033  692.558   17.314 <string>:118(EntriesDirectionClosure)
+   232278    4.517    0.000  691.501    0.003 <string>:159(EntryDirectionEntries)
+   231640    0.305    0.000  691.020    0.003 <string>:186(EntryDirectionChpars)
+   726591    0.680    0.000  497.517    0.001 <string>:454(EntryRefs)
+   487376    0.987    0.000  493.021    0.001 <string>:12(Read)
+  1220904    1.106    0.000  491.839    0.000 <string>:404(WordLangMaybedict)
+  1220904    1.768    0.000  490.311    0.000 <string>:142(WordwikiDict)
+   487739  400.633    0.001  402.451    0.001 {built-in method io.open}
+   232278    1.146    0.000  166.079    0.001 <string>:431(EntryMentioners)
+   248309    0.523    0.000  150.598    0.001 <string>:152(TextDict)
+594547/248309    1.423    0.000   88.183    0.000 <string>:187(EntryToks)
+   335938   85.412    0.000   87.142    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+  1292793    6.653    0.000   86.653    0.000 <string>:258(TextReftokens)
+  2630928   29.740    0.000   73.536    0.000 <string>:287(ReftextRefdict)
+   248309   58.915    0.000   59.529    0.000 <string>:195(TextHeadtoks)
+  1001099    0.650    0.000   40.134    0.000 <string>:391(<listcomp>)
+  1166362   39.491    0.000   39.491    0.000 <string>:24(WordtextLangWord)
+  
+
+
+
+WITH ensuring cache parallel
+
+         144635296 function calls (143199401 primitive calls) in 439.708 seconds
+
+   Ordered by: internal time
+   List reduced from 578 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   485258  176.238    0.000  177.116    0.000 {built-in method io.open}
+   267444   61.919    0.000   62.449    0.000 <string>:197(TextHeadtoks)
+  3034914   37.884    0.000   79.865    0.000 <string>:289(ReftextRefdict)
+  1360199   37.490    0.000   37.490    0.000 <string>:24(WordtextLangWord)
+   181322   19.783    0.000   20.428    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+     1120   17.442    0.016   17.442    0.016 {method 'acquire' of '_thread.lock' objects}
+  1512212    7.228    0.000   93.535    0.000 <string>:260(TextReftokens)
+   745197    4.990    0.000    5.888    0.000 <string>:446(DictAllRefs)
+   242771    4.080    0.000   45.956    0.000 <string>:159(EntryDirectionEntries)
+       40    3.908    0.098   11.632    0.291 <string>:14(dev_DAGTransitiveClosure)
+  1512212    3.550    0.000    3.550    0.000 {method 'split' of 're.Pattern' objects}
+  8688522    3.466    0.000    7.146    0.000 <string>:146(RefDirection)
+   759603    2.918    0.000    5.087    0.000 <string>:68(FilenameHash)
+  6657081    2.848    0.000    2.848    0.000 {method 'split' of 'str' objects}
+  8688522    2.663    0.000    2.663    0.000 <string>:101(isPastward)
+   759603    2.631    0.000    3.456    0.000 <string>:54(WordwikiWordfilename)
+   484878    2.190    0.000  212.571    0.000 <string>:433(EntryMentioners)
+ 21286363    2.055    0.000    2.055    0.000 {method 'append' of 'list' objects}
+  2211807    1.775    0.000    3.371    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+1276657/242127    1.663    0.000    3.960    0.000 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/copy.py:128(deepcopy)
+
+
+Sat Feb 19 22:20:19 2022    cProfile_aux.stats
+
+         144635296 function calls (143199401 primitive calls) in 439.708 seconds
+
+   Ordered by: cumulative time
+   List reduced from 578 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     22/1    0.000    0.000  439.761  439.761 {built-in method builtins.exec}
+        1    0.289    0.289  439.761  439.761 <stdin>:1(TEST)
+       20    0.037    0.002  439.463   21.973 <string>:204(Cognates)
+       40    1.645    0.041  424.507   10.613 <string>:118(EntriesDirectionClosure)
+   484878    2.190    0.000  212.571    0.000 <string>:433(EntryMentioners)
+   484890    0.649    0.000  199.272    0.000 <string>:12(Read)
+      276    0.471    0.002  180.663    0.655 <string>:160(EnsureWLDictCache)
+   485258  176.238    0.000  177.116    0.000 {built-in method io.open}
+   267444    0.416    0.000  159.984    0.001 <string>:154(TextDict)
+668535/267444    1.407    0.000   95.460    0.000 <string>:189(EntryToks)
+  1512212    7.228    0.000   93.535    0.000 <string>:260(TextReftokens)
+  3034914   37.884    0.000   79.865    0.000 <string>:289(ReftextRefdict)
+   267444   61.919    0.000   62.449    0.000 <string>:197(TextHeadtoks)
+   242771    4.080    0.000   45.956    0.000 <string>:159(EntryDirectionEntries)
+   242107    0.242    0.000   45.439    0.000 <string>:186(EntryDirectionChpars)
+  1167901    0.644    0.000   38.126    0.000 <string>:393(<listcomp>)
+  1360199   37.490    0.000   37.490    0.000 <string>:24(WordtextLangWord)
+   181322   19.783    0.000   20.428    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+      265    0.002    0.000   17.450    0.066 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/threading.py:556(wait)
+      265    0.003    0.000   17.446    0.066 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/threading.py:280(wait)
+
+
+
+WITHOUT ensuring cache parallel
+
+   131328616 function calls (129937515 primitive calls) in 754.743 seconds
+
+   Ordered by: internal time
+   List reduced from 565 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   505833  425.705    0.001  427.692    0.001 {built-in method io.open}
+   346794   92.733    0.000   94.669    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+   255805   61.421    0.000   62.086    0.000 <string>:197(TextHeadtoks)
+  1192145   41.471    0.000   41.471    0.000 <string>:24(WordtextLangWord)
+  2690456   35.764    0.000   81.758    0.000 <string>:289(ReftextRefdict)
+  1325774    7.504    0.000   96.132    0.000 <string>:260(TextReftokens)
+   745197    5.165    0.000    6.138    0.000 <string>:446(DictAllRefs)
+   242771    4.876    0.000  737.419    0.003 <string>:160(EntryDirectionEntries)
+       40    4.124    0.103   12.462    0.312 <string>:14(dev_DAGTransitiveClosure)
+  8688522    3.882    0.000    7.903    0.000 <string>:147(RefDirection)
+  1325774    3.780    0.000    3.780    0.000 {method 'split' of 're.Pattern' objects}
+  8688522    2.908    0.000    2.908    0.000 <string>:102(isPastward)
+   347178    2.864    0.000    2.864    0.000 {method '__exit__' of '_io._IOBase' objects}
+   505470    2.841    0.000    5.165    0.000 <string>:68(FilenameHash)
+  4678540    2.353    0.000    2.353    0.000 {method 'split' of 'str' objects}
+  2211807    2.136    0.000    3.962    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+ 20015311    2.111    0.000    2.111    0.000 {method 'append' of 'list' objects}
+  1806543    2.016    0.000    5.978    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:210(feedToken)
+   505470    1.992    0.000    2.652    0.000 <string>:54(WordwikiWordfilename)
+  1276307    1.940    0.000  528.073    0.000 <string>:144(WordwikiDict)
+
+
+Sat Feb 19 22:34:55 2022    cProfile_aux.stats
+
+         131328616 function calls (129937515 primitive calls) in 754.743 seconds
+
+   Ordered by: cumulative time
+   List reduced from 565 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     22/1    0.000    0.000  754.812  754.812 {built-in method builtins.exec}
+        1    0.336    0.336  754.812  754.812 <stdin>:1(TEST)
+       20    0.041    0.002  754.467   37.723 <string>:205(Cognates)
+       40    1.292    0.032  738.501   18.463 <string>:119(EntriesDirectionClosure)
+   242771    4.876    0.000  737.419    0.003 <string>:160(EntryDirectionEntries)
+   242107    0.317    0.000  736.963    0.003 <string>:187(EntryDirectionChpars)
+   759539    0.732    0.000  535.821    0.001 <string>:456(EntryRefs)
+  1276307    1.177    0.000  529.686    0.000 <string>:406(WordLangMaybedict)
+  1276307    1.940    0.000  528.073    0.000 <string>:144(WordwikiDict)
+   505470    1.050    0.000  526.177    0.001 <string>:12(Read)
+   505833  425.705    0.001  427.692    0.001 {built-in method io.open}
+   242771    1.265    0.000  174.335    0.001 <string>:433(EntryMentioners)
+   255805    0.558    0.000  162.303    0.001 <string>:154(TextDict)
+612102/255805    1.587    0.000   97.841    0.000 <string>:189(EntryToks)
+  1325774    7.504    0.000   96.132    0.000 <string>:260(TextReftokens)
+   346794   92.733    0.000   94.669    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+  2690456   35.764    0.000   81.758    0.000 <string>:289(ReftextRefdict)
+   255805   61.421    0.000   62.086    0.000 <string>:197(TextHeadtoks)
+  1024443    0.689    0.000   42.152    0.000 <string>:393(<listcomp>)
+  1192145   41.471    0.000   41.471    0.000 <string>:24(WordtextLangWord)
+
+
+
+
+WITH ensuring..
+
+
+         144648139 function calls (143212244 primitive calls) in 415.490 seconds
+
+   Ordered by: internal time
+   List reduced from 578 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   485258  151.383    0.000  152.229    0.000 {built-in method io.open}
+   267444   63.251    0.000   63.772    0.000 <string>:197(TextHeadtoks)
+  1360199   38.198    0.000   38.198    0.000 <string>:24(WordtextLangWord)
+  3034914   32.214    0.000   74.800    0.000 <string>:289(ReftextRefdict)
+   181322   20.470    0.000   21.093    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+     1120   18.376    0.016   18.376    0.016 {method 'acquire' of '_thread.lock' objects}
+  1512212    6.868    0.000   88.034    0.000 <string>:260(TextReftokens)
+       40    6.203    0.155   14.007    0.350 <string>:14(dev_DAGTransitiveClosure)
+   745261    5.061    0.000    5.946    0.000 <string>:446(DictAllRefs)
+   242771    3.966    0.000   42.430    0.000 <string>:160(EntryDirectionEntries)
+  1512212    3.540    0.000    3.540    0.000 {method 'split' of 're.Pattern' objects}
+  8690310    3.409    0.000    6.998    0.000 <string>:147(RefDirection)
+   759603    2.893    0.000    3.694    0.000 <string>:54(WordwikiWordfilename)
+   759603    2.789    0.000    4.871    0.000 <string>:68(FilenameHash)
+  6657279    2.776    0.000    2.776    0.000 {method 'split' of 'str' objects}
+   267444    2.730    0.000    3.114    0.000 <string>:236(TokensDict)
+  8690310    2.614    0.000    2.614    0.000 <string>:102(isPastward)
+   484878    2.098    0.000  187.668    0.000 <string>:433(EntryMentioners)
+       40    2.039    0.051  397.787    9.945 <string>:119(EntriesDirectionClosure)
+ 21288296    2.004    0.000    2.004    0.000 {method 'append' of 'list' objects}
+
+
+Sat Feb 19 22:42:56 2022    cProfile_aux.stats
+
+         144648139 function calls (143212244 primitive calls) in 415.490 seconds
+
+   Ordered by: cumulative time
+   List reduced from 578 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     22/1    0.000    0.000  415.532  415.532 {built-in method builtins.exec}
+        1    0.296    0.296  415.532  415.532 <stdin>:1(TEST)
+       20    0.039    0.002  415.227   20.761 <string>:205(Cognates)
+       40    2.039    0.051  397.787    9.945 <string>:119(EntriesDirectionClosure)
+   484878    2.098    0.000  187.668    0.000 <string>:433(EntryMentioners)
+      276    0.463    0.002  178.745    0.648 <string>:160(EnsureWLDictCache)
+   484890    0.626    0.000  174.992    0.000 <string>:12(Read)
+   267444    0.402    0.000  156.888    0.001 <string>:154(TextDict)
+   485258  151.383    0.000  152.229    0.000 {built-in method io.open}
+668535/267444    1.394    0.000   89.600    0.000 <string>:189(EntryToks)
+  1512212    6.868    0.000   88.034    0.000 <string>:260(TextReftokens)
+  3034914   32.214    0.000   74.800    0.000 <string>:289(ReftextRefdict)
+   267444   63.251    0.000   63.772    0.000 <string>:197(TextHeadtoks)
+   242771    3.966    0.000   42.430    0.000 <string>:160(EntryDirectionEntries)
+   242107    0.238    0.000   41.924    0.000 <string>:187(EntryDirectionChpars)
+  1167901    0.641    0.000   38.834    0.000 <string>:393(<listcomp>)
+  1360199   38.198    0.000   38.198    0.000 <string>:24(WordtextLangWord)
+   181322   20.470    0.000   21.093    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+      265    0.002    0.000   18.384    0.069 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/threading.py:556(wait)
+      265    0.003    0.000   18.381    0.069 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/threading.py:280(wait)
+
+
+WITHOUT 
+
+    131345674 function calls (129954573 primitive calls) in 764.735 seconds
+
+   Ordered by: internal time
+   List reduced from 565 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   505833  431.046    0.001  433.076    0.001 {built-in method io.open}
+   346794   94.552    0.000   96.543    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+   255805   63.172    0.000   63.835    0.000 <string>:197(TextHeadtoks)
+  1192145   41.832    0.000   41.832    0.000 <string>:24(WordtextLangWord)
+  2690456   30.310    0.000   76.767    0.000 <string>:289(ReftextRefdict)
+  1325774    7.235    0.000   91.037    0.000 <string>:260(TextReftokens)
+   516834    5.559    0.000   14.512    0.000 <string>:68(InfInherit)
+   745261    5.252    0.000    6.238    0.000 <string>:446(DictAllRefs)
+   242771    4.977    0.000  746.236    0.003 <string>:160(EntryDirectionEntries)
+  1325774    3.873    0.000    3.873    0.000 {method 'split' of 're.Pattern' objects}
+  8690310    3.872    0.000    7.973    0.000 <string>:147(RefDirection)
+       40    3.851    0.096   11.746    0.294 <string>:14(dev_DAGTransitiveClosure)
+  8690310    2.974    0.000    2.974    0.000 <string>:102(isPastward)
+   505470    2.884    0.000    5.215    0.000 <string>:68(FilenameHash)
+   347178    2.858    0.000    2.858    0.000 {method '__exit__' of '_io._IOBase' objects}
+  4678738    2.419    0.000    2.419    0.000 {method 'split' of 'str' objects}
+  2212157    2.238    0.000    4.901    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+   242107    2.227    0.000  747.680    0.003 <string>:187(EntryDirectionChpars)
+ 20017244    2.143    0.000    2.143    0.000 {method 'append' of 'list' objects}
+   505470    2.037    0.000    2.722    0.000 <string>:54(WordwikiWordfilename)
+
+
+Sat Feb 19 22:56:51 2022    cProfile_aux.stats
+
+         131345674 function calls (129954573 primitive calls) in 764.735 seconds
+
+   Ordered by: cumulative time
+   List reduced from 565 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     22/1    0.000    0.000  764.795  764.795 {built-in method builtins.exec}
+        1    0.304    0.304  764.795  764.795 <stdin>:1(TEST)
+       20    0.045    0.002  764.482   38.224 <string>:205(Cognates)
+       40    1.217    0.030  749.170   18.729 <string>:119(EntriesDirectionClosure)
+   242107    2.227    0.000  747.680    0.003 <string>:187(EntryDirectionChpars)
+   242771    4.977    0.000  746.236    0.003 <string>:160(EntryDirectionEntries)
+   759605    0.733    0.000  540.324    0.001 <string>:456(EntryRefs)
+  1276439    1.200    0.000  534.104    0.000 <string>:406(WordLangMaybedict)
+   505470    1.087    0.000  533.467    0.001 <string>:12(Read)
+  1276439    1.908    0.000  532.454    0.000 <string>:144(WordwikiDict)
+   505833  431.046    0.001  433.076    0.001 {built-in method io.open}
+   242771    1.278    0.000  174.477    0.001 <string>:433(EntryMentioners)
+   255805    0.550    0.000  159.392    0.001 <string>:154(TextDict)
+   346794   94.552    0.000   96.543    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+612102/255805    1.589    0.000   93.173    0.000 <string>:189(EntryToks)
+  1325774    7.235    0.000   91.037    0.000 <string>:260(TextReftokens)
+  2690456   30.310    0.000   76.767    0.000 <string>:289(ReftextRefdict)
+   255805   63.172    0.000   63.835    0.000 <string>:197(TextHeadtoks)
+  1024443    0.698    0.000   42.494    0.000 <string>:393(<listcomp>)
+  1192145   41.832    0.000   41.832    0.000 <string>:24(WordtextLangWord)
+
+      27142080 function calls (26875297 primitive calls) in 172.113 seconds
+
+   Ordered by: internal time
+   List reduced from 305 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    99281   91.940    0.001   92.395    0.001 {built-in method io.open}
+    73436   20.148    0.000   20.586    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+    56946   16.570    0.000   16.733    0.000 <string>:196(TextHeadtoks)
+   365311   13.538    0.000   13.538    0.000 <string>:23(WordtextLangWord)
+   794622    9.474    0.000   24.308    0.000 <string>:288(ReftextRefdict)
+   372531    2.025    0.000   28.246    0.000 <string>:259(TextReftokens)
+   372531    1.064    0.000    1.064    0.000 {method 'split' of 're.Pattern' objects}
+    40516    0.880    0.000  169.264    0.004 <string>:182(EntryDirectionEntries)
+   126348    0.878    0.000    1.047    0.000 <string>:445(DictAllRefs)
+        2    0.711    0.355    2.460    1.230 <string>:14(dev_DAGTransitiveClosure)
+  1542753    0.692    0.000    1.398    0.000 <string>:169(RefDirection)
+    89692    0.674    0.000    0.799    0.000 <string>:423(WordfilenameWord)
+    73463    0.619    0.000    0.619    0.000 {method '__exit__' of '_io._IOBase' objects}
+    99254    0.587    0.000    1.071    0.000 <string>:67(FilenameHash)
+  1153286    0.577    0.000    0.577    0.000 {method 'split' of 'str' objects}
+  1542753    0.512    0.000    0.512    0.000 <string>:123(isPastward)
+  4611085    0.477    0.000    0.477    0.000 {method 'append' of 'list' objects}
+       34    0.420    0.012    0.420    0.012 <string>:40(<listcomp>)
+   410791    0.419    0.000    0.755    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+149701/56946    0.408    0.000   28.690    0.001 <string>:188(EntryToks)
+
+
+Thu Mar 17 13:22:27 2022    cProfile_aux.stats
+
+         27142080 function calls (26875297 primitive calls) in 172.113 seconds
+
+   Ordered by: cumulative time
+   List reduced from 305 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000  172.125  172.125 {built-in method builtins.exec}
+        1    0.009    0.009  172.125  172.125 <string>:1(<module>)
+        1    0.007    0.007  172.116  172.116 <string>:227(Cognates)
+        2    0.176    0.088  169.370   84.685 <string>:140(EntriesDirectionClosure)
+    40516    0.880    0.000  169.264    0.004 <string>:182(EntryDirectionEntries)
+    40402    0.054    0.000  169.151    0.004 <string>:209(EntryDirectionChpars)
+   129303    0.141    0.000  126.439    0.001 <string>:455(EntryRefs)
+   218090    0.210    0.000  125.382    0.001 <string>:405(WordLangMaybedict)
+   218090    0.386    0.000  125.095    0.001 <string>:143(WordwikiDict)
+    99254    0.231    0.000  113.821    0.001 <string>:33(Read)
+    99281   91.940    0.001   92.395    0.001 {built-in method io.open}
+    56946    0.129    0.000   46.030    0.001 <string>:153(TextDict)
+    40516    0.232    0.000   38.031    0.001 <string>:432(EntryMentioners)
+149701/56946    0.408    0.000   28.690    0.001 <string>:188(EntryToks)
+   372531    2.025    0.000   28.246    0.000 <string>:259(TextReftokens)
+   794622    9.474    0.000   24.308    0.000 <string>:288(ReftextRefdict)
+    73436   20.148    0.000   20.586    0.000 {method 'read' of '_io.TextIOWrapper' objects}
+    56946   16.570    0.000   16.733    0.000 <string>:196(TextHeadtoks)
+   306370    0.200    0.000   13.736    0.000 <string>:392(<listcomp>)
+   365311   13.538    0.000   13.538    0.000 <string>:23(WordtextLangWord)
+
+
+         26887765 function calls (26620498 primitive calls) in 121.174 seconds
+
+   Ordered by: internal time
+   List reduced from 562 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    99329   33.269    0.000   60.730    0.001 <string>:20(CRead)
+    99458   27.093    0.000   27.093    0.000 {built-in method posix.stat}
+    57018   17.103    0.000   17.273    0.000 <string>:196(TextHeadtoks)
+   366978   14.066    0.000   14.066    0.000 <string>:23(WordtextLangWord)
+   798490    9.632    0.000   25.024    0.000 <string>:288(ReftextRefdict)
+   373655    2.658    0.000   29.653    0.000 <string>:259(TextReftokens)
+   373655    1.096    0.000    1.096    0.000 {method 'split' of 're.Pattern' objects}
+    40518    0.889    0.000  118.169    0.003 <string>:185(EntryDirectionEntries)
+   126420    0.878    0.000    1.050    0.000 <string>:445(DictAllRefs)
+  1544719    0.706    0.000    1.435    0.000 <string>:172(RefDirection)
+        2    0.702    0.351    2.591    1.296 <string>:14(dev_DAGTransitiveClosure)
+    88859    0.665    0.000    2.221    0.000 <string>:92(InfInherit)
+  1157452    0.594    0.000    0.594    0.000 {method 'split' of 'str' objects}
+    99329    0.571    0.000    1.053    0.000 <string>:67(FilenameHash)
+  1544719    0.525    0.000    0.525    0.000 <string>:126(isPastward)
+      999    0.493    0.000    0.493    0.000 <string>:37(<listcomp>)
+    57018    0.492    0.000    0.604    0.000 <string>:235(TokensDict)
+  4624814    0.488    0.000    0.488    0.000 {method 'append' of 'list' objects}
+   411157    0.463    0.000    0.812    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+       35    0.453    0.013    0.453    0.013 <string>:40(<listcomp>)
+
+
+Thu Mar 17 13:40:22 2022    cProfile_aux.stats
+
+         26887765 function calls (26620498 primitive calls) in 121.174 seconds
+
+   Ordered by: cumulative time
+   List reduced from 562 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     22/1    0.000    0.000  121.205  121.205 {built-in method builtins.exec}
+        1    0.007    0.007  121.195  121.195 <string>:230(Cognates)
+        2    0.181    0.090  118.263   59.131 <string>:143(EntriesDirectionClosure)
+    40518    0.889    0.000  118.169    0.003 <string>:185(EntryDirectionEntries)
+    40402    0.057    0.000  118.039    0.003 <string>:212(EntryDirectionChpars)
+   129377    0.144    0.000   97.907    0.001 <string>:455(EntryRefs)
+   218236    0.211    0.000   96.850    0.000 <string>:405(WordLangMaybedict)
+   218236    0.284    0.000   96.560    0.000 <string>:143(WordwikiDict)
+    99329    0.083    0.000   60.813    0.001 <string>:28(Read)
+    99329   33.269    0.000   60.730    0.001 <string>:20(CRead)
+    57018    0.144    0.000   48.135    0.001 <string>:153(TextDict)
+149983/57018    0.426    0.000   30.114    0.001 <string>:188(EntryToks)
+   373655    2.658    0.000   29.653    0.000 <string>:259(TextReftokens)
+    99329    0.150    0.000   27.240    0.000 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/genericpath.py:16(exists)
+    99458   27.093    0.000   27.093    0.000 {built-in method posix.stat}
+   798490    9.632    0.000   25.024    0.000 <string>:288(ReftextRefdict)
+    57018   17.103    0.000   17.273    0.000 <string>:196(TextHeadtoks)
+    40518    0.171    0.000   14.984    0.000 <string>:432(EntryMentioners)
+   307774    0.210    0.000   14.273    0.000 <string>:392(<listcomp>)
+   366978   14.066    0.000   14.066    0.000 <string>:23(WordtextLangWord)
+
+    9694349 function calls (9588538 primitive calls) in 59.303 seconds
+
+   Ordered by: internal time
+   List reduced from 304 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    41764   31.333    0.001   31.333    0.001 {built-in method posix.stat}
+    41764    9.247    0.000   40.730    0.001 <string>:20(CRead)
+    24230    5.492    0.000    5.552    0.000 <string>:196(TextHeadtoks)
+    98684    3.000    0.000    3.000    0.000 <string>:23(WordtextLangWord)
+   227865    2.954    0.000    6.338    0.000 <string>:288(ReftextRefdict)
+        2    0.938    0.469    1.271    0.635 <string>:14(dev_DAGTransitiveClosure)
+   111809    0.605    0.000    7.526    0.000 <string>:259(TextReftokens)
+    53077    0.359    0.000    0.426    0.000 <string>:445(DictAllRefs)
+    17071    0.351    0.000   57.690    0.003 <string>:185(EntryDirectionEntries)
+   111809    0.321    0.000    0.321    0.000 {method 'split' of 're.Pattern' objects}
+   597279    0.276    0.000    0.559    0.000 <string>:172(RefDirection)
+    41764    0.243    0.000    0.441    0.000 <string>:67(FilenameHash)
+   597279    0.205    0.000    0.205    0.000 <string>:126(isPastward)
+   378252    0.193    0.000    0.193    0.000 {method 'split' of 'str' objects}
+    41764    0.174    0.000    0.232    0.000 <string>:53(WordwikiWordfilename)
+  1528453    0.161    0.000    0.161    0.000 {method 'append' of 'list' objects}
+   142823    0.146    0.000    0.266    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+56520/24230    0.140    0.000    7.679    0.000 <string>:188(EntryToks)
+   117589    0.135    0.000    0.402    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:210(feedToken)
+   505108    0.124    0.000    0.124    0.000 <string>:180(DirectionReverse)
+
+
+Thu Mar 17 13:42:20 2022    cProfile_aux.stats
+
+         9694349 function calls (9588538 primitive calls) in 59.303 seconds
+
+   Ordered by: cumulative time
+   List reduced from 304 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   59.305   59.305 {built-in method builtins.exec}
+        1    0.075    0.075   59.305   59.305 <string>:1(<module>)
+        1    0.002    0.002   59.230   59.230 <string>:230(Cognates)
+        2    0.067    0.033   57.760   28.880 <string>:143(EntriesDirectionClosure)
+    17071    0.351    0.000   57.690    0.003 <string>:185(EntryDirectionEntries)
+    17031    0.023    0.000   57.677    0.003 <string>:212(EntryDirectionChpars)
+    53874    0.060    0.000   42.592    0.001 <string>:455(EntryRefs)
+    90677    0.090    0.000   42.162    0.000 <string>:405(WordLangMaybedict)
+    90677    0.121    0.000   42.040    0.000 <string>:143(WordwikiDict)
+    41764    0.033    0.000   40.763    0.001 <string>:28(Read)
+    41764    9.247    0.000   40.730    0.001 <string>:20(CRead)
+    41764    0.076    0.000   31.409    0.001 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/genericpath.py:16(exists)
+    41764   31.333    0.001   31.333    0.001 {built-in method posix.stat}
+    24230    0.054    0.000   13.445    0.001 <string>:153(TextDict)
+    17071    0.078    0.000   13.260    0.001 <string>:432(EntryMentioners)
+56520/24230    0.140    0.000    7.679    0.000 <string>:188(EntryToks)
+   111809    0.605    0.000    7.526    0.000 <string>:259(TextReftokens)
+   227865    2.954    0.000    6.338    0.000 <string>:288(ReftextRefdict)
+    24230    5.492    0.000    5.552    0.000 <string>:196(TextHeadtoks)
+    86255    0.057    0.000    3.057    0.000 <string>:392(<listcomp>)
+
+
+>>> profile("cogs=Cognates('have', 'en')")
+
+
+        6167822 function calls (6094301 primitive calls) in 6.546 seconds
+
+   Ordered by: internal time
+   List reduced from 278 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    17071    2.886    0.000    3.032    0.000 <string>:20(CRead)
+    53077    0.366    0.000    0.429    0.000 <string>:445(DictAllRefs)
+    17071    0.292    0.000    5.577    0.000 <string>:185(EntryDirectionEntries)
+        2    0.268    0.134    0.657    0.329 <string>:14(dev_DAGTransitiveClosure)
+   597279    0.247    0.000    0.510    0.000 <string>:172(RefDirection)
+   597279    0.191    0.000    0.191    0.000 <string>:126(isPastward)
+       16    0.131    0.008    0.131    0.008 {built-in method _posixsubprocess.fork_exec}
+    17071    0.119    0.000    0.119    0.000 {built-in method posix.stat}
+   142823    0.118    0.000    0.220    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+   117589    0.109    0.000    0.330    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:210(feedToken)
+   505108    0.107    0.000    0.107    0.000 <string>:180(DirectionReverse)
+90553/17032    0.097    0.000    0.226    0.000 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/copy.py:128(deepcopy)
+    36803    0.084    0.000    0.501    0.000 <string>:92(InfInherit)
+    17071    0.073    0.000    0.133    0.000 <string>:67(FilenameHash)
+    90677    0.072    0.000    0.140    0.000 <string>:405(WordLangMaybedict)
+   530312    0.071    0.000    0.071    0.000 <string>:129(isFutureward)
+        2    0.067    0.033    5.644    2.822 <string>:143(EntriesDirectionClosure)
+   704214    0.065    0.000    0.065    0.000 {method 'append' of 'list' objects}
+    36803    0.063    0.000    0.609    0.000 <string>:114(EntryInferlinks)
+    17071    0.060    0.000    0.080    0.000 <string>:53(WordwikiWordfilename)
+
+
+Thu Mar 17 13:47:21 2022    cProfile_aux.stats
+
+         6167822 function calls (6094301 primitive calls) in 6.546 seconds
+
+   Ordered by: cumulative time
+   List reduced from 278 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    6.549    6.549 {built-in method builtins.exec}
+        1    0.031    0.031    6.549    6.549 <string>:1(<module>)
+        1    0.003    0.003    6.518    6.518 <string>:230(Cognates)
+        2    0.067    0.033    5.644    2.822 <string>:143(EntriesDirectionClosure)
+    17071    0.292    0.000    5.577    0.000 <string>:185(EntryDirectionEntries)
+    17031    0.019    0.000    5.563    0.000 <string>:212(EntryDirectionChpars)
+    17071    0.059    0.000    3.489    0.000 <string>:432(EntryMentioners)
+    17071    0.011    0.000    3.043    0.000 <string>:28(Read)
+    17071    2.886    0.000    3.032    0.000 <string>:20(CRead)
+        2    0.268    0.134    0.657    0.329 <string>:14(dev_DAGTransitiveClosure)
+    36803    0.063    0.000    0.609    0.000 <string>:114(EntryInferlinks)
+    53874    0.039    0.000    0.568    0.000 <string>:455(EntryRefs)
+   597279    0.247    0.000    0.510    0.000 <string>:172(RefDirection)
+    36803    0.084    0.000    0.501    0.000 <string>:92(InfInherit)
+    53077    0.366    0.000    0.429    0.000 <string>:445(DictAllRefs)
+   117589    0.109    0.000    0.330    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:210(feedToken)
+90553/17032    0.097    0.000    0.226    0.000 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/copy.py:128(deepcopy)
+   142823    0.118    0.000    0.220    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+   597279    0.191    0.000    0.191    0.000 <string>:126(isPastward)
+        1    0.000    0.000    0.171    0.171 /usr/local/Cellar/python@3.9/3.9.10/Frameworks/Python.framework/Versions/3.9/lib/python3.9/multiprocessing/context.py:115(Pool)
+
+
+
+>>> profile("cogs=Cognates('have', 'en')")
+
+
+  10107329 function calls (9999044 primitive calls) in 35.140 seconds
+
+   Ordered by: internal time
+   List reduced from 562 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    42220   14.799    0.000   15.378    0.000 <string>:20(CRead)
+    24677    5.905    0.000    5.970    0.000 <string>:196(TextHeadtoks)
+   117198    4.012    0.000    4.012    0.000 <string>:23(WordtextLangWord)
+   266581    3.175    0.000    7.618    0.000 <string>:288(ReftextRefdict)
+   123371    0.652    0.000    8.921    0.000 <string>:259(TextReftokens)
+    42349    0.447    0.000    0.447    0.000 {built-in method posix.stat}
+   123371    0.358    0.000    0.358    0.000 {method 'split' of 're.Pattern' objects}
+    17071    0.332    0.000   34.057    0.002 <string>:185(EntryDirectionEntries)
+    53077    0.320    0.000    0.384    0.000 <string>:445(DictAllRefs)
+    17020    0.269    0.000    0.269    0.000 <string>:30(<listcomp>)
+   597279    0.260    0.000    0.529    0.000 <string>:172(RefDirection)
+        2    0.259    0.130    0.904    0.452 <string>:14(dev_DAGTransitiveClosure)
+    42220    0.231    0.000    0.429    0.000 <string>:67(FilenameHash)
+   417488    0.210    0.000    0.210    0.000 {method 'split' of 'str' objects}
+   597279    0.194    0.000    0.194    0.000 <string>:126(isPastward)
+  1642398    0.166    0.000    0.166    0.000 {method 'append' of 'list' objects}
+    36803    0.164    0.000    0.846    0.000 <string>:114(EntryInferlinks)
+    42220    0.156    0.000    0.214    0.000 <string>:53(WordwikiWordfilename)
+59167/24677    0.145    0.000    9.079    0.000 <string>:188(EntryToks)
+   142823    0.143    0.000    0.259    0.000 /Users/tbt/programming/python/vocab/main/abstract_regex.py:220(processTransition)
+
+
+Thu Mar 17 13:48:19 2022    cProfile_aux.stats
+
+         10107329 function calls (9999044 primitive calls) in 35.140 seconds
+
+   Ordered by: cumulative time
+   List reduced from 562 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     22/1    0.000    0.000   35.144   35.144 {built-in method builtins.exec}
+        1    0.002    0.002   35.142   35.142 <string>:230(Cognates)
+        2    0.054    0.027   34.110   17.055 <string>:143(EntriesDirectionClosure)
+    17071    0.332    0.000   34.057    0.002 <string>:185(EntryDirectionEntries)
+    17031    0.021    0.000   34.042    0.002 <string>:212(EntryDirectionChpars)
+    53874    0.058    0.000   29.078    0.001 <string>:455(EntryRefs)
+    90677    0.082    0.000   28.688    0.000 <string>:405(WordLangMaybedict)
+    90677    0.111    0.000   28.578    0.000 <string>:143(WordwikiDict)
+    42220    0.037    0.000   15.415    0.000 <string>:28(Read)
+    42220   14.799    0.000   15.378    0.000 <string>:20(CRead)
+    24677    0.056    0.000   15.276    0.001 <string>:153(TextDict)
+59167/24677    0.145    0.000    9.079    0.000 <string>:188(EntryToks)
+   123371    0.652    0.000    8.921    0.000 <string>:259(TextReftokens)
+   266581    3.175    0.000    7.618    0.000 <string>:288(ReftextRefdict)
+    24677    5.905    0.000    5.970    0.000 <string>:196(TextHeadtoks)
+   101404    0.066    0.000    4.078    0.000 <string>:392(<listcomp>)
+   117198    4.012    0.000    4.012    0.000 <string>:23(WordtextLangWord)
+    17071    0.062    0.000    3.145    0.000 <string>:432(EntryMentioners)
+        2    0.259    0.130    0.904    0.452 <string>:14(dev_DAGTransitiveClosure)
+    36803    0.164    0.000    0.846    0.000 <string>:114(EntryInferlinks)
+
+
+stats of language from 'have', 'en'
+[('mhn', 1), ('sqj-pro', 1), ('lv', 1), ('iir-pro', 1), ('swg', 1), ('gmw-ecg', 1), ('osc', 1), ('inc-pro', 1), ('sa', 1), ('ira-pro', 1), ('hac', 1), ('kmr', 1), ('ckb', 1), ('sdh', 1), ('lki', 1), ('br', 1), ('kw', 1), ('xcb', 1), ('spx', 1), ('gme-cgo', 1), ('mi', 1), ('fiu-fin-pro', 1), ('krl', 1), ('vep', 1), ('smi-pro', 1), ('se', 1), ('sma', 1), ('tft', 1), ('pey', 1), ('kl', 1), ('tg', 1), ('gur', 1), ('roa-leo', 1), ('arc', 1), ('he', 1), ('obt', 1), ('mwl', 1), ('jv', 1), ('bjn', 1), ('ban', 1), ('mrw', 1), ('klw', 1), ('nwc', 1), ('new', 1), ('xct', 1), ('bo', 1), ('zh', 1), ('cmg', 1), ('mn', 1), ('pka', 1), ('pmh', 1), ('mr', 1), ('pa', 1), ('pi', 1), ('mkh-okm', 1), ('lo', 1), ('mag', 1), ('gbm', 1), ('owl', 1), ('vo', 1), ('tet', 1), ('pox', 1), ('roa-cha', 1), ('ext', 1), ('vls', 1), ('ccc', 1), ('eu', 1), ('my', 1), ('haw', 1), ('abe', 1), ('hif', 1), ('ruo', 1), ('ur', 1), ('kbc', 1), ('be', 1), ('ka', 1), ('pis', 1), ('hil', 1), ('ha', 1), ('ota', 1), ('gmw-jdt', 2), ('bar', 2), ('gmw-rfr', 2), ('brc', 2), ('jvd', 2), ('wlm', 2), ('fax', 2), ('gmq-gut', 2), ('yo', 2), ('sk', 2), ('roa-tar', 2), ('egl', 2), ('mk', 2), ('km', 2), ('gu', 2), ('lad', 2), ('ar', 2), ('pdt', 2), ('nci', 2), ('roa-lor', 2), ('sw', 2), ('as', 2), ('ko', 2), ('nan', 2), ('crs', 2), ('gmq-oda', 3), ('ovd', 3), ('hrx', 3), ('cel-bry-pro', 3), ('axm', 3), ('gmw-cfr', 3), ('nrn', 3), ('lld', 3), ('co', 3), ('uz', 3), ('ist', 3), ('bg', 3), ('th', 3), ('crh', 3), ('gcf', 3), ('wa', 3), ('uk', 3), ('grk-pro', 4), ('cel-pro', 4), ('gmq-scy', 4), ('mt', 4), ('et', 4), ('gv', 4), ('pov', 4), ('ms', 4), ('hu', 4), ('itc-pro', 5), ('fa', 5), ('pdc', 5), ('li', 5), ('pcd', 5), ('mul', 5), ('dlm', 5), ('an', 5), ('pro', 5), ('mxi', 5), ('yol', 6), ('wym', 6), ('srn', 6), ('frp', 6), ('io', 6), ('lou', 6), ('cs', 6), ('kea', 6), ('ine-pro', 7), ('cim', 7), ('frr', 7), ('sga', 7), ('gd', 7), ('no', 7), ('lmo', 7), ('nap', 7), ('pms', 8), ('ja', 8), ('mfe', 8), ('hy', 9), ('osp', 9), ('rgn', 9), ('roa-brg', 9), ('gsw', 10), ('grc', 10), ('cy', 10), ('dcr', 10), ('tr', 10), ('stq', 11), ('gmq-osw', 11), ('ga', 11), ('tpi', 11), ('eo', 12), ('nds', 13), ('nds-de', 13), ('pap', 13), ('sh', 13), ('ht', 13), ('gmq-bot', 14), ('sc', 14), ('ceb', 14), ('fur', 14), ('fi', 14), ('tl', 14), ('ru', 14), ('lij', 15), ('ofs', 16), ('gmw-pro', 17), ('gml', 18), ('odt', 18), ('vec', 18), ('sq', 19), ('rup', 19), ('roa-opt', 19), ('pl', 19), ('gem-pro', 20), ('frm', 20), ('id', 21), ('gmh', 22), ('el', 24), ('lb', 25), ('got', 25), ('rm', 25), ('goh', 26), ('osx', 28), ('yi', 28), ('scn', 28), ('fy', 29), ('oc', 30), ('dum', 31), ('fo', 35), ('sco', 40), ('non', 41), ('af', 53), ('fro', 56), ('is', 65), ('nrf', 67), ('ang', 75), ('enm', 110), ('da', 176), ('ca', 183), ('gl', 214), ('ro', 231), ('sv', 239), ('nl', 314), ('ast', 338), ('es', 464), ('nn', 477), ('pt', 576), ('nb', 597), ('de', 876), ('fr', 1578), ('it', 2366), ('en', 3175), ('la', 3409)]
+
+
+

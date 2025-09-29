@@ -1,0 +1,68 @@
+
+fix function names, distinglish wordtexts/ wikiwordtexts/ rawwordtexts better
+
+re-setup profiling that shows function calls and such. 
+
+move to sqlite or similar. basically have a big table that's like 
+wordtext language xml_file parsed_xml(ujson?) inlinker_list(ujson?) last_parsed_timestamp actual_pastwards actual_pastwards_timestamp actual_futurewards actual_futurewards_timestamp
+maybe also a table that caches the LUA thingies? idk about efficiency.
+build index on word + lang
+this should save a lot of efficiency? eg the article parsing is then cached, and if you haven't changed the traversal strategy, the pastwards and futurewards things can be cached as well... idk if worth the compleixty though
+and would let us eliminate this QQQZZZ BS (whichi is needede to deal with Mac file system not handling capital letters!!)
+note constraint: some important development would involve changing traversal strategy, eg changing which sorts of links are considered pastward / futureward, and more importantly, adding link templates to the parser. with the later, articles have to be reparsed.
+
+test whether loading the parsed json and then ujson.loads is actually faster than loading the raw article and parsing it. should be because it's shorter, but idk. 
+would be nice to have speed comparison for Read(file) vs sql select 
+
+redo parsing in a reasonable way. but make sure it's 1. robust to badly formatted articles, and 2. fast
+
+use language models to detect when senses are the same. also use the wiktionary sense markers (which i think are somewhat sparsely used but still somewhat used so worth it for verification if nothing else)
+
+how to display multiple etymons, eg in a compound? want something like "depth first", but how to deal with a non-tree pastward set? could just do, how old is the word, but this mixes two different 'strands' together sort of randomly. for example, "economy" has "eco" and "nom" which are both substantial cognate trees of their own.
+
+how to deal with tiny particles such as "ex-" or "en-" or "de-"? they are often interesting but would, i assume, generate huge trees. i forget what's currently done with them. another example: at least currently, without sense disambig, we have that english "is" sense 2 points at "I" which has many descendants. that's inappropriate, but in some contexts that would be interesting to know; however, it might be best to say "here's where it's cognate to 'I'/'ego' etc. but i won't show that because it's big, ask for 'I' specifically if you want to see that". but, how to know how big it is? could sort of build a list of words that have big thingies, and this list grows... or just a sqlite table of sizes of a word's futureward sets and past-futureward sets. (if these sets, especially their orders, weren't so big, we could just store them... and maybe there's a way to do that, since the trees for a given word would also be the same tree as for that word's trunk.
+
+better tooling to see why links are believed
+
+better tooling to scan over random words
+
+reincorporate the abstract regex inference thing
+
+display using html  in browsre rather than text in the terminal? thereby eg allowing mouseovers (eg expanding definitions, etc) and links to wiktionary.org for easier interplay / verification / etc.
+
+cleanup the parsing!! 
+
+tooling for exploring errory things, eg negative depth in parsing, nonexistent languages, pastward loops, etc etc. often these are errors in the actual witkionary entries, or could maybe only be fixed with LM sense disambiguation.
+
+get data from users about false and missing cognates ?
+
+maybe verify against etymonline, e.g. did we discover all the cognates etymonline has? likewise other etymological dictionaries?
+
+maybe somehow make use of wiktionary template handling code, instead of awful partial handrolled thing
+
+taking transitive closure ouught to be faster? maybe first take immediate_lefts, then use that to get the closure? also, maybe don't even need transitive closure? though, do want it for e.g. exclude lists and such for printing. esp. since the exclusions are computed dynamically depending on what's already been computed. 
+
+could do a more complicated thing to show things that are too much and go off the right side, instead taking a right turn and go down (where now down means later), though wouldn't obviously accomodate branching...
+
+somehow display descent on the trunk
+
+pipe dream: show the sound change rules somehow ???
+
+colorcode definitions as slightly dimmer?
+
+use import + reload instead of exec? in particular, show which functions are being imported?
+
+maybe show full definition if there's room?
+
+shorten more languages. in particular, in general shorten Middle -> M, Old -> O, and then apply shortening to the rest of the langname
+
+don't show ':' when no def?
+
+maybe study the order structure. interesting and also could say how to deal with orders better. eg look at number of immediate pastwards, immediate futurewards, vs all pastwards, all futurewards. etc.  
+
+important but maybe messy: show "evidence traces". that is, make a mode that can take longer but then shows why a particular sense is included, and why there's a particular ordering included.
+
+
+incorporate data from the given cog and noncog tags
+
+

@@ -1,0 +1,43 @@
+
+240808    09:47:53    
+maybe go nonlinear--use inferences rules or whatever. maybe after reaching fixpoint, we... ah... we have a hierarchy of rules... we apply the highest priority until fixed. then we apply the next lowest and so on-- but only until we get 1 change. then restart. 
+maybe generally think of it in terms of narrowing--track both in /exclusions, increasing both sets...
+combining these automatically gives us some reasonable priority of rules...
+
+
+240808    19:21:47    
+see traversing.py
+WordposetWordsenses_Includedsenses
+
+def WordposetWordsenses_Includedsenses(poset, starting_included_senses):
+   ClusionWord_Senses = {'included':{}, 'excluded':{}}
+
+   def word_explicitly_covered_by(word, clusion):
+      return any(covering_sense in ClusionWord_Senses[clusion].get(covering_sense.word, set()) for covering_sense in SQL_WORD_Direction_Coveringsenses_CACHE_Select(word, poset.direction))
+
+   def word_directly_covered_by(word, clusion):
+      return any(word in SenseDirection_Wordrefs(sense, poset.direction) for _, senses in ClusionWord_Senses[clusion].items() for sense in senses)
+
+   def sense_is_backlinking(sense):
+      return any(len(ClusionWord_Senses['included'].get(target_word, set())) > 0 
+               for target_word in SenseDirection_Wordrefs(sense, Direction_Reversed(poset.direction)))
+
+   for word in poset.domain:
+      if word in starting_included_senses:
+         word_includesenses_update(word, starting_included_senses[word])
+      elif all(len(ClusionWord_Senses['included'][prior_word])==0 for prior_word in poset.immediate_priors[word]):
+         word_includesenses_update(word, set())
+      elif (not word_explicitly_covered_by(word, 'included')) and word_explicitly_covered_by(word, 'excluded'):
+         word_includesenses_update(word, set())
+      #experiminental :
+#      elif (not word_directly_covered_by(word, 'included')) and word_directly_covered_by(word, 'excluded'):
+#         word_includesenses_update(word, set())
+
+#      elif all the reasons saying that this word is here... wait do we mean direct reasons, or all reasons including skips..??? have been excluded...... o r, if any link from a sense to this word...
+      else:
+         backlinking_senses = set(filter(sense_is_backlinking, Word_AllRealGivenSenses(word)))
+         word_includesenses_update(word, Word_GivensOrPlaceholder(word) if len(backlinking_senses) == 0 else backlinking_senses)
+
+   return ClusionWord_Senses['included']
+
+

@@ -1,0 +1,211 @@
+radix by tsvibt
+
+
+NOTE april 2023: the below is at least a little out of date. the instructions have a good chance of working, but may not work. the system has since been updated to use SQLite instead of a horrendous blob of files. this is much less messy. however, the change seems to have partially broken things; eg now the output mysteriously has duplicates, which should have been ruled out by the printing code. so something is messed up and ther esults will for now be not great. 
+
+WARNING: this is the development repo for radix. so it will change w/o warning. also the current setup is extremeley janky. be warned : following the instructions below will create MILLIONS OF FILES on your computer. 
+make sure that the .gitignore file is working correctly! or whatever. probaly good to glance at it so you know what's being ignored, eg all xml files 
+
+also be warned that lots of stuff is poorly done / poorly named, some transitions are halfway through happening, lots fo stuff will change. anything might be outdated / nonsensical / unnecessary / broken etc. 
+
+also be warned that the outputs CANNOT BE TRUSTED. there may be words that are not actually cognates shown, and there may be words that are cognates but are not displayed, both by design and by error. the shortened definitions shown may from non-main senses; currently SENSES ARE NOT DISTINGUISHED
+
+works with python 3.11. probably previous versions too but idk
+
+
+step -2.
+install pyparsing, e.g.
+pip3 install pyparsing
+
+step -1. install Lua and lupa. 
+
+install lupa somehow. https://pypi.org/project/lupa/
+eg:
+pip3 install lupa
+
+then in lua directory, eg /usr/local/lib/lua/5.4, make a dir
+mkdir ustring
+and copy contexts of resources/LUA_USTRING there.
+
+i don't remember what this is (i probably never knew) but i think it's important. it's some component that wiktionary uses, and radix uses a piece of wiktionary code which uses this ustring thing. very janky.
+
+[[[
+old instructions (the link seems broken!):
+now put this:
+https://github.com/wikimedia/mediawiki-extensions-Scribunto/tree/master/includes/engines/LuaCommon/lualib/ustring
+in lua directory. so e.g.:
+# WARNING dec 15 2022: i forget exactly what this is but it's important, lua or something won't work without it. 
+if svn not available:
+brew install subversion
+then in lua directory, eg /usr/local/lib/lua/5.4
+snv checkout https://github.com/wikimedia/mediawiki-extensions-Scribunto/trunk/includes/engines/LuaCommon/lualib/ustring
+note, maybe have to make this directory. can try running it and seeing the error that happens, it says where lupa looks...
+(note, the url is not identicall to above , i i think svn needs that...)
+now, our lua may be ahead of the one used in scribunto / uscript. so, we have to make this change: 
+:%s/unpack/table.unpack/g
+it's in two files. use grep / rg. idk if the file other than ustring/ustring.lua matters.
+]]]
+
+0. Try out parsing with the included file mill-initial.xml, which is just the first 1million lines in some full wiktionary xml dump. so create a file named config.py (it's .gitignored!) like:
+cp example-config.y config.py
+
+then uncomment  
+#WiktionaryXMLfile = "resources/mill-initial.xml"
+so it's like 
+WiktionaryXMLfile = "resources/mill-initial.xml"
+
+and the other such linhes are commented. 
+
+then run 
+
+```python3 xmldumpparse.py```
+
+should take like a minute or something. but you'll probably find you have to install some packages. 
+
+the result should be that there's a directory like  
+
+wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/
+
+except it says mill-initial. it should have 3 dirs: entries, errors, and mentions-index. the file in errors is well-populated with errors, the entries directory is full of directories most of which have just one file which is the xml of one wiktionary article, and the mentions-index dir has dirs with a few dirs which have some files like
+
+
+~/programming/radix/wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/mentions-index/1805/egg/en.xml
+
+which contain stuff like
+
+
+Ancient Greek !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/3429/ᾠόν
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/4632/eggless
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/0037/egg hunt
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/2913/egged
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/1589/eggheaded
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/2040/frikadelle
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/0188/eggfly
+Faroese !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/1805/egg
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/4635/egge
+Danish !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/1230/æg
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/3184/egging
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/2053/eggstraordinary
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/2295/egger
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/1285/eggman
+English !! wiktionary-parse-resources---enwiktionary-20221120-pages-meta-current22.11.30-20:51:24/entries/4243/eggbeater
+
+or whatever. 
+
+this will not enable radix to do anything interesting, as most words will not be there. but if you wanted you could run radix on a word that's there, to get boring output but to check that it works at all? 
+
+Ok if that worked, now do it for a whole big dump:
+
+1. get a dump
+
+https://dumps.wikimedia.org/enwiktionary/
+
+eg  latest regular dump at the moment:
+https://dumps.wikimedia.org/enwiktionary/20221201/
+
+search for:
+All pages, current versions only
+should be roughly 1 gb. looks like:
+enwiktionary-20220201-pages-meta-current.xml.bz2 1.1 GB
+
+download and expand.
+unzip / expand (double click on mac...)
+put it in radix/resources
+
+
+2. parse it!
+
+xmldumpparse.py
+does:
+make a directory
+in there make an entries directory, an index file, and an indexes directory
+parse out one xml article
+if it's in a certain set, exclude it
+else:
+write it to a file in entries
+parse it, and for every link there, write a reference to this article in the index file for the linked word
+
+so: change 
+WiktionaryXMLfile 
+in xmldumpparse.py  to be your file, like 
+WiktionaryXMLfile = "resources/enwiktionary-DATE...current.xml"
+run 
+python3 xmldumpparse.py
+
+wait like 10 hours
+
+3. if it worked you have a horrible giant directory. 
+
+you can now run radix.
+see beginning of file radix.py for commands: execute radix.py, get cognates, printcognates. you'll get an error telling you that WikiDir doesn't exist, change it in parsearticle.py
+
+4. lmk how it goes
+
+
+# python 3.9.10
+# lua 5.4.3 maybe? and lupa
+# iterm2 or other for millions of colors (ansi color codes)
+https://github.com/ultrajson/ultrajson
+##### WWWWAAAAAARNNNIIINNNGGGG this files is broken at the moment halfway through a transition, don't use
+#https://dumps.wikimedia.org/enwiktionary/latest/
+
+230923    16:59:42    
+from xmldumpparse
+# https://en.wiktionary.org/wiki/Category:Proto-Indo-European_language
+# this includes all and only proto-indo-european languages. radix is only tested with these languages, and probably wouldn't work well with other language families. e.g. hebrew or other root-based lexicons might be better displayed some other way; mandarin or similar IIUC have little morphology except for compounding; radix probably doesn't handle compounds well, so more would have to be done. that said, you can just put whatever languages you want here. i exclude non-PIE since that's what i'm interested and i don't want too much extra stuff. this does occlude some info, eg "algorithm" doesn't get traced back, even though it's ultimate root is persian (PIE), since it goes through arabic (2 hops; i think a single hop should be bridged, not sure). spanish i'm told has a lot of arabic words.
+# maybe include arabic + ancestors; also hebrew?
+
+
+"""
+
+import os
+for directory in sorted(next(os.walk('.'))[2]):
+   if directory.startswith(Wiktionary_database_start) and directory.endswith('.db'):
+      WikiDir = directory
+
+import sqlite3
+db_connection = sqlite3.connect(WikiDir)
+db_cursor = db_connection.cursor()
+res = db_cursor.execute("SELECT * FROM Word_Lang_Parsed WHERE word='book' AND lang='en'").fetchall()
+res = db_cursor.execute("SELECT * FROM Word_Lang_Parsed WHERE word='dictionary' AND lang='en'").fetchall()
+res = db_cursor.execute("SELECT * FROM Word_Lang_Parsed WHERE word='steigen' AND lang='de'").fetchall()
+res = db_cursor.execute("SELECT * FROM Word_XML WHERE word='book'").fetchall()
+res = db_cursor.execute("SELECT * FROM Word_Lang_Inlinkers WHERE word='dictus' AND lang='la'").fetchall()
+
+db_connection.execute("VACUUM")
+
+#OUT OF DATE
+db_cursor.execute('''CREATE INDEX Index_WordLangParsed_WordLang ON Word_Lang_Parsed (word, lang)''')
+
+db_cursor.execute('''CREATE INDEX Index_WordXML_Word ON Word_XML (word)''')
+
+db_cursor.execute('''CREATE INDEX Index_WordLangInlinkers_WordLang ON Word_Lang_Inlinkers (word, lang)''')
+
+"""
+
+#writing_errorDir = writing_parseDir + 'errors/'
+#override from parsearticle
+#logFile = writing_errorDir + 'warning-log.txt'
+#os.makedirs(writing_errorDir)
+ 
+# this is because on my mac, case is ignored and 'ß' is treated as 'ss'. terrible. 
+#def TitleToFile(title):
+#   title = title.replace('/','::')
+#   ret = ''
+#   for k in title:
+#      if k.isupper():
+#         ret+='QQQ'
+#      if k == 'ß':
+#         ret+='ZZZ'
+#      ret+=k
+#   return ret
+
+
+
+#   db_connection = sqlite3.connect(WikiDir)
+
+# the xml dump has very very roughly 31 bytes / line on average
+
+
+
+

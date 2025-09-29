@@ -1,0 +1,507 @@
+
+240220    16:31:10    
+:!rg Poset                                                                                                                                                                                       
+sql.py:SQL_Table('Wordtext_Lang_FuturePoset', ['WORD'], 'future_poset', storage={'pickle', 'compress'})
+
+
+new_radix.py:   return Poset(Word_Directionwardset)
+new_radix.py:   tree_poset = Time(lambda: Poset(all_immediate_futurewards, direction='futureward'), 'all futures')
+new_radix.py:   trunk_poset = Time(lambda: PosetDomain_Restricted(tree_poset, {word} | tree_poset.all_rights[word], reverse=True), 'trunk')
+
+ordering.py:class Poset:
+ordering.py:def PosetDomain_Restricted(poset, domain, reverse=False):
+ordering.py:   return Poset(Restricted_lefts, direction=direction)
+ordering.py:def PosetFun_Map(fun, poset):
+ordering.py:   return Poset({fun(item):set(map(fun,lefts)) for item,lefts in poset.immediate_lefts.items()})
+
+printing/printing.py:      i:PosetDomain_Restricted(cognates[i], Dict_Nonempties(sense_decorations[i])) for i in ['trunk','tree']}
+printing/printing.py:   exclusionSet = Poset_Exclusionset(cognates['tree'])
+printing/printing.py:def Poset_Exclusionset(poset):
+
+precomputing/6_pastmost_futureposet.py:to_do_1 = {'generator source':[(x,) for x in SQL_AllPastmosts.Unstore(SQL_AllPastmosts.RowIterator().fetchone()[0])], 'function':FUN, 'target table':SQL_Wordtext_Lang_FuturePoset, 'message': ''}
+
+interface.py:PIE_langcode_poset = Poset(ast.literal_eval(Read(RadixRootdir + 'resources/proto-indo-european-langs-tree.txt')))
+
+
+https://en.wikipedia.org/wiki/Preorder
+
+we have to be able to compute the transitive closure and the immediates. 
+
+ok so we'l have to make an arbitrary choice in sorting ; which is fine but we'll have to break the ties...
+   for word in reversed(poset.domain):
+
+so here... 
+
+      elif all([Word_Includedsenses[right_word] == set() for right_word in poset.immediate_rights[word]]):
+         Word_Includedsenses[word] = set()
+well i supose this is just fine; the equivalents will be empty (for the first of them)... 
+wait no
+this is bad in that it could miss that a later equivalent gets a sense admitted, and then that should have allowed a sense from an *earlier* equivalent to be admitted. (tbc this isn't worse than the present thing, which also misses this). but, to have senses be canonical, we will need domain sorting to be canonical... actually i'm not sure what's needed here... but i think having preorder is at least not a detriment over the current thing? 
+
+
+   def word_explicitly_covered(word, complement=False):
+      result = any([not SenseDirection_Wordrefs(right_sense, poset.direction).isdisjoint(poset.all_lefts[word] | {word})
+                 for right_word in poset.all_rights[word] for right_sense in word_excludedsenses(right_word, complement)])
+      return result 
+idk... ithink it's fine? 
+
+import copy
+
+# before/after, up/down, ante/post, above/below, lesser/greater, prime/ultima, fore/back, previous/next, firstward/lastward, initial/final, Prior / Posterior , before/after, anterior/posterior, prior/ulterior. ok i think i want prior/ulterior? not sure.
+# it's presumed that the domain is the KEYS of Item_Givenlefts, i.e. everyone has an entry even if its empty
+class Poset:
+   def __init__(self, Item_Givenlefts, direction=None, give_args=None):
+      if give_args == None:
+         self.given_lefts = Item_Givenlefts
+         self.all_lefts = DAGTransitiveClosure(Item_Givenlefts)
+         self.immediate_lefts = GivenleftsAlllefts_Immediatelefts(Item_Givenlefts, self.all_lefts)
+         self.all_rights = Order_Reversed(self.all_lefts)
+         self.immediate_rights = Order_Reversed(self.immediate_lefts)
+         self.domain = ImmediateleftsImmediaterights_Sorted(self.immediate_lefts, self.immediate_rights)
+         assert len(self.domain) == len(self.all_lefts) == len(self.all_rights) == len(self.immediate_lefts) == len(self.immediate_rights)
+         self.direction = direction
+      else:
+         #TODO : maybe enable directly constructing poset. for efficiency
+         pass
+
+def unionfold(sets):
+   return set().union(*sets)
+
+def Remove_uptoK_cycles(Item_Lefts, k):
+   mprint('removing up to', k, 'cycles')
+   for i in range(1,k+1):
+      RemoveKcycles(Item_Lefts, i)
+
+def RemoveKcycles(Item_Lefts, k):
+   mprint('removing', k, 'cycles...')
+   for k_sequence in Lefts_k_sequences(Item_Lefts, k):
+      if k_sequence[0] in Item_Lefts[k_sequence[-1]]:
+#         have to recheck because lefts may have changed
+         if all((j == len(k_sequence)-1) or (k_sequence[j+1] in Item_Lefts[k_sequence[j]]) for j in range(len(k_sequence))):
+            mprint(' and '.join(map(str, k_sequence)), 'forms a ' + str(k) + '-cycle')
+            to_remove_index = k_sequence.index(max(k_sequence))
+            Item_Lefts[k_sequence[to_remove_index-1]].remove(k_sequence[to_remove_index])
+#         Item_Lefts[k_sequence[-1]].remove(k_sequence[0])
+   mprint('done removing', k, 'cycles')
+
+def Lefts_k_sequences(Item_Lefts, k):
+   for x in Item_Lefts:
+      for seq in Lefts_item_k_sequences(Item_Lefts, x, k):
+         yield seq
+
+#this may be BAD because of modifying things while iterated over them... but maybe it's fine for the same reason as the dumb version? 
+def Lefts_item_k_sequences(Item_Lefts, x, k):
+   if k==1:
+      yield [x]
+   else:
+      for y in list(Item_Lefts[x]):
+#      for y in Item_Lefts[x]:
+         for seq in Lefts_item_k_sequences(Item_Lefts, y, k-1):
+            yield [x] + seq
+
+
+def AssertTransitivelyClosed(Item_Lefts):
+   mprint('checking transitive closure')
+   #TODO reuse the sequenc thing above after testing
+   for x in Item_Lefts:
+      for y in Item_Lefts[x]:
+         for z in Item_Lefts[y]:
+            if z not in Item_Lefts[x]:
+               raise Exception('order not transitively closed:', z, 'in', y, 'in', x, 'but', z, 'not in', x)
+
+
+
+def DAGTransitiveClosure(Item_Givenlefts):
+   return NEW_DAGTransitiveClosure(Item_Givenlefts, 2)
+
+def NEW_DAGTransitiveClosure(Item_Givenlefts, cycle_bound):
+   Remove_uptoK_cycles(Item_Givenlefts, cycle_bound)
+   mprint("taking transitive closure")
+   # probly just mve ths into the thing. poset.
+   Item_Givenrights = Order_Reversed(Item_Givenlefts)
+   remaining_domain = set(Item_Givenlefts.keys())
+   new_candidates = set(remaining_domain)
+   Item_Alllefts = {}
+   while len(remaining_domain)>0:
+      madeprogress = False
+      candidates = new_candidates
+      new_candidates = set()
+      for x in list(candidates):
+         if x in remaining_domain and not any([y in remaining_domain for y in Item_Givenlefts[x]]):
+            remaining_domain.remove(x)
+            Item_Alllefts[x] = unionfold([{y}|Item_Alllefts[y] for y in Item_Givenlefts[x]])
+            new_candidates |= Item_Givenrights[x]
+            madeprogress = True
+      if not madeprogress:
+         # well, if we do it this way, we shouldn't use uptoK, just do K. 
+         return NEW_DAGTransitiveClosure(Item_Givenlefts, cycle_bound + 1)
+   mprint("done taking transitive closure")
+   return Item_Alllefts
+
+def GivenleftsAlllefts_Immediatelefts(Item_Givenlefts, Item_Alllefts):
+   mprint('computing immediate lefts')
+#   if slow, can maybe speed up a lot by just checking each given left whether it's in the lefts of the others.... idk. 
+   return {x: Item_Givenlefts[x] - unionfold([Item_Alllefts[y] for y in Item_Givenlefts[x]])
+                          for x in Item_Givenlefts.keys()}
+
+def SymmetricReflexiveTransitive(dom, rel):
+   equivalents = {x: set([x]) for x in dom}
+   for (x,y) in rel:
+      s = equivalents[x] | equivalents[y]
+      for z in s:
+         equivalents[z] = s
+   return equivalents
+
+import heapq
+
+class EfficientHeap:
+   def __init__(self):
+      self.heap = []
+      self.membership_set = set()
+   def push(self, value):
+      if value not in self.membership_set:
+         heapq.heappush(self.heap, value)
+         self.membership_set.add(value)
+   def pop(self):
+      if self.heap:
+         popped_value = heapq.heappop(self.heap)
+         self.membership_set.remove(popped_value)
+         return popped_value
+      else:
+         raise IndexError("pop from an empty heap")
+   def contains(self, value):
+      return value in self.membership_set
+   def len(self):
+      return len(self.membership_set)
+
+# could write with FIX...
+def ImmediateleftsImmediaterights_Sorted(Item_Immediatelefts, Item_Immediaterights):
+   sort = []
+   lefts_keys = set(Item_Immediatelefts.keys())
+   candidates = EfficientHeap()
+   [candidates.push(x) for x in lefts_keys if Item_Immediatelefts[x] == set()]
+   not_yet_sorted = lefts_keys - candidates.membership_set
+   while len(not_yet_sorted) > 0 or candidates.len() > 0:
+      x = candidates.pop()
+      sort.append(x)
+      for y in Item_Immediaterights[x]:
+         if not any(z in not_yet_sorted or candidates.contains(z) for z in Item_Immediatelefts[y]):
+            not_yet_sorted.discard(y)
+            candidates.push(y)
+   return sort
+
+#https://codewiz.app/app/chat/python/eflHbV8iHnDQow6ZC6gX
+def Order_Reversed(Item_Lefts):
+   all_rights = {key:set() for key in Item_Lefts}
+   for right, lefts in Item_Lefts.items():
+      for left in lefts:
+         all_rights[left].add(right)
+   return all_rights
+
+def itemnexts_histogram(item_nexts):
+   histogram = {}
+   for nexts in item_nexts.values():
+      Histogram_add(histogram, len(nexts))
+   return histogram
+
+def print_histogram(histogram, to_reverse=True):
+   items = sorted(histogram.items(), key=lambda x:x[0])
+   if to_reverse:
+      items = reversed(items)
+   [print(key,':',value) for key,value in items]
+
+def OrderDomain_Restricted(Item_Lefts, domain):
+   return {item: lefts & domain for item, lefts in Item_Lefts.items() if item in domain}
+
+def PosetDomain_Restricted(poset, domain, reverse=False):
+   Restricted_lefts = OrderDomain_Restricted(poset.immediate_lefts, domain)
+   if reverse:
+      Restricted_lefts = Order_Reversed(Restricted_lefts)
+   direction = poset.direction if not reverse else DirectionReverse(poset.direction)
+   return Poset(Restricted_lefts, direction=direction)
+
+def PosetFun_Map(fun, poset):
+   return Poset({fun(item):set(map(fun,lefts)) for item,lefts in poset.immediate_lefts.items()})
+
+'''
+def Remove_uptoK_cycles(Item_Lefts, k):
+   mprint('removing up to', k, 'cycles')
+   for i in range(1,k+1):
+      RemoveKcycles(Item_Lefts, i)
+
+def RemoveKcycles(Item_Lefts, k):
+   mprint('removing', k, 'cycles...')
+   for k_sequence in Lefts_k_sequences(Item_Lefts, k):
+      if k_sequence[0] in Item_Lefts[k_sequence[-1]]:
+#         have to recheck because lefts may have changed
+         if all((j == len(k_sequence)-1) or (k_sequence[j+1] in Item_Lefts[k_sequence[j]]) for j in range(len(k_sequence))):
+            mprint(' and '.join(map(str, k_sequence)), 'forms a ' + str(k) + '-cycle')
+            to_remove_index = k_sequence.index(max(k_sequence))
+            Item_Lefts[k_sequence[to_remove_index-1]].remove(k_sequence[to_remove_index])
+#         Item_Lefts[k_sequence[-1]].remove(k_sequence[0])
+   mprint('done removing', k, 'cycles')
+
+def Lefts_k_sequences(Item_Lefts, k):
+   for x in Item_Lefts:
+      for seq in Lefts_item_k_sequences(Item_Lefts, x, k):
+         yield seq
+
+#this may be BAD because of modifying things while iterated over them... but maybe it's fine for the same reason as the dumb version? 
+def Lefts_item_k_sequences(Item_Lefts, x, k):
+   if k==1:
+      yield [x]
+   else:
+      for y in list(Item_Lefts[x]):
+#      for y in Item_Lefts[x]:
+         for seq in Lefts_item_k_sequences(Item_Lefts, y, k-1):
+            yield [x] + seq
+
+
+240220    23:52:35    
+#def Order_NONSTRICTTransitiveClosure(Item_Givenlefts, Item_Givenrights, Item_Equivalents):
+#   return internal_Order_NONSTRICTTransitiveClosure(Item_Givenlefts, Item_Givenrights, Item_Equivalents, 2)
+
+#NONSTRICT
+def internal_Order_NONSTRICTTransitiveClosure(Item_Givenlefts, Item_Givenrights, Item_Equivalents):
+#def internal_Order_NONSTRICTTransitiveClosure(Item_Givenlefts, Item_Givenrights, Item_Equivalents, cycle_bound):
+   cycle_bound = 2
+   Locate_uptoK_cycles(Item_Givenlefts, Item_Equivalents, cycle_bound)
+   mprint("taking transitive closure")
+   remaining_domain, new_candidates = set(Item_Givenlefts.keys()), set(Item_Givenlefts.keys())
+   Item_Alllefts = {}
+   while len(remaining_domain)>0:
+      madeprogress = False
+      #TODO: one line
+      candidates = new_candidates
+      new_candidates = set()
+      for x in list(candidates & remaining_domain):
+         if not any(y in remaining_domain for y in Item_Givenlefts[x] - Item_Equivalents[x]): # wrong; could have x<y<x, z<y
+            remaining_domain.difference_update(Item_Equivalents[x])
+#            remaining_domain.remove(x)
+#           TODO  remove [] braces vvv
+#need that if x<y<z<x and x<w, also we have y<w. but ... this doesn't happen if we are doing strict orders. we exclude y from z's contribution... whatever. need nonstrict.
+            LEFTS = unionfold([{y}|Item_Alllefts[y] 
+                      for equivalent in Item_Equivalents[x] for y in Item_Givenlefts[equivalent] - Item_Equivalents[x]])
+            for equivalent in Item_Equivalents[x]:
+               Item_Alllefts[equivalent] = LEFTS
+#            Item_Alllefts[x] = unionfold([{y}|Item_Alllefts[y] for y in Item_Givenlefts[x]])
+            new_candidates.update(unionfold(Item_Givenrights[equivalent] for equivalent in Item_Equivalents[x]) - Item_Equivalents[x])
+#            new_candidates |= Item_Givenrights[x]
+
+            madeprogress = True
+      if not madeprogress:
+         # well, if we do it this way, we shouldn't use uptoK, just do K. 
+         cycle_bound += 1
+         LocateKcycles(Item_Givenlefts, Item_Equivalents, cycle_bound)
+#         return internal_Order_NONSTRICTTransitiveClosure(Item_Givenlefts, Item_Givenrights, Item_Equivalents, cycle_bound + 1)
+   mprint("done taking transitive closure")
+   return Item_Alllefts
+
+240221    16:19:51    
+todo:
+add CR_... things
+when finding a cycle need to iterate over the union of the guys, not the item_lefts.
+do the candidates finding thign.
+maybe try to isolate equivalence-making and order-popping? so they only go through one pathway and can be easier to verify correctnes. e.g. the cycle finder doesn't popp stuff, it just returns candidates (maybe after adding equivalencese) ; and it doesn't add equivlaencens itself, it finds cycles and then the cycle-checker checks and ads...
+
+
+
+## ## ## ##
+from collections import defaultdict
+ 
+#Class to represent a graph
+class Graph:
+ 
+    def __init__(self, vertices):
+        self.V = vertices
+ 
+    # A utility function to print the solution
+    def printSolution(self, reach):
+        print ("Following matrix transitive closure of the given graph ")    
+        for i in range(self.V):
+            for j in range(self.V):
+                if (i == j):
+                  print ("%7d\t" % (1),end=" ")
+                else:
+                  print ("%7d\t" %(reach[i][j]),end=" ")
+            print()
+     
+     
+    # Prints transitive closure of graph[][] using Floyd Warshall algorithm
+    def transitiveClosure(self,graph):
+        reach =[i[:] for i in graph]
+        '''Add all vertices one by one to the set of intermediate
+        vertices.
+         ---> Before start of a iteration, we have reachability value
+         for all pairs of vertices such that the reachability values
+          consider only the vertices in set 
+        {0, 1, 2, .. k-1} as intermediate vertices.
+          ----> After the end of an iteration, vertex no. k is
+         added to the set of intermediate vertices and the 
+        set becomes {0, 1, 2, .. k}'''
+        for k in range(self.V):
+             
+            # Pick all vertices as source one by one
+            for i in range(self.V):
+                 
+                # Pick all vertices as destination for the
+                # above picked source
+                for j in range(self.V):
+                     
+                    # If vertex k is on a path from i to j, 
+                       # then make sure that the value of reach[i][j] is 1
+                    reach[i][j] = reach[i][j] or (reach[i][k] and reach[k][j])
+ 
+        self.printSolution(reach)
+         
+g= Graph(4)
+
+## ## ## ##
+
+
+
+240222    13:34:50    
+could try with numpy and warshall? probably just inefeficient...? generally jsut extremely non-skeletal? 
+
+
+240222    23:12:20    
+replace strings
+find . -type f -exec sed -i -e  's/all\_rights/all\_priors/g' {} \;
+find . -name '*.py' -exec sed -i '' 's/rights/priors/g' {} \;
+find . -name '*.py' 
+reset to commit
+DON"T RUN: git reset --hard <hash of commit>
+get hash : git log
+
+240226    18:42:18    
+
+def Locate_uptoK_cycles(Item_Ulteriors, Item_Equivalents, k):
+   mprint('locating up to', k, 'cycles')
+   for i in range(1,k+1):
+      Ulteriors_k_cycles(Item_Ulteriors, Item_Equivalents, i)
+
+def Ulteriors_k_cycles(Item_Ulteriors, Item_Equivalents, k):
+   mprint('locating', k, 'cycles...')
+   for k_sequence in Ulteriors_k_sequences(Item_Ulteriors, Item_Equivalents, k):
+#      if k_sequence[0] in Item_Ulteriors[k_sequence[-1]] and any(item not in Item_Equivalents[k_sequence[0]] for item in k_sequence):
+      if k_sequence[0] in Item_Ulteriors[k_sequence[-1]]:
+         mprint(' and '.join(map(str, k_sequence)), 'forms a ' + str(k) + '-cycle')
+         yield k_sequence
+   mprint('done locating', k, 'cycles')
+
+def Ulteriors_k_sequences(Item_Ulteriors, Item_Equivalents, k):
+   for x in Item_Ulteriors:
+#      if len(Item_Equivalents[x]) == 1:
+      for seq in Ulteriors_item_k_sequences(Item_Ulteriors, Item_Equivalents, x, k):
+         yield seq
+
+def Ulteriors_item_k_sequences(Item_Ulteriors, Item_Equivalents, x, k):
+   if k==1:
+      yield [x]
+   else:
+#      for y in list(Item_Ulteriors[x]):
+#      for y in list(Item_Ulteriors[x] - {x}):
+      for y in Item_Ulteriors[x]:
+         for seq in Ulteriors_item_k_sequences(Item_Ulteriors, Item_Equivalents, y, k-1):
+            yield [x] + seq
+
+
+         EQUIVALENTS = unionfold(Item_Equivalents[x] for x in k_sequence)
+         for x in EQUIVALENTS:
+            Item_Equivalents[x] = EQUIVALENTS
+
+
+
+
+
+
+#NONSTRICT
+def Order_NONSTRICTTransitiveClosure(Item_Givenulteriors, Item_Givenpriors, Item_Equivalents):
+#   print(Item_Givenulteriors)
+   cycle_bound = 1
+   Ulteriors_uptoK_cycles(Item_Givenulteriors, Item_Equivalents, cycle_bound)
+   mprint("taking transitive closure")
+   remaining_domain, new_candidates = set(Item_Givenulteriors.keys()), set(Item_Givenulteriors.keys())
+   Item_Allulteriors = {item:{item} for item in Item_Givenulteriors.keys()}
+   while len(remaining_domain)>0:
+      madeprogress = False
+      candidates, new_candidates = new_candidates & remaining_domain, set()
+      for x in candidates:
+         if not any(y in remaining_domain for y in (unionfold(Item_Givenulteriors[equivalent] for equivalent in Item_Equivalents[x]) - Item_Equivalents[x])): 
+            remaining_domain.difference_update(Item_Equivalents[x])
+#need that if x<y<z<x and x<w, also we have y<w. but ... this doesn't happen if we are doing strict orders. we exclude y from z's contribution... whatever. need nonstrict.
+            LEFTS = unionfold({y}|Item_Allulteriors[y] 
+                      for equivalent in Item_Equivalents[x] for y in Item_Givenulteriors[equivalent])
+            for equivalent in Item_Equivalents[x]:
+               Item_Allulteriors[equivalent] = LEFTS
+            new_candidates.update(unionfold(Item_Givenpriors[equivalent] for equivalent in Item_Equivalents[x]) - Item_Equivalents[x])
+            madeprogress = True
+      if not madeprogress:
+         if cycle_bound>25:
+            raise Exception('cycle bound exceeded 25')
+         cycle_bound += 1
+         Ulteriors_k_cycles(Item_Givenulteriors, Item_Equivalents, cycle_bound)
+         new_candidates = remaining_domain
+#         new_candidates = candidates 
+   mprint("done taking transitive closure")
+   return Item_Allulteriors 
+
+
+
+240226    21:23:08    
+
+for attribute in ['direction', 'given_ulteriors', 'given_priors', 'all_nonstrict_ulteriors', 'item_equivalents', 'all_ulteriors', 'immediate_ulteriors', 'all_priors', 'immediate_priors', 'domain', ]:
+   print(attribute, getattr(P_Eq_strict, attribute) == getattr(P_noEq_nonstrict, attribute) )
+
+
+240226    21:26:47    
+
+.......ok so the problem only shows when cycles, i think? like the include equivalents and geniunie strict alls, this works for sing. but it doesn't work for valu, which has cycles. why. 
+
+exec(open('src/radix.py').read())
+logged_Cognates('sing', 'en', 1)
+logged_Cognates('value', 'en', 1)
+logged_Cognates('orchard', 'en', 1)
+logged_Cognates('cross', 'en', 1)
+logged_Cognates('sack', 'en', 1)
+
+
+word = Word('value', 'en')
+Word_Pastmosts(word)
+pastmost = str_Word('[*h₂welh₁-, ine-pro]')
+Pastmost_Futureposet(pastmost)
+WordsDirection_Closureposet({pastmost},'futureward')
+givens = WordsDirection_UlteriorclosureGivens({pastmost},'futureward')
+givens[pastmost]
+
+fuckit. 
+
+givens = {'a': {'b'}, 'b':{'a'}}
+givens = {'a': {'a'}}
+p=Poset(givens)
+Item_Givenulteriors = givens
+given_ulteriors, given_priors = Item_Givenulteriors, Order_Reversed(Item_Givenulteriors)
+all_nonstrict_ulteriors, item_equivalents = UlteriorsPriors_NonstrictTransitiveClosure_Equivalents(given_ulteriors, given_priors)
+AssertTransitivelyClosed(all_nonstrict_ulteriors)
+all_ulteriors = {item: nonstrict_ulteriors - item_equivalents[item] for item, nonstrict_ulteriors in all_nonstrict_ulteriors.items()}
+immediate_ulteriors = GivenulteriorsAllulteriors_Immediateulteriors(given_ulteriors, all_ulteriors)
+
+         all_priors = Order_Reversed(all_ulteriors)
+         immediate_priors = Order_Reversed(immediate_ulteriors)
+         domain = ImmediateulteriorsImmediatepriors_Sorted(immediate_ulteriors, immediate_priors)
+         assert len(domain) == len(all_ulteriors) == len(all_priors) == len(immediate_ulteriors) == len(immediate_priors) == len(all_nonstrict_ulteriors) 
+      else:
+         #TODO : maybe enable directly constructing poset. for efficiency
+         pass
+
+
+
+def GivenulteriorsAllulteriors_Immediateulteriors(Item_Givenulteriors, Item_Allulteriors):
+   mprint('computing immediate ulteriors')
+#   if slow, can maybe speed up a lot by just checking each given ulterior whether it's in the ulteriors of the others.... idk. 
+   return {x: Item_Givenulteriors[x] - unionfold([Item_Allulteriors[y] for y in Item_Givenulteriors[x]])
+                          for x in Item_Givenulteriors.keys()}
+
+
+
+

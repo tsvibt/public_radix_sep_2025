@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <title>en.wiktionary favicon</title>
+ <defs>
+  <linearGradient id="linearGradient3074">
+   <stop offset="0"/>
+   <stop stop-color="#fff" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient3408" x1="828.98" x2="844.82" y1="659.91" y2="659.91" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient3074"/>
+  <linearGradient id="linearGradient4597" x1="829.06" x2="833.88" y1="659.91" y2="659.91" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient3074"/>
+ </defs>
+ <g transform="translate(-818.28571,-653.50507)">
+  <path d="m823.28571 653.50507h22c2.77 0 5 2.23 5 5v22c0 2.77-2.23 5-5 5h-22c-2.77 0-5-2.23-5-5v-22c0-2.77 2.23-5 5-5z" fill="#fff"/>
+  <path d="m826.47071 664.65206h2.28671l2.85839 9.98075 2.84597-9.98075h2.6968l2.85839 9.98075 2.84597-9.98075h2.28671l-3.64131 12.7894h-2.6968l-2.99505-10.48305-3.00746 10.48305h-2.6968z"/>
+  <g id="text3033" transform="scale(.98932985 1.0107852)" fill="url(#linearGradient3408)">
+   <path d="m828.12 651.48h5.0539v1.9695h-3.0412v17.826h3.0412v1.9695h-5.0539z" fill="url(#linearGradient4597)"/>
+  </g>
+  <path d="m823.93 667.73-0.36878-0.0952c-0.52345-2.6013-0.78516-3.9496-0.78516-4.0448 0-0.31722 0.14473-0.61661 0.43421-0.89818 0.28948-0.28153 0.67611-0.4223 1.1599-0.42232 0.24585 2e-5 0.44611 0.0238 0.60076 0.0714s0.26569 0.12096 0.3331 0.22008c0.0674 0.0992 0.11103 0.19234 0.13086 0.27957 0.0198 0.0873 0.0297 0.19828 0.0297 0.3331 0 0.11104-0.0753 0.53535-0.22603 1.2729l-0.45206 2.1176-0.22603 1.0231z"/>
+  <use transform="matrix(-1,0,0,1,1668.5714,0)" width="32" height="32" xlink:href="#text3033"/>
+ </g>
+</svg>

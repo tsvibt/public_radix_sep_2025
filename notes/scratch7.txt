@@ -1,0 +1,2335 @@
+
+240913    05:36:23    
+wat.
+so weird. 
+
+240913    16:55:20    
+'''
+
+import webbrowser
+def open_in_chrome(url):
+   webbrowser.get('chrome').open(url)
+
+for wordtext in ['index', 'see', 'free', 'sing', 'board', 'take',]:
+   server_url = 'http://localhost/word/'+wordtext
+   open_in_chrome(server_url)
+
+
+'''
+
+
+for single_word in ['break', 'table', 'free', 'drape', 'sing', 'moral', 'angle', 'coalesce', 'enjoin', 'drive', 'bicycle',]:
+#for single_word in ['elephant', 'pond', 'dictionary']:
+
+   #list of words = elephant, pond, dictionary
+   #list of words = break, value, table
+   #wordtexts_to_include  = ['elephant', 'pond']
+   #wordtexts_to_include  = ['index', 'see', 'free',]
+   #wordtexts_to_include  = [ 'sing', 'board', 'take',]
+   #wordtexts_to_include  = ['value', ]
+   wordtexts_to_include  = [single_word, ]
+
+
+240914    01:54:28    
+
+ne adding all rows to cache for table _GRAM_Parsed
+done adding all rows to cache for table _GRAM_Parsed
+
+loaded tables: _GRAM_Parsed and _GRAM_Parsed
+truth of the two tables _GRAM_Parsed and _GRAM_Parsed being equal: False
+
+
+
+FAILED table _GRAM_Parsed
+
+
+printing obj_diff of the two results:
+('change', [([wiki, xto],), 1, 'Etymology', 15, 'content', 'gramtexts', 0])
+printing difference of the two strings:
+
+'инсæй'
+'инсӕй'
+
+
+
+
+done adding all rows to cache for table _GRAM_AllMentioningGrams
+done adding all rows to cache for table _GRAM_AllMentioningGrams
+
+loaded tables: _GRAM_AllMentioningGrams and _GRAM_AllMentioningGrams
+truth of the two tables _GRAM_AllMentioningGrams and _GRAM_AllMentioningGrams being equal: False
+
+
+
+FAILED table _GRAM_AllMentioningGrams
+
+
+printing obj_diff of the two results:
+('add', '')
+('add', '', [(([инсӕй, os],), {[wiki, xto]})])
+('remove', '')
+('remove', '', [(([инсæй, os],), {[wiki, xto]})])
+
+
+
+
+done adding all rows to cache for table _WORD_OwnFuturewardGramlinks
+done adding all rows to cache for table _WORD_OwnFuturewardGramlinks
+
+240914    02:34:00    
+
+assert WiktionaryXMLfile.endswith('.xml'), print(f'bad wiktionary xml path {xml_path}')
+
+# subuniverse
+G_WiktionaryStem = '.'.join(WiktionaryXMLfile.split('/')[-1].split('.')[:-1])
+G_current_wiktionary_Dir = WiktionariesFullDir + G_WiktionaryStem + '/'
+
+#pre/ a,b
+G_WiktionaryXMLfullPath = G_current_wiktionary_Dir + WiktionaryXMLfile
+
+def XMLfile_MostRecentDBfile():
+   for file in reversed(sorted(next(os.walk(G_current_wiktionary_Dir))[2])):
+      if file.startswith(G_WiktionaryStem) and file.endswith('.db'):
+         return G_current_wiktionary_Dir + file 
+
+# site/server; pre/a; pre/abstracted
+G_Wiktionary_db_file = XMLfile_MostRecentDBfile()
+# tests
+G_DB_Checkpoint_filename = G_current_wiktionary_Dir + 'Checkpoint_' + G_WiktionaryStem + '.db'
+
+#pre/a
+def __X__NewWiktionaryDBfile(): return G_current_wiktionary_Dir + G_WiktionaryStem + f'-{GetTimestamp()}.db' 
+
+if G_Wiktionary_db_file is not None: sql_db_activate(G_Wiktionary_db_file)
+
+
+
+240914    21:45:30    
+_WORD_PastwardPoset
+
+
+printing obj_diff of the two results:
+('change', [([handy, en]_4,)])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+('change', [([handy, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [handy, en], [*handugaz, gem-pro], [hendig, ang], [handy, enm], [hondi, enm], [hand, en], [hand, enm], [hond, enm], [hand, ang], [*handu, gmw-pro], [* ...
+('change', [([handy, en]_2,)])
+printing difference of the two strings:
+found no difference. start: [handy, en], [hand, en], [hand, enm], [hond, enm], [hand, ang], [*handu, gmw-pro], [*handuz, gem-pro]] ...
+('change', [([handy, en]_3,)])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+
+
+exec(open('src/radix.py').read())
+
+
+WiktionaryXMLfile = "SUBUNIVERSE__mill-initial__handy_24.09.14-21_51_55.xml"
+
+WiktionaryxmlFile_ACTIVATE("SUBUNIVERSE__mill-initial__handy_24.09.14-21_51_55.xml")
+
+word = Word('handy', 'en', 4)
+
+subposet = Word_Pastwardwordposet(word)
+
+WiktionaryxmlFile_ACTIVATE("mill-initial.xml")
+
+poset = Word_Pastwardwordposet(word)
+
+obj_diff(subposet,poset)
+
+inc = poset.includedWords
+subinc = subposet.includedWords
+obj_diff(subinc, inc)
+
+gram = Gram('Handy', 'de')
+inc[gram]
+subinc[gram]
+
+"""
+exec(open('src/precomputing/O_KN_word_pastwardwordposet.py').read())
+
+"""
+exec(open('src/precomputing/abstracted.py').read())
+
+all_pastmost_words = set()
+already_pastmosted = set()
+
+def FUN(gram_exploring, _):
+   if gram_exploring in already_pastmosted: return []
+   results = []
+   for gram in (pastward_poset := Gram_Pastwardposet(gram_exploring)):
+      if gram not in already_pastmosted:
+         already_pastmosted.add(gram)
+         restricted_pastward_poset = pastward_poset if gram==gram_exploring else GramPoset_Ulteriorsubposet(gram, pastward_poset)
+         for word in Gram_GivensOrPlaceholder(gram):
+            pastward_wordposet = WordPoset_Wordposet(word, restricted_pastward_poset)
+            all_pastmost_words.update(Wordposet_Ulteriormostwords(pastward_wordposet))
+            results.append((word, pastward_wordposet))
+   return results
+
+DB._GRAM_ImmediatePastwards.ALLCACHE()
+DB._GRAM_ImmediateFuturewards.ALLCACHE()
+
+to_do_1 = {'generator source': DB._GRAM_ImmediateFuturewards, 'function':FUN, 'target tables':[DB._WORD_PastwardPoset], }
+
+to_do_2 = OBJECT_TABLE_TODO(all_pastmost_words, DB._AllPastmostWords)
+
+CALL([to_do_1, to_do_2, ])
+
+
+
+older version:
+
+
+"""
+exec(open('src/precomputing/O_KN_word_pastwardwordposet.py').read())
+
+"""
+exec(open('src/precomputing/abstracted.py').read())
+
+all_pastmost_words = set()
+already_pastmosted = set()
+
+def FUN(gram_exploring, _):
+   if gram_exploring in already_pastmosted:
+      return []
+   pastward_poset = Gram_Pastwardposet(gram_exploring)
+   results = []
+   for gram in pastward_poset.domain:
+      if gram not in already_pastmosted:
+         already_pastmosted.add(gram)
+         restricted_pastward_poset = pastward_poset if gram==gram_exploring else GramPoset_Ulteriorsubposet(gram, pastward_poset)
+         for word in Gram_GivensOrPlaceholder(gram):
+            pastward_wordposet = WordPoset_Wordposet(word, restricted_pastward_poset)
+            all_pastmost_words.update(Wordposet_Ulteriormostwords(pastward_wordposet))
+            results.append((word, pastward_wordposet))
+   return results
+
+DB._GRAM_ImmediatePastwards.ALLCACHE()
+DB._GRAM_ImmediateFuturewards.ALLCACHE()
+
+to_do_1 = {'generator source': DB._GRAM_ImmediateFuturewards, 'function':FUN, 'target tables':[DB._WORD_PastwardPoset], }#'limit': 50000} 
+
+to_do_2 = OBJECT_TABLE_TODO(all_pastmost_words, DB._AllPastmostWords)
+
+CALL([to_do_1, to_do_2, ])
+
+
+
+240914    22:37:41    
+
+exec(open('src/radix.py').read())
+
+word = Word('handy', 'en', 4)
+gram = word.gram
+
+WiktionaryxmlFile_ACTIVATE("SUBUNIVERSE__mill-initial__handy_24.09.14-21_51_55.xml")
+subpastward = Gram_Pastwardposet(gram)
+
+WiktionaryxmlFile_ACTIVATE("mill-initial.xml")
+pastward = Gram_Pastwardposet(gram)
+
+obj_diff(subpastward,pastward)
+
+
+inc = poset.includedWords
+subinc = subposet.includedWords
+obj_diff(subinc, inc)
+
+gram = Gram('Handy', 'de')
+inc[gram]
+subinc[gram]
+
+
+240914    22:51:45    
+
+wait it's gone now?? wtf?
+this is with checkpoint equals
+mill-initial-24.09.13-03_35_11.db
+which is the earliest available. wut.  
+
+
+done adding all rows to cache for table _Tests
+done adding all rows to cache for table _Tests
+
+loaded tables: _Tests and _Tests
+TRUE that the two tables _Tests and _Tests are equal
+
+
+
+compared current database DB (first) to previous database previous_DB (second):
+file /Users/tbt/radix/wiktionaries/mill-initial/mill-initial-24.09.14-22_42_09.db
+file /Users/tbt/radix/wiktionaries/mill-initial/Checkpoint_mill-initial.db
+
+PASSED all ran comparisons
+
+succeeded with tables [_GramtitleRedirect, _Gramtitle_XML, _GRAM_Parsed, _GRAM_AllMentioningGrams, _WORD_OwnFuturewardGramlinks, _WORD_Direction_OwnRefGrams, _GRAM_Direction_GivenRefGrams, _GRAM_StrictPastwardset, _GRAM_ImmediatePastwards, _GRAM_Equivalents, _GRAM_ImmediateFuturewards, _GRAM_StrictFuturewards, _GRAM_RealGivenWords, _GRAM_Coglang_LangStrictFutures, _GRAM_Direction_Coveringwords, _WORD_PastwardPoset, _AllPastmostWords, _WORD_Lang_FuturewardPoset, _Tests]
+
+ALL tables SUCCEEDED, none skipped
+
+
+
+240914    22:59:18    
+waaaait. it FAILED now!
+
+
+
+one adding all rows to cache for table _GRAM_Direction_Coveringwords
+done adding all rows to cache for table _GRAM_Direction_Coveringwords
+
+loaded tables: _GRAM_Direction_Coveringwords and _GRAM_Direction_Coveringwords
+TRUE that the two tables _GRAM_Direction_Coveringwords and _GRAM_Direction_Coveringwords are equal
+
+done adding all rows to cache for table _WORD_PastwardPoset
+done adding all rows to cache for table _WORD_PastwardPoset
+
+loaded tables: _WORD_PastwardPoset and _WORD_PastwardPoset
+FALSE that the two tables _WORD_PastwardPoset and _WORD_PastwardPoset are equal
+
+
+
+FAILED table _WORD_PastwardPoset
+
+
+printing obj_diff of the two results:
+('change', [([handy, en]_4,)])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+('change', [([handy, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [handy, en], [*handugaz, gem-pro], [hendig, ang], [handy, enm], [hondi, enm], [hand, en], [hand, enm], [hond, enm], [hand, ang], [*handu, gmw-pro], [* ...
+('change', [([handy, en]_2,)])
+printing difference of the two strings:
+found no difference. start: [handy, en], [hand, en], [hand, enm], [hond, enm], [hand, ang], [*handu, gmw-pro], [*handuz, gem-pro]] ...
+('change', [([handy, en]_3,)])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+
+
+seems like it must be some order dependency??
+
+we could iterate over ALL The mill guys. or actualy just use this current one llol.  and check wordpastposet or whatever it was from above 
+current one:
+/Users/tbt/radix/wiktionaries/mill-initial/mill-initial-24.09.14-22_51_41.db
+
+
+#WiktionaryxmlFile_ACTIVATE("SUBUNIVERSE__mill-initial__handy_24.09.14-21_51_55.xml")
+#subpastward = Gram_Pastwardposet(gram)
+
+
+gram= Gram('Handy', 'de')
+current_poset = Gram_Pastwardposet(gram)
+
+old_poset = Gram_Pastwardposet(gram)
+
+exec(open('src/radix.py').read())
+
+
+word = Word('handy', 'en', 4)
+gram = word.gram
+
+WiktionaryxmlFile_ACTIVATE("mill-initial.xml")
+current_poset = DB._WORD_PastwardPoset.Get(word)
+
+sql_db_activate(G_DB_Checkpoint_filename)
+old_poset = DB._WORD_PastwardPoset.Get(word)
+
+obj_diff(current_poset,old_poset)
+
+inc = poset.includedWords
+subinc = subposet.includedWords
+obj_diff(subinc, inc)
+
+gram = Gram('Handy', 'de')
+inc[gram]
+subinc[gram]
+
+
+DB._GRAM_Equivalents.Get(gram)
+
+
+word = Word('handy', 'en', 4)
+
+
+240915    02:49:57    
+
+
+def Word_CognatesHTMLContent(word, new_id_count=None):
+   MaybeNat_ResetID(new_id_count)
+   trunk_poset = Word_Pastwardwordposet(word) 
+   html = Aggregator()
+   if trunk_poset is None:
+      html << Paragraph('found nothing for ' + Gram_Element(word.gram, info={'kind':'generic'}) + ', word number: ' + str(word.num))
+      if globals().get('G_SERVER_RUNNING', False):
+         Log(word, 'unsuccessfully_computed')
+      return Word_ReportHTMLContent(word, prefix=html())
+   else:
+      html << Starting_word(word)
+#      html << Text_Legendheader('Debug trunk: ')
+#      html << Word_DebugtrunkHTML(word)
+      html << Text_Legendheader('Pastward trunk: ')
+      html << Trunkposet_PastwardtrunkHTML(trunk_poset)
+#      html << Text_Legendheader('New pastward trunk: ')
+#      html << Trunkposet_PastwardtrunkHTML(compute_Word_Pastwardwordposet(word))
+      html << Async_retriever()
+      if globals().get('G_SERVER_RUNNING', False):
+         Log(word, 'successfully_computed')
+      return html()
+
+
+delete:
+def compute_Word_Pastwardwordposet(word) : return WordPoset_Wordposet(word, Gram_Pastwardposet(word.gram))
+
+def GramDirection_ManualPoset(main_gram, direction):
+   domain_set = GramDirection_Stricts(main_gram, direction) | DB._GRAM_Equivalents.CACHE_Get(main_gram) 
+>>>>>>>
+ def GramDirection_ManualPoset(main_gram, direction):
+   domain_set = GramDirection_Stricts(main_gram, direction) | DB._GRAM_Equivalents.CACHE_Get(main_gram) 
+ 
+
+   domain_set = GramDirection_Stricts(main_gram, direction) | {main_gram}
+
+240915    03:16:10    
+('change', [([larvo, la]_-1, 'de')])
+
+
+exec(open('src/radix.py').read())
+
+word = Word('larvo', 'la', -1)
+gram = word.gram
+
+
+WiktionaryxmlFile_ACTIVATE("mill-initial.xml")
+current_poset = DB._WORD_Lang_FuturewardPoset.Get(word, 'de')
+current_equivs = DB._GRAM_Equivalents.Get()
+
+sql_db_activate(G_DB_Checkpoint_filename)
+old_poset = DB._WORD_Lang_FuturewardPoset.Get(word, 'de')
+
+obj_diff(current_poset,old_poset)
+
+inc = poset.includedWords
+subinc = subposet.includedWords
+obj_diff(subinc, inc)
+
+gram = Gram('Handy', 'de')
+inc[gram]
+subinc[gram]
+
+
+240915    03:28:46    
+hmmmmmmm.......
+apparently maybe having equivalents in a poset helps to eliminate words..??? maybe??? like the equivalent is around, but it gets excluded, and that helps exclude other stuff? idk...
+
+240915    03:41:57    
+
+cuting: /Users/tbt/radix/src/wiktionary_autoconfig.py
+executing: /Users/tbt/radix/src/config.py
+db filne is /Users/tbt/radix/wiktionaries/mill-initial/mill-initial-24.09.15-03_29_37.db
+intializing database DB using Wiktionary db file: /Users/tbt/radix/wiktionaries/mill-initial/mill-initial-24.09.15-03_29_37.db
+intializing database previous_DB using Wiktionary db file: /Users/tbt/radix/wiktionaries/mill-initial/Checkpoint_mill-initial.db
+comparing current database DB,
+file /Users/tbt/radix/wiktionaries/mill-initial/mill-initial-24.09.15-03_29_37.db to previous database previous_DB,
+file /Users/tbt/radix/wiktionaries/mill-initial/Checkpoint_mill-initial.db
+done adding all rows to cache for table _GramtitleRedirect
+done adding all rows to cache for table _GramtitleRedirect
+
+loaded tables: _GramtitleRedirect and _GramtitleRedirect
+TRUE that the two tables _GramtitleRedirect and _GramtitleRedirect are equal
+
+done adding all rows to cache for table _Gramtitle_XML
+done adding all rows to cache for table _Gramtitle_XML
+
+loaded tables: _Gramtitle_XML and _Gramtitle_XML
+TRUE that the two tables _Gramtitle_XML and _Gramtitle_XML are equal
+
+done adding all rows to cache for table _GRAM_Parsed
+done adding all rows to cache for table _GRAM_Parsed
+
+loaded tables: _GRAM_Parsed and _GRAM_Parsed
+FALSE that the two tables _GRAM_Parsed and _GRAM_Parsed are equal
+
+
+
+FAILED table _GRAM_Parsed
+
+
+printing obj_diff of the two results:
+('change', [([wiki, xto],), 1, 'Etymology', 15, 'content', 'gramtexts', 0])
+printing difference of the two strings:
+
+'инсæй'
+'инсӕй'
+
+
+
+
+done adding all rows to cache for table _GRAM_AllMentioningGrams
+done adding all rows to cache for table _GRAM_AllMentioningGrams
+
+loaded tables: _GRAM_AllMentioningGrams and _GRAM_AllMentioningGrams
+FALSE that the two tables _GRAM_AllMentioningGrams and _GRAM_AllMentioningGrams are equal
+
+
+
+FAILED table _GRAM_AllMentioningGrams
+
+
+printing obj_diff of the two results:
+('add', '')
+('add', '', [(([инсӕй, os],), {[wiki, xto]})])
+('remove', '')
+('remove', '', [(([инсæй, os],), {[wiki, xto]})])
+
+
+
+
+done adding all rows to cache for table _WORD_OwnFuturewardGramlinks
+done adding all rows to cache for table _WORD_OwnFuturewardGramlinks
+
+loaded tables: _WORD_OwnFuturewardGramlinks and _WORD_OwnFuturewardGramlinks
+TRUE that the two tables _WORD_OwnFuturewardGramlinks and _WORD_OwnFuturewardGramlinks are equal
+
+done adding all rows to cache for table _WORD_Direction_OwnRefGrams
+done adding all rows to cache for table _WORD_Direction_OwnRefGrams
+
+loaded tables: _WORD_Direction_OwnRefGrams and _WORD_Direction_OwnRefGrams
+TRUE that the two tables _WORD_Direction_OwnRefGrams and _WORD_Direction_OwnRefGrams are equal
+
+done adding all rows to cache for table _GRAM_Direction_GivenRefGrams
+done adding all rows to cache for table _GRAM_Direction_GivenRefGrams
+
+loaded tables: _GRAM_Direction_GivenRefGrams and _GRAM_Direction_GivenRefGrams
+TRUE that the two tables _GRAM_Direction_GivenRefGrams and _GRAM_Direction_GivenRefGrams are equal
+
+done adding all rows to cache for table _GRAM_StrictPastwardset
+done adding all rows to cache for table _GRAM_StrictPastwardset
+
+loaded tables: _GRAM_StrictPastwardset and _GRAM_StrictPastwardset
+TRUE that the two tables _GRAM_StrictPastwardset and _GRAM_StrictPastwardset are equal
+
+done adding all rows to cache for table _GRAM_ImmediatePastwards
+done adding all rows to cache for table _GRAM_ImmediatePastwards
+
+loaded tables: _GRAM_ImmediatePastwards and _GRAM_ImmediatePastwards
+TRUE that the two tables _GRAM_ImmediatePastwards and _GRAM_ImmediatePastwards are equal
+
+done adding all rows to cache for table _GRAM_Equivalents
+done adding all rows to cache for table _GRAM_Equivalents
+
+loaded tables: _GRAM_Equivalents and _GRAM_Equivalents
+TRUE that the two tables _GRAM_Equivalents and _GRAM_Equivalents are equal
+
+done adding all rows to cache for table _GRAM_ImmediateFuturewards
+done adding all rows to cache for table _GRAM_ImmediateFuturewards
+
+loaded tables: _GRAM_ImmediateFuturewards and _GRAM_ImmediateFuturewards
+TRUE that the two tables _GRAM_ImmediateFuturewards and _GRAM_ImmediateFuturewards are equal
+
+done adding all rows to cache for table _GRAM_StrictFuturewards
+done adding all rows to cache for table _GRAM_StrictFuturewards
+
+loaded tables: _GRAM_StrictFuturewards and _GRAM_StrictFuturewards
+TRUE that the two tables _GRAM_StrictFuturewards and _GRAM_StrictFuturewards are equal
+
+done adding all rows to cache for table _GRAM_RealGivenWords
+done adding all rows to cache for table _GRAM_RealGivenWords
+
+loaded tables: _GRAM_RealGivenWords and _GRAM_RealGivenWords
+TRUE that the two tables _GRAM_RealGivenWords and _GRAM_RealGivenWords are equal
+
+done adding all rows to cache for table _GRAM_Coglang_LangStrictFutures
+done adding all rows to cache for table _GRAM_Coglang_LangStrictFutures
+
+loaded tables: _GRAM_Coglang_LangStrictFutures and _GRAM_Coglang_LangStrictFutures
+TRUE that the two tables _GRAM_Coglang_LangStrictFutures and _GRAM_Coglang_LangStrictFutures are equal
+
+done adding all rows to cache for table _GRAM_Direction_Coveringwords
+done adding all rows to cache for table _GRAM_Direction_Coveringwords
+
+loaded tables: _GRAM_Direction_Coveringwords and _GRAM_Direction_Coveringwords
+TRUE that the two tables _GRAM_Direction_Coveringwords and _GRAM_Direction_Coveringwords are equal
+
+done adding all rows to cache for table _WORD_PastwardPoset
+done adding all rows to cache for table _WORD_PastwardPoset
+
+loaded tables: _WORD_PastwardPoset and _WORD_PastwardPoset
+FALSE that the two tables _WORD_PastwardPoset and _WORD_PastwardPoset are equal
+
+
+
+FAILED table _WORD_PastwardPoset
+
+
+printing obj_diff of the two results:
+('change', [([abbreviate, en]_1,)])
+printing difference of the two strings:
+
+[abbreviate, en], [abbreviatio, la], [abbreviatus, la], [ad, la], [*ad, itc-pro], [*h₂éd, ine-pro], [*ád, ine-pro], [abréviation
+[abbreviate, en], [abbreviatus, la], [abbreviaten, enm]]
+('change', [([abbreviate, en]_2,)])
+printing difference of the two strings:
+
+[abbreviate, en], [abbreviatio, la], [abbreviatus, la], [abbrevio, la], [ad, la], [*ad, itc-pro], [*h₂éd, ine-pro], [*ád, ine-pr
+[abbreviate, en], [abbreviatus, la], [abbrevio, la]]
+('change', [([abduct, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [abduct, en], [*dewk-, ine-pro], [abductio, la], [abductus, la], [abduco, la], [*abdoukō, itc-pro], [ab, la], [*ab, itc-pro], [*h₂epó, ine-pro], [duco ...
+('change', [([abominate, en]_1,)])
+printing difference of the two strings:
+
+[abominate, en], [abominatus, la], [abominacioun, enm], [abomination, frm], [abominatio, la]]
+[abominate, en], [abominatus, la]]
+('change', [([also, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [also, en], [ealswa, ang], [also, enm], [alswa, enm], [alswo, enm], [all, en], [*h₂el- (other), ine-pro], [all, enm], [eall, ang], [*all, gmw-pro], [* ...
+('change', [([bollocks, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [bollocks, en], [ballokes, enm], [beallucas, ang]] ...
+('change', [([bollocks, en]_2,)])
+printing difference of the two strings:
+found no difference. start: [bollocks, en]] ...
+('change', [([bollocks, en]_0,)])
+printing difference of the two strings:
+found no difference. start: [bollocks, en]] ...
+('change', [([pseudonym, en]_0,)])
+printing difference of the two strings:
+found no difference. start: [pseudonym, en]] ...
+('change', [([pseudonym, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [pseudonym, en], [ψευδώνυμος, grc], [pseudonyme, fr]] ...
+('change', [([accelerate, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [accelerate, en], [*kel-, ine-pro]] ...
+('change', [([sol, en]_3,)])
+printing difference of the two strings:
+found no difference. start: [sol, en], [sol, enm], [sol, la], [*swōl, itc-pro], [sol, ang], [*sulą, gem-pro], [*sūl-, ine-pro], [*sōwulą, gem-pro], [*sōwulō, gem-pro], [*sewol-,  ...
+('change', [([sol, en]_0,)])
+printing difference of the two strings:
+found no difference. start: [sol, en]] ...
+('change', [([sol, en]_2,)])
+printing difference of the two strings:
+found no difference. start: [sol, en], [solidum, la], [sol, fro], [*solh₂-, ine-pro], [solidus, la]] ...
+('change', [([sol, en]_5,)])
+printing difference of the two strings:
+found no difference. start: [sol, en]] ...
+('change', [([sol, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [sol, en], [solve, la], [sol, enm], [sol, la], [*swōl, itc-pro], [sol, ang], [*sulą, gem-pro], [*sūl-, ine-pro], [*sōwulą, gem-pro], [*sōwulō, gem-pro ...
+('change', [([sol, en]_4,)])
+printing difference of the two strings:
+found no difference. start: [sol, en], [sol, enm], [sol, la], [*swōl, itc-pro], [sol, ang], [*sulą, gem-pro], [*sūl-, ine-pro], [*sōwulą, gem-pro], [*sōwulō, gem-pro], [*sewol-,  ...
+('change', [([handy, en]_4,)])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+('change', [([handy, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [handy, en], [*handugaz, gem-pro], [hendig, ang], [handy, enm], [hondi, enm], [hand, en], [hand, enm], [hond, enm], [hand, ang], [*handu, gmw-pro], [* ...
+('change', [([handy, en]_2,)])
+printing difference of the two strings:
+found no difference. start: [handy, en], [hand, en], [hand, enm], [hond, enm], [hand, ang], [*handu, gmw-pro], [*handuz, gem-pro]] ...
+('change', [([handy, en]_3,)])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+('change', [([in-law, en]_0,)])
+printing difference of the two strings:
+found no difference. start: [in-law, en]] ...
+('change', [([in-law, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [in-law, en]] ...
+('change', [([expression, en]_0,)])
+printing difference of the two strings:
+found no difference. start: [expression, en]] ...
+('change', [([expression, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [expression, en], [expression, frm], [expressio, la]] ...
+('change', [([lob, en]_0,)])
+printing difference of the two strings:
+found no difference. start: [lob, en]] ...
+('change', [([lob, en]_3,)])
+printing difference of the two strings:
+found no difference. start: [lob, en]] ...
+('change', [([lob, en]_2,)])
+printing difference of the two strings:
+found no difference. start: [lob, en], [*lubbǭ, gem-pro], [*lep-, ine-pro], [*lewbʰ-, ine-pro], [llob, cy]] ...
+('change', [([lob, en]_4,)])
+printing difference of the two strings:
+found no difference. start: [lob, en]] ...
+('change', [([lob, en]_1,)])
+printing difference of the two strings:
+found no difference. start: [lob, en]] ...
+('change', [([came, fr]_1,)])
+printing difference of the two strings:
+found no difference. start: [came, fr], [kam, nl]] ...
+('change', [([came, fr]_2,)])
+printing difference of the two strings:
+found no difference. start: [came, fr]] ...
+('change', [([came, fr]_3,)])
+printing difference of the two strings:
+found no difference. start: [came, fr]] ...
+
+
+
+
+done adding all rows to cache for table _AllPastmostWords
+done adding all rows to cache for table _AllPastmostWords
+
+loaded tables: _AllPastmostWords and _AllPastmostWords
+TRUE that the two tables _AllPastmostWords and _AllPastmostWords are equal
+
+done adding all rows to cache for table _WORD_Lang_FuturewardPoset
+done adding all rows to cache for table _WORD_Lang_FuturewardPoset
+
+loaded tables: _WORD_Lang_FuturewardPoset and _WORD_Lang_FuturewardPoset
+FALSE that the two tables _WORD_Lang_FuturewardPoset and _WORD_Lang_FuturewardPoset are equal
+
+
+
+FAILED table _WORD_Lang_FuturewardPoset
+
+
+printing obj_diff of the two results:
+('change', [([wood, en]_3, 'en')])
+printing difference of the two strings:
+found no difference. start: [wood, en]] ...
+('change', [([wood, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [wood, en]] ...
+('change', [([cadre, fr]_2, 'de')])
+printing difference of the two strings:
+found no difference. start: [cadre, fr]] ...
+('change', [([cadre, fr]_2, 'ru')])
+printing difference of the two strings:
+found no difference. start: [cadre, fr]] ...
+('change', [([cadre, fr]_2, 'en')])
+printing difference of the two strings:
+found no difference. start: [cadre, fr]] ...
+('change', [([larvo, la]_-1, 'de')])
+printing difference of the two strings:
+
+[larvo, la], [Larve, de]]
+[larvo, la]]
+('change', [([larvo, la]_-1, 'ru')])
+printing difference of the two strings:
+
+[larvo, la], [ларва, ru]]
+[larvo, la]]
+('change', [([larvo, la]_-1, 'en')])
+printing difference of the two strings:
+
+[larvo, la], [larva, en]]
+[larvo, la]]
+('change', [([larvo, la]_-1, 'la')])
+printing difference of the two strings:
+
+[larvo, la], [larvalis, la], [larvans, la]]
+[larvo, la]]
+('change', [([pseudonym, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [pseudonym, en]] ...
+('change', [([lob, en]_4, 'en')])
+printing difference of the two strings:
+found no difference. start: [lob, en]] ...
+('change', [([lob, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [lob, en]] ...
+('change', [([lob, en]_1, 'en')])
+printing difference of the two strings:
+found no difference. start: [lob, en], [lob wedge, en]] ...
+('change', [([lob, en]_3, 'en')])
+printing difference of the two strings:
+found no difference. start: [lob, en]] ...
+('change', [([-in-law, en]_-1, 'en')])
+printing difference of the two strings:
+
+[-in-law, en], [co-in-law, en]]
+[-in-law, en]]
+('change', [([force, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [force, en]] ...
+('change', [([cicisbeo, it]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [cicisbeo, it], [cicisbeo, en], [cicisbeism, en]] ...
+('change', [([cicisbeo, it]_1, 'en')])
+printing difference of the two strings:
+found no difference. start: [cicisbeo, it], [cicisbeo, en], [cicisbeism, en]] ...
+('change', [([cicisbeo, it]_2, 'en')])
+printing difference of the two strings:
+found no difference. start: [cicisbeo, it], [cicisbeo, en], [cicisbeism, en]] ...
+('change', [([abduction, en]_0, 'en')])
+printing difference of the two strings:
+
+[abduction, en], [abductee, en], [abductive, en], [abductor, en]]
+[abduction, en], [abductor, en]]
+('change', [([handy, en]_4, 'de')])
+printing difference of the two strings:
+found no difference. start: ] ...
+('change', [([handy, en]_4, 'en')])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+('change', [([handy, en]_3, 'de')])
+printing difference of the two strings:
+found no difference. start: ] ...
+('change', [([handy, en]_3, 'en')])
+printing difference of the two strings:
+found no difference. start: [handy, en]] ...
+('change', [([Philippines, fr]_2, 'en')])
+printing difference of the two strings:
+found no difference. start: [Philippines, fr], [Philippines, en]] ...
+('change', [([expression, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [expression, en], [expressway, en], [ewy, en], [ewy., en], [expwy, en], [expwy., en], [expy, en], [expy., en]] ...
+('change', [([larva, la]_1, 'de')])
+printing difference of the two strings:
+found no difference. start: [larva, la], [Larve, de]] ...
+('change', [([larva, la]_1, 'ru')])
+printing difference of the two strings:
+found no difference. start: [larva, la], [ларва, ru]] ...
+('change', [([larva, la]_1, 'en')])
+printing difference of the two strings:
+found no difference. start: [larva, la], [larva, en]] ...
+('change', [([larva, la]_1, 'la')])
+printing difference of the two strings:
+found no difference. start: [larva, la], [larvalis, la], [larvans, la]] ...
+('change', [([larva, la]_2, 'de')])
+printing difference of the two strings:
+found no difference. start: [larva, la]] ...
+('change', [([larva, la]_2, 'ru')])
+printing difference of the two strings:
+found no difference. start: [larva, la]] ...
+('change', [([larva, la]_2, 'en')])
+printing difference of the two strings:
+found no difference. start: [larva, la]] ...
+('change', [([larva, la]_2, 'la')])
+printing difference of the two strings:
+found no difference. start: [larva, la]] ...
+('change', [([bollocks, en]_2, 'en')])
+printing difference of the two strings:
+found no difference. start: [bollocks, en]] ...
+('change', [([bollocks, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [bollocks, en]] ...
+('change', [([grandfather, en]_2, 'en')])
+printing difference of the two strings:
+found no difference. start: [grandfather, en], [grandfathering, en]] ...
+('change', [([grandfather, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [grandfather, en]] ...
+('change', [([pit, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [pit, en]] ...
+('change', [([pit, en]_3, 'en')])
+printing difference of the two strings:
+found no difference. start: [pit, en]] ...
+('change', [([in-law, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [in-law, en]] ...
+('change', [([in-law, en]_1, 'en')])
+printing difference of the two strings:
+found no difference. start: [in-law, en], [co-in-law, en]] ...
+('change', [([lubba, non]_-1, 'en')])
+printing difference of the two strings:
+
+[lubba, non], [lob wedge, en]]
+[lubba, non]]
+('change', [([cicisbeare, it]_-1, 'en')])
+printing difference of the two strings:
+found no difference. start: [cicisbeare, it], [cicisbeo, en], [cicisbeism, en]] ...
+('change', [([lubbe, da]_-1, 'en')])
+printing difference of the two strings:
+
+[lubbe, da], [lob wedge, en]]
+[lubbe, da]]
+('change', [([grandfather clause, en]_-1, 'en')])
+printing difference of the two strings:
+
+[grandfather clause, en], [GILF, en], [co-grandfather, en], [co-grandfather-in-law, en], [grandfather chair, en], [grandfath
+[grandfather clause, en]]
+('change', [([boss, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [boss, en]] ...
+('change', [([boss, en]_3, 'en')])
+printing difference of the two strings:
+found no difference. start: [boss, en]] ...
+('change', [([sol, en]_0, 'en')])
+printing difference of the two strings:
+found no difference. start: [sol, en]] ...
+('change', [([sol, en]_5, 'en')])
+printing difference of the two strings:
+found no difference. start: [sol, en], [aerosol, en]] ...
+('change', [([acceleration, en]_0, 'en')])
+printing difference of the two strings:
+
+[acceleration, en], [accelerated motion, en], [accelerating force, en], [accelerative, en], [accelerator, en], [accele
+[acceleration, en]]
+
+
+
+
+done adding all rows to cache for table _Tests
+done adding all rows to cache for table _Tests
+
+loaded tables: _Tests and _Tests
+TRUE that the two tables _Tests and _Tests are equal
+
+
+compared current database DB (first) to previous database previous_DB (second):
+file /Users/tbt/radix/wiktionaries/mill-initial/mill-initial-24.09.15-03_29_37.db
+file /Users/tbt/radix/wiktionaries/mill-initial/Checkpoint_mill-initial.db
+
+
+FAILED tables [_GRAM_Parsed, _GRAM_AllMentioningGrams, _WORD_PastwardPoset, _WORD_Lang_FuturewardPoset]
+
+240915    15:32:42    
+gram = Gram('elephant', 'en')
+Pickle(gram)
+
+240925    12:05:49    
+
+#def DictFun_Mapflatten(d, fun)  : return [x for key,value in d.items() for x in fun(key,value)]
+
+240927    12:50:54    
+
+def logged_WordCoglangs_Wordposet(word, Coglangs):
+   cmd = f'ret = WordCoglangs_Wordposet(Word(Gram({repr(word.text)}, {repr(word.lang)}), {word.num}), {Coglangs})'
+   my_profile(cmd, log_file=G_profiling_file)
+   return ret
+def only_time_profile(cmd): print(my_profile(cmd, to_print=False).split('\n')[2])
+
+
+240927    13:54:51    
+#import src.utilities
+#src.utilities.Global_Printing_On = False
+mprint.printing_on = False
+
+Global_Printing_On = True
+def mprint(*args, **kwargs):
+   if Global_Printing_On: print(*args, **kwargs)
+
+
+#         self.immediate_ulteriors = COMPARE(newer_GivensStrictsEquivalents_Immediates, old_GivensStrictsEquivalents_Immediates, given_ulteriors, self.strict_ulteriors, self.item_equivalents)
+
+#doesn't account for caching. 
+def COMPARE(fun1, fun2, *args):
+   WIPE_GLOBALCACHES()
+   result1 = fun1(*args)
+   WIPE_GLOBALCACHES()
+   result2 = fun2(*args)
+   WIPE_GLOBALCACHES()
+#   assert result1 == result2, print('\nCOMPARE results:', args, '\nresult1:\n', result1, '\nresult2:\n', result2, '\n')
+   assert result1 == result2, print( obj_diff(result1, result2))
+#   assert result1 == result2, print( args, obj_diff(result1, result2))
+   return result2
+
+240928    04:17:51    
+
+   def non_generally_excluded_domain(self):
+      if not hasattr(self, '_internal_non_generally_excluded_domain'):
+         self._internal_non_generally_excluded_domain = [x for x in self.domain if x not in self.generally_excluded_domain_set()]
+      return self._internal_non_generally_excluded_domain
+   def generally_excluded_domain_set(self):
+      if not hasattr(self, '_internal_generally_excluded_domain_set'):
+         self._internal_generally_excluded_domain_set = self.THING()
+#         self._internal_generally_excluded_domain_set = Wordposet_Gramsgenerallyexcluded(self)
+      return self._internal_generally_excluded_domain_set
+
+#         self._internal_generally_excluded_domain_set = Wordposet_Gramsgenerallyexcluded(self)
+
+
+240928    07:52:34    
+
+def make_regex(code, name, arg, kind=None):
+   def register(pattern, predicate): globals()[name] = pattern(name, predicate)
+#   def register(pattern, predicate): G_regexes.append(pattern(name, predicate))
+   match code:
+      case 'OR'|'AND'|'NOT': register(Primitive , lambda tok: G_code_fun[code](regex.test(tok) for regex in arg))
+      case 'Primitive'     : register(Primitive , lambda tok: tok['kind'] == kind and arg(tok['content']))
+      case 'Pattern'       : register(Pattern   , arg)
+
+240928    09:08:15    
+
+from lxml import etree
+
+
+from src.printing.html import *
+from src.printing.definitions import *
+from src.printing.language_specific import *
+
+from src.printing.asynch import *
+#exec(RR('printing/asynch'))
+
+#from src.printing.cognates import *
+exec(RR('printing/cognates'))
+
+#from src.printing.settings import *
+exec(RR('printing/settings'))
+
+#from src.printing.markdown import *
+exec(RR('printing/markdown'))
+
+#from src.printing.inspection import *
+exec(RR('printing/inspection'))
+
+exec(RR('printing/debug_tree'))
+
+
+240929    06:00:34    
+
+def NewIDnumber():
+   global ELEMENT_ID
+   ELEMENT_ID += 1
+   return str(ELEMENT_ID)
+
+def MaybeNat_ResetID(new_id_count):
+   global ELEMENT_ID
+   if new_id_count is not None: ELEMENT_ID = new_id_count
+
+240929    10:27:23    
+
+debug_tree removed. but bring back later, when time to redo tree finding and incorporate senseids
+
+
+240930    01:26:06    
+#WiktionaryxmlFile_ACTIVATE(WiktionaryXMLfile)
+Wiktionary._SET_(WiktionaryContext(WiktionaryXMLfile))
+
+def RR(filename): print('executing:', (fullpath := SourceDir + filename + '.py')); return Read(fullpath)
+
+#'tests', 
+#'shared_state', 'autoconfig', 'utilities','ordering','languagecodes', 'classes','sql', 'interface','parsearticle', 'inference/inference',  'traversing', 'inspecting','printing/printing', 'wiktionary_autoconfig','config',
+for exec_file_name in [  
+                         ]:
+   exec(RR(exec_file_name))
+
+
+class LoggerMaker:
+   def __init__(self, log_file):
+      self.file = log_file
+
+   def __call__(self, *args):
+      match args:
+         case text : 
+         case text, alternate_file :
+
+Logger = LoggerMaker('default')
+
+logFile = ''
+def setup_logfile(directory):
+   global logFile
+   logFile = f'{RadixRootdir}log/{directory}/LOG{GetShortTimestamp()[:8]}.txt'
+   ensure_file_exists(logFile)
+
+
+setup_logfile('default')
+
+G_ALT_LOGFILES = {}
+def ensure_alt_logfile_exists(directory):
+   if directory not in G_ALT_LOGFILES:
+      logFile = f'{RadixRootdir}log/{directory}/LOG{GetShortTimestamp()[:8]}.txt'
+      ensure_file_exists(logFile)
+      G_ALT_LOGFILES[directory] = logFile
+
+def Log(t, alt_logfile=None):
+   if alt_logfile==None:
+      with open(logFile, 'a') as f:
+         f.write(GetTimestamp() + ': ' + str(t) + '\n')
+   else:
+      ensure_alt_logfile_exists(alt_logfile)
+      with open(G_ALT_LOGFILES[alt_logfile], 'a') as f:
+         f.write(GetTimestamp() + ': ' + str(t) + '\n')
+
+
+240930    06:17:00    
+
+getting rid of G_SERVER_RUNNING. but this seems a little less robust... it's now less explicit that the server, by setting G_S... is doign somtehign global... but idk, this variable is only doing this one thing so i think it is fine?
+def Word_CognatesHTMLContent(word, new_id_count=None):
+   ID_maker.maybe_reset(new_id_count)
+   (trunk_poset := Word_Pastwardwordposet(word))
+   html = Aggregator()
+   if trunk_poset is None:
+      html << Paragraph('found nothing for ' + Gram_Element(word.gram, info={'kind':'generic'}) + ', word number: ' + str(word.num))
+      if globals().get('G_SERVER_RUNNING', False):
+         Log(word, 'unsuccessfully_computed')
+      return Word_ReportHTMLContent(word, prefix=html())
+   else:
+      html << Starting_word(word)
+      html << Text_Legendheader('Pastward trunk: ')
+      html << Trunkposet_PastwardtrunkHTML(trunk_poset)
+      html << Async_retriever()
+      if globals().get('G_SERVER_RUNNING', False):
+         Log(word, 'successfully_computed')
+      return html()
+
+240930    12:33:52    
+
+for file_name in x.strip().split('\n'):
+   if not file_name.startswith('#'):
+      path = f'src/precomputing/{file_name}.py'
+      print(f'\nexecuting: {path}\n')
+      with open(path, 'r') as f:
+         text = f.read()
+      exec(text)
+#      clear_user_globals()
+
+exec(open('src/radix.py').read())
+DB.VACUUM()
+
+
+241001    16:15:59    
+
+   print(poolid, 'boop', boop)
+   
+import multiprocessing
+import time
+import os
+
+#print(poolid, 'boop', boop)
+#   boop += 1
+#   print(poolid, 'boop', boop)
+#   return boop + sum(i * i for i in range(number))
+
+boop = 10
+def cpu_bound(number):
+   global boop
+   poolid = multiprocessing.current_process().name.split('-')[1]
+   print(f"input: {number}. pool pid: {poolid}. hash: {hash('boop')} pid: {os.getpid()}")
+   time.sleep(1)
+   return number
+
+#def find_sums(numbers):
+#   for number in numbers:
+#      cpu_bound(number)
+
+def find_sums(numbers):
+   with multiprocessing.Pool() as pool:
+      x = pool.map(cpu_bound, numbers)
+   return x
+
+if __name__ == "__main__":
+#   numbers = [1+ x for x in range(20)]
+   numbers = [1_000_000 + x for x in range(8)]
+
+   start_time = time.time()
+   sqs = find_sums(numbers)
+   duration = time.time() - start_time
+   print(f"Duration {duration} seconds")
+   print(sqs)
+
+
+
+241001    16:23:49    
+
+#               str(round(100*fraction_done, 1)) + '% done;', "{:.2f}".format(round(hours_taken, 2)) + 'h, ~' + "{:.2f}".format(round((1-fraction_done)*hours_taken/fraction_done, 2)) + 'h left;' + str(current_MBs_RAM()) + 'MB;pi:'+ str(round(current_total_pageins()*1000/(current_row_index+1))) + '/k. ',  end='')
+
+241001    16:35:27    
+
+def my_profile(cmd, funs=None, num=20, log_file=None, log_string='', to_print=True, callers=False, iterations=None):
+   if iterations: cmd = f'[{cmd} for _ in range({iterations})]'
+   cProfile.run(cmd, G_profiling_file)
+   result = capture_output(lambda: printprofile(G_profiling_file, num=num, callers=callers))[1]
+   if log_file!=None:
+      with open(log_file, 'a') as f: f.write(log_string + '\n' + result)
+   if to_print : print(result); line_profile.print_stats(output_unit=1e-03)
+   else        : return result
+
+241001    16:48:21    
+
+   recent_timestamps = [start_time]*4
+   average_step = 0 
+   average_step_step = 0 
+   def list_index_step(xs, i):
+      return xs[i]-xs[i-1]
+
+
+
+241002    04:01:57    
+   def report_GLOBALCACHES(): [print(len(value), type(value), key) for key,value in GLOBALCACHES.items()]
+
+241002    04:25:52    
+def WIPE_GLOBALCACHES(retain_keys=set(), wipe_keys=): 
+   for k in GLOBALCACHES: 
+      if k not in retain_keys and (wipe_keys : GLOBALCACHES[k] = {} 
+
+
+class Caches(dict):
+   def CACHIFY(self, function, name=None):
+      function_name = name or function.__name__ 
+      print(f'making cache for function {function_name}')
+      self[function_name] = {}
+      # TODO compact with .setdefault?
+      @functools.wraps(function)
+      def cachified(*args):
+         if args not in self[function_name]:
+            self[function_name][args] = function(*args)
+         return self[function_name][args] 
+      return cachified
+
+   def wipe(self, keys)        : self.update({k:{} for k in keys & self.keys()})
+   def wipe_all(self)          : self.wipe(self.keys())
+   def wipe_except(self, keys) : self.wipe(self.keys() - keys)
+
+
+241002    04:58:31    
+
+import builtins
+
+def clear_user_globals():
+   print('CLEARING USER GLOBALS')
+   global_dict = globals()
+   for key in list(global_dict.keys()):
+      if key not in builtins.__dict__ and key != 'builtins' and key != 'G_English_grams_order':
+         del global_dict[key]
+   print('CLEARED USER GLOBALS')
+
+
+241002    07:53:03    
+
+### sorting 
+
+#if 'G_English_grams_order' not in globals():
+#   English_grams_order_file = RadixRootdir + 'resources/English_grams_order_dict.pickle'
+#   with open(English_grams_order_file, 'rb') as file:
+#      G_English_grams_order = pickle.load(file)
+
+def English_gram_sort_key(gram):
+   gramtext = gram if type(gram) == str else gram.text
+   return DB._EnglishGramtext_Sortkey.CACHE_Get(gramtext) or (DB._EnglishGramtext_Sortkey.Count() + 1 + len(gramtext))
+
+#   return G_English_grams_order[gramtext] if gramtext in G_English_grams_order else len(G_English_grams_order) 
+
+def English_gram_frequency_sort(grams):
+   return sorted(grams, key= lambda x: (English_gram_sort_key(x), x))
+
+
+241002    16:27:54    
+failed shared_state refactor
+
+class SharedState:
+   def __init__(self): pass
+   def _SET_(self, value): self.__dict__.update(value.__dict__)  
+
+DB = SharedState()
+
+problem is... methods aren't copied.
+
+
+241002    17:24:10    
+random stuff from site/server.py
+
+https://flask.palletsprojects.com/en/3.0.x/
+gunicorn -w 17 -b 127.0.0.1:80 src.site.server:app
+gunicorn -w 17 -b 127.0.0.1:8000 src.site.server:app
+gunicorn -w 17 -b 127.0.0.1:8000 --preload src.site.server:app
+http://localhost:8000/word/lang:en/see
+http://localhost:8000/word/lang:en/be
+http://localhost:8000/word/lang:en/is
+http://localhost:8000/word/lang:en/do
+http://localhost:8000/word/lang:en/put 
+http://localhost:8000/word/lang:en/in
+http://localhost:8000/word/lang:en/of
+http://localhost:8000/word/lang:en/no
+gunicorn -w 17 -b 127.0.0.1:80 --preload src.site.server:app
+gunicorn -w 17 -b 127.0.0.1:8000 --preload src.site.server:app
+
+http://radix.ink/word/lang:en/see
+http://radix.ink/word/lang:en/be
+http://radix.ink/word/lang:en/is
+http://radix.ink/word/lang:en/do
+http://radix.ink/word/lang:en/put 
+http://radix.ink/word/lang:en/in
+http://radix.ink/word/lang:en/of
+http://radix.ink/word/lang:en/no
+
+
+241003    14:27:04    
+         return self[function_name].setdefault(args, function(*args))
+
+241009    04:01:05    
+#def reporttext_report(reporttext):
+#   lines = reporttext.split('\n')
+#   return {'wiktionary': reporttext_wiktionary(reporttext),
+#           'date': lines[1].split('/')[0],
+#           'time': lines[3].split('seconds')[0].strip().split(' ')[-1],
+#           'tables': [x.strip() for x in lines[0].split('run on')[0].split(',')],
+#           }
+#
+
+#def wikistem_table_reports(stem, table):
+#   return [x for x in All_Reports() if x['wiktionary'].startswith(stem) and table in x['tables']]
+
+241009    07:52:24    
+git show 31faf4a --stat
+
+241009    10:09:11    
+   def BatchInsertRow(self, row, insert_wavelength):  
+      self.rows_to_insert.append(self.PlainRow_SQLRow(row))
+      if len(self.rows_to_insert) > insert_wavelength: self.BatchExecuteInserts()
+
+   def BatchExecuteInserts(self):
+      self.db.cursor.executemany(self.insertion_command, self.rows_to_insert)
+      self.rows_to_insert = []
+         case [target_table] : [target_table.BatchInsertRow(result, insert_wavelength)  for result in RESULTS]
+         case _              : [result[0].BatchInsertRow(result[1:], insert_wavelength) for result in RESULTS]
+
+   insert_wavelength = int(commit_wavelength/100)
+
+def Table_Finish(table):
+   table.BatchExecuteInserts()
+   DB.commit()
+   table.Index()
+   print('done with '+ table.name[4:])
+
+241009    15:35:09    
+
+
+   conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*), MAX(id) FROM your_table")
+    total_rows, max_id = cursor.fetchone()
+    conn.close()
+
+    chunk_size = max_id // num_processes
+
+ with multiprocessing.Pool(processes=num_processes) as pool:
+        # Create a list of (start_id, end_id) tuples for each chunk
+        chunks = [(i * chunk_size + 1, (i + 1) * chunk_size) for i in range(num_processes)]
+        chunks[-1] = (chunks[-1][0], max_id)  # Adjust the last chunk to include any remainder
+        
+        # Map the chunks to the worker processes
+        pool.starmap(partial(process_chunk, db_path=db_path), chunks)
+
+
+from src.radix import *
+
+DB.cursor.execute(f"PRAGMA table_info(_GRAM_Equivalents)").fetchall()
+
+for table_name in DB.real_table_names():
+   DB.cursor.execute(f"SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table_name,)).fetchone()[0]
+
+
+
+DB._value._AllPastmostWords                DB._value._GRAM_Direction_Coveringwords    DB._value._GRAM_ImmediatePastwards         DB._value._GRAM_StrictPastwards            DB._value._WORD_Direction_OwnRefGrams      DB._value._cached_EnglishGramtext_Sortkey
+
+
+DB._value._GRAM_Equivalents.MaxID()
+
+https://www.sqlitetutorial.net/sqlite-autoincrement/
+
+def strings_remove_prefix(str1, str2):
+    return str2[len(str1):] if str2.startswith(str1) else str2
+
+def Table_short_name(table): return table.name.split('_')[-1]
+
+
+241010    08:54:21    
+
+ with multiprocessing.Pool(processes=num_processes) as pool:
+
+        # Create a list of (start_id, end_id) tuples for each chunk
+
+
+
+        chunks = [(i * chunk_size + 1, (i + 1) * chunk_size) for i in range(num_processes)]
+        chunks[-1] = (chunks[-1][0], max_id)  # Adjust the last chunk to include any remainder
+        
+        # Map the chunks to the worker processes
+        pool.starmap(partial(process_chunk, db_path=db_path), chunks)
+
+
+DB.MaxID()
+DB.Count()
+
+cursor.execute("SELECT * FROM your_table WHERE id BETWEEN ? AND ?", (start_id, end_id))
+
+
+241010    12:53:22    
+
+for table in DB._value.real_table_names():
+   id = DB._value.__getattribute__(table).MaxID()
+   count = DB._value.__getattribute__(table).Count()
+   assert id == count
+   print(id)
+
+
+from src.radix import *
+
+DB.
+
+cursor.execute("SELECT * FROM your_table WHERE id BETWEEN ? AND ?", (start_id, end_id))
+
+DB._value.real_table_names()
+DB._GRAM_StrictPastwards.MaxID()
+
+from src.radix import *
+
+start_id, end_id = (10, 20)
+k = DB.cursor.execute("SELECT * FROM _GRAM_StrictPastwards WHERE _rowid_ BETWEEN ? AND ?", (start_id, end_id)).fetchall()
+len(k)
+
+start_id, end_id = (10000, 2000000)
+k = DB.cursor.execute("SELECT * FROM _GRAM_StrictPastwards WHERE _rowid_ BETWEEN ? AND ?", (start_id, end_id)).fetchall()
+len(k)
+
+
+def TODO_EXECUTE(to_do):
+   [table.Drop_Create() for table in to_do['target tables']]
+   for id_range in Todo_SourceRanges(to_do):
+      TodoRange_Do(to_do, id_range)
+   [Table_Finish(table) for table in to_do['target tables']]
+   DB.commit()
+
+
+241013    18:34:48    
+installing rocksdb
+
+/usr/local/Cellar/rocksdb/9.6.1/ 
+
+export CPPFLAGS=-I/usr/local/Cellar/rocksdb/9.6.1/include/
+export LDFLAGS="-L/usr/local/Cellar/rocksdb/9.6.1/lib -L/usr/local/Cellar/lz4/1.10.0/lib -L/usr/local/Cellar/snappy/1.2.1/lib"
+pip install python-rocksdb
+
+
+
+
+
+241013    18:54:42    
+
+
+
+
+
+pip install --use-pep517 python-rocksdb
+
+Collecting python-rocksdb
+  Using cached python-rocksdb-0.7.0.tar.gz (219 kB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Installing backend dependencies ... done
+  Preparing metadata (pyproject.toml) ... done
+Requirement already satisfied: setuptools>=25 in ./.pyenv/versions/3.11.0/lib/python3.11/site-packages (from python-rocksdb) (68.0.0)
+Building wheels for collected packages: python-rocksdb
+  Building wheel for python-rocksdb (pyproject.toml) ... error
+  error: subprocess-exited-with-error
+
+
+pip install --use-pep517 python-rocksdb
+
+pip install --upgrade cython
+
+xcode-select --install
+
+pip install python-rocksdb
+
+pip install -U pip setuptools wheel
+
+pip uninstall Cython &&  pip install Cython==0.29.37
+
+pip install --use-pep517 python-rocksdb
+
+pip install --use-pep517 rocksdb
+
+
+https://github.com/trK54Ylmz/rocksdb-py
+https://github.com/Congyuwang/RocksDict
+
+https://plyvel.readthedocs.io/en/latest/
+https://github.com/wbolster/plyvel
+https://github.com/dgraph-io/badger
+
+https://github.com/facebook/rocksdb/wiki/RocksDB-Tuning-Guide
+
+LMDB
+https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database
+http://www.lmdb.tech/doc/
+
+https://github.com/jnwatson/py-lmdb?tab=readme-ov-file
+
+pip install rocksdict
+https://congyuwang.github.io/RocksDict/rocksdict.html
+
+241014    18:35:33    
+python3 -m pip install --upgrade diskcache --trusted-host pypi.org --trusted-host files.pythonhosted.org
+
+#https://grantjenks.com/docs/diskcache/api.html#diskcache.Index.items
+#https://grantjenks.com/docs/diskcache/tutorial.html
+
+
+241015    16:13:44    
+
+from src.radix import *
+gram = str_Gram('[*deyḱ-, ine-pro]')
+
+gram.Direction_Immediates('pastward')
+gram.Direction_Immediates('futureward')
+
+241015    17:03:49    
+from src.radix import *
+k = DB._AllPastmostWords.OneValue():
+list(DB._AllPastmostWords.index.keys())
+
+DB._AllPastmostWords.index[[]]
+
+DB._AllPastmostWords.index.get([], None)
+
+[[]]
+
+
+241015    20:05:43    
+
+scalene src/precomputing/G_F_grampastmosts.py
+targeting _GRAM_StrictPastwards, _GRAM_ImmediatePastwards, _GRAM_Equivalents
+7366537 function calls (7363154 primitive calls) in 6.060 seconds
+
+scalene src/precomputing/N_QGI_gram_coverings.py
+targeting _GRAM_Direction_Coveringwords
+4256129 function calls (4188909 primitive calls) in 5.328 seconds
+
+scalene src/precomputing/O_KN_word_pastwardwordposet.py
+targeting _WORD_PastwardPoset, _AllPastmostWords
+7729321 function calls (7585836 primitive calls) in 6.312 seconds
+
+targeting _WORD_Lang_FuturewardPoset
+6025230 function calls (5971593 primitive calls) in 3.993 seconds
+
+241015    21:03:53    
+13.66 40k-initial-24.09.14-03_31_50.db
+14.15 40k-initial-24.09.14-04_17_08.db
+13.57 40k-initial-24.09.14-04_22_59.db
+14.48 40k-initial-24.09.14-17_45_20.db
+13.07 40k-initial-24.09.14-18_15_35.db
+13.09 40k-initial-24.09.14-18_58_25.db
+13.47 40k-initial-24.09.14-18_59_12.db
+13.20 40k-initial-24.09.14-19_25_23.db
+19.90 40k-initial-24.09.15-03_01_11.db
+22.62 40k-initial-24.09.15-03_40_59.db
+19.82 40k-initial-24.09.15-03_45_07.db
+21.64 40k-initial-24.09.15-03_46_16.db
+19.87 40k-initial-24.09.15-14_36_50.db
+19.54 40k-initial-24.09.15-14_38_57.db
+22.20 40k-initial-24.09.15-15_44_43.db
+
+
+commit 1dbec403b78ff265874cc7b50653c924c92d9154
+Author: tsvibt <tsvibt@gmail.com>
+Date:   Sun Sep 15 04:00:51 2024 -0700
+
+    unnamed
+
+commit 31faf4a2670a326b8ebcd84c90c1bf868af5dfaa
+Author: tsvibt <tsvibt@gmail.com>
+Date:   Sun Sep 15 03:02:18 2024 -0700
+
+    pastwardposet now is strictself not nonstrict
+
+commit fdd334c97c8f78aa06969e32f71a44933a626236
+Author: tsvibt <tsvibt@gmail.com>
+Date:   Sat Sep 14 19:23:30 2024 -0700
+
+    unnamed
+
+commit f4729ed0ec0650cbf5fa4d2fc21f68af0ca94144
+Author: tsvibt <tsvibt@gmail.com>
+Date:   Sat Sep 14 04:26:58 2024 -0700
+
+241015    21:45:42    
+
+def FIX(Item_Completed, update):
+   while not all(Item_Completed.values()):
+      for Item in list(Item_Completed.keys()):
+         if not Item_Completed[Item]:
+            Item_Completed[Item] = True
+            update(Item_Completed, Item)
+
+
+241015    22:24:57    
+
+def FIX(Item_Completed, update):
+   while not all(Item_Completed.values()):
+      for Item in list(Item_Completed.keys()):
+         if not Item_Completed[Item]:
+            Item_Completed[Item] = True
+            update(Item_Completed, Item)
+
+
+def GramsDirection_UlteriorclosureGivens(grams, direction):
+   Gram_Directionwardset = {}
+   def update(Livegram_Explored, gram_exploring):
+      Gram_Directionwardset[gram_exploring] = thing if (thing := gram_exploring.Direction_Givenrefgrams(direction)) else set() 
+      for new_gram in Gram_Directionwardset[gram_exploring]:
+         Livegram_Explored.setdefault(new_gram, False)
+   FIX({gram: False for gram in grams}, update)
+   return Gram_Directionwardset
+
+def Gram_compute_Pastwardposet(gram):
+   givens = GramsDirection_UlteriorclosureGivens({gram}, 'pastward')
+   return Poset(givens, 'pastward', unsorted_domain=True)
+
+
+
+
+241016    06:09:05    
+
+scalene src/precomputing/G_F_grampastmosts.py
+targeting _GRAM_StrictPastwards, _GRAM_ImmediatePastwards, _GRAM_Equivalents
+7366537 function calls (7363154 primitive calls) in 6.060 seconds
+
+scalene src/precomputing/N_QGI_gram_coverings.py
+targeting _GRAM_Direction_Coveringwords
+4256129 function calls (4188909 primitive calls) in 5.328 seconds
+
+scalene src/precomputing/O_KN_word_pastwardwordposet.py
+targeting _WORD_PastwardPoset, _AllPastmostWords
+7729321 function calls (7585836 primitive calls) in 6.312 seconds
+
+scalene precomputing/P_O_pastmostword_futurewordposet.py
+targeting _WORD_Lang_FuturewardPoset
+6025230 function calls (5971593 primitive calls) in 3.993 seconds
+
+
+241016    21:06:06    
+
+   def DBkeyBatchGenerator(self, batchsize): 
+      keys = iter(self.index.keys())
+      def generator():
+         while (batch := list(islice(keys, batchsize))): yield batch
+      return generator()
+
+
+241017    06:29:27    
+from src.radix import *
+DB._WORD_Lang_FuturewardPoset.ALLCACHE()
+list(DB._WORD_Lang_FuturewardPoset.CACHE.keys())
+GLOBALCACHES[
+
+len(GLOBALCACHES[ DB._WORD_Lang_FuturewardPoset.name_of_cacheget].keys())
+
+from src.radix import *
+DB._WORD_Lang_FuturewardPoset.ALLCACHE()
+table = DB._WORD_Lang_FuturewardPoset
+len(table.CACHE.keys())
+
+
+table.CACHE 
+
+len(GLOBALCACHES[ table.name_of_cacheget].keys())
+241017    07:42:09    
+
+from src.radix import *
+import pickle
+file = 'aux/data.pkl'
+
+data = table.CACHE
+
+with open(file, 'wb') as f: pickle.dump(data, f)
+
+import pickle
+file = 'aux/data.pkl'
+with open(file, 'rb') as f: loaded_data = pickle.load(f)
+
+
+241018    06:50:25    
+from src.radix import *
+for table in DB.tables:
+   file = f'aux/caches/new_{table.name}.pkl'
+   print(file)
+   table.ALLCACHE()
+   with open(file, 'wb') as f: pickle.dump(table.CACHE, f)
+
+
+from src.radix import *
+for table in DB.tables:
+   file = f'aux/caches/new_{table.name}.pkl'
+   print(file)
+   table.ALLCACHE()
+   with open(file, 'rb') as f: loaded_data = pickle.load(f)
+
+
+
+
+241018    10:56:31    
+python src/precomputing/G_F_grampastmosts.py
+targeting _GRAM_StrictPastwards, _GRAM_ImmediatePastwards, _GRAM_Equivalents
+7366537 function calls (7363154 primitive calls) in 6.060 seconds
+
+python src/precomputing/N_QGI_gram_coverings.py
+targeting _GRAM_Direction_Coveringwords
+4256129 function calls (4188909 primitive calls) in 5.328 seconds
+
+python src/precomputing/O_KN_word_pastwardwordposet.py
+targeting _WORD_PastwardPoset, _AllPastmostWords
+7729321 function calls (7585836 primitive calls) in 6.312 seconds
+
+python precomputing/P_O_pastmostword_futurewordposet.py
+targeting _WORD_Lang_FuturewardPoset
+6025230 function calls (5971593 primitive calls) in 3.993 seconds
+
+
+
+241018    13:34:50    
+'''
+scalene src/precomputing/N_QGI_gram_coverings.py
+'''
+
+
+from src.precomputing.coordinator import *
+from src.precomputing.multi_coordinator import *
+
+def GramsGramsDirection_coveringWords(sources, targets, direction):
+#   Sourcegram_
+   return {source_word for source_gram in sources for source_word in source_gram.AllRealGivenWords()
+         if not source_word.Direction_Gramrefs(direction).isdisjoint(targets)}
+
+already_got = set()
+
+def FUN(gram, strict_pasts):
+   GLOBALCACHES.wipe_except({'DB._GRAM_StrictFuturewards_CACHE_Get', 'DB._GRAM_Equivalents_CACHE_Get'})
+
+   results = []
+   if gram not in already_got:
+      strict_futures = DB._GRAM_StrictFuturewards.Get(gram)
+      equivalents = gram.Equivalents()
+      already_got.update(equivalents)
+
+      futureward_coverings = GramsGramsDirection_coveringWords(strict_pasts   , equivalents | strict_futures , 'futureward')
+      pastward_coverings   = GramsGramsDirection_coveringWords(strict_futures , equivalents | strict_pasts   , 'pastward')
+      results.extend((equivalent , 'futureward' , futureward_coverings) for equivalent in equivalents)
+      results.extend((equivalent , 'pastward'   , pastward_coverings)   for equivalent in equivalents)
+   return results
+
+to_do_1 = {'generator source':DB._GRAM_StrictPastwards, 'function':FUN, 'target tables':[DB._GRAM_Direction_Coveringwords], }
+
+CALL([to_do_1, ], )
+
+
+
+241018    14:19:08    
+'''
+scalene src/precomputing/N_QGI_gram_coverings.py
+'''
+
+#from src.precomputing.coordinator import *
+from src.precomputing.multi_coordinator import *
+
+# todo: batchget?
+def GramsetsDirection_CoverWords(sources, targets, direction):
+   return {source_word for source_gram in sources for source_word in source_gram.AllRealGivenWords()
+         if not source_word.Direction_Gramrefs(direction).isdisjoint(targets)}
+
+def FUN(gram, strict_pasts):
+   results = []
+   equivalents = gram.Equivalents()
+   # weird + relies on grams being deterministically sorted; but better than 'already_got' set 
+   if gram == sorted(equivalents)[0]: return results
+
+   GLOBALCACHES.wipe_except({'DB._GRAM_Equivalents_CACHE_Get'})
+
+   stricts = {'pastward': strict_pasts, 'futureward': gram.Direction_Stricts('futureward')}
+   for direction in G_Directions:
+      coverings = GramsetsDirection_CoverWords(stricts[direction], equivalents|stricts[Direction_Reversed(direction)], direction)
+      results.extend((equivalent, direction, coverings) for equivalent in equivalents)
+   return results
+
+if __name__ == "__main__":
+
+   to_do_1 = {'generator source':DB._GRAM_StrictPastwards, 'function':FUN, 'target tables':[DB._GRAM_Direction_Coveringwords], }
+
+   CALL([to_do_1, ], )
+
+
+241018    14:27:47    
+
+def FUN(gram, strict_pasts):
+   results = []
+   equivalents = gram.Equivalents()
+   # weird + relies on grams being deterministically sorted; but better than 'already_got' set 
+   if gram == sorted(equivalents)[0]: return results
+
+   GLOBALCACHES.wipe_except({'DB._GRAM_Equivalents_CACHE_Get'})
+
+   stricts = {'pastward': strict_pasts, 'futureward': gram.Direction_Stricts('futureward')}
+   for direction in G_Directions:
+      coverings = GramsetsDirection_CoverWords(stricts[Direction_Reversed(direction)], equivalents|stricts[direction], direction)
+      results.extend((equivalent, direction, coverings) for equivalent in equivalents)
+   return results
+
+
+
+
+def FUN(gram, strict_pasts):
+   results = []
+   equivalents = gram.Equivalents()
+   if gram == sorted(equivalents)[0]: # weird + relies on grams being deterministically sorted; but better than 'already_got' set 
+      GLOBALCACHES.wipe_except({'DB._GRAM_Equivalents_CACHE_Get'})
+# redo with a dict like direction_stricts = {future: strict_futures, ..}
+
+
+      strict_futures = gram.Direction_Stricts('futureward')
+
+      futureward_coverings = GramsGramsDirection_coveringWords(strict_pasts   , equivalents | strict_futures , 'futureward')
+      pastward_coverings   = GramsGramsDirection_coveringWords(strict_futures , equivalents | strict_pasts   , 'pastward')
+      results.extend((equivalent , 'futureward' , futureward_coverings) for equivalent in equivalents)
+      results.extend((equivalent , 'pastward'   , pastward_coverings)   for equivalent in equivalents)
+   return results
+
+
+241018    15:49:14    
+'''
+scalene src/precomputing/G_F_grampastmosts.py
+python src/precomputing/G_F_grampastmosts.py
+'''
+
+from src.precomputing.coordinator import *
+#from src.precomputing.multi_coordinator import *
+
+RAM_grams_already_explored   = set()
+RAM_gram_immediate_pastwards = {}
+RAM_gram_equivalents         = {}
+
+def GramsDirection_UlteriorclosureGivens(uncompleted_grams, direction):
+   Gram_Directionwardset = {}
+   completed_grams = set()
+   while len(uncompleted_grams) > 0:
+      completed_grams.update(uncompleted_grams)
+      #TODO : cache
+      gram_directionset_pairs = DB._GRAM_Direction_GivenRefGrams.BatchGet([(item, direction) for item in uncompleted_grams])
+      new_gram_sets = []
+      for [gram, *xs], directionset in gram_directionset_pairs:
+         new_gram_sets.append(Gram_Directionwardset.setdefault(gram, directionset or set()))
+      uncompleted_grams = unionfold(new_gram_sets) - completed_grams
+
+   return Gram_Directionwardset
+
+def Gram_compute_Pastwardposet(gram):
+   givens = GramsDirection_UlteriorclosureGivens({gram}, 'pastward')
+   return Poset(givens, 'pastward', unsorted_domain=True)
+
+# note: this does a weird thing with cycles between pastmosts. here we exclude them from each other's things, because we restrict to all_ulteriors; and even gram_exploring doesn't have to have everything in the poset be in its past! 
+
+def FUN(gram_exploring, _dir, _givens):
+   GLOBALCACHES.wipe_all()
+   if gram_exploring in RAM_grams_already_explored: return []
+
+   pastward_poset = Gram_compute_Pastwardposet(gram_exploring)
+   results = [(gram, pastward_poset.strict_ulteriors[gram]) for gram in set(pastward_poset.domain) - RAM_grams_already_explored]
+
+   RAM_gram_immediate_pastwards.update(pastward_poset.immediate_ulteriors)
+   RAM_gram_equivalents        .update(pastward_poset.item_equivalents)
+   RAM_grams_already_explored  .update(pastward_poset.domain)
+   return results
+
+to_do_1 = {'generator source':DB._GRAM_Direction_GivenRefGrams, 'function':FUN, 'target tables':[DB._GRAM_StrictPastwards],} 
+
+to_do_2 = OBJECT_TABLE_TODO(RAM_gram_immediate_pastwards , DB._GRAM_ImmediatePastwards)
+to_do_3 = OBJECT_TABLE_TODO(RAM_gram_equivalents         , DB._GRAM_Equivalents)
+
+CALL([to_do_1, to_do_2, to_do_3])
+
+
+
+241018    10:56:31    
+multied.
+python src/precomputing/G_F_grampastmosts.py
+targeting _GRAM_StrictPastwards, _GRAM_ImmediatePastwards, _GRAM_Equivalents
+7366537 function calls (7363154 primitive calls) in 6.060 seconds
+
+multied.
+python src/precomputing/N_QGI_gram_coverings.py
+targeting _GRAM_Direction_Coveringwords
+4256129 function calls (4188909 primitive calls) in 5.328 seconds
+
+python src/precomputing/O_KN_word_pastwardwordposet.py
+targeting _WORD_PastwardPoset, _AllPastmostWords
+7729321 function calls (7585836 primitive calls) in 6.312 seconds
+
+multied.
+python precomputing/P_O_pastmostword_futurewordposet.py
+targeting _WORD_Lang_FuturewardPoset
+6025230 function calls (5971593 primitive calls) in 3.993 seconds
+
+
+18 Oct 2024
+
+from src.radix import *
+table = DB._WORD_OwnFuturewardGramlinks
+table.ALLCACHE()
+k=table.CACHE
+
+check_db = Disk_DB( Wiktionary.checkpoint_db_dir)
+check_table = check_db._WORD_OwnFuturewardGramlinks
+check_table.ALLCACHE()
+j=check_table.CACHE
+
+
+241019    06:05:04    
+
+def TODO_EXECUTE(to_do):
+   [table.Drop() for table in to_do['target tables']]
+   print('BATCHES')
+   for i,batch in enumerate(Todo_ArgsBatches(to_do)):
+      print('BATCH',i, len(batch))
+ 
+   poolid = multiprocessing.current_process().name.split('-')[1]
+   [print(poolid, table.name, 'before exec all : insert count', len(table.insert_queue), 'dict count', len(table.dict_queue)) for table in to_do['target tables']]
+   [table.Execute_all_updates() for table in to_do['target tables']]
+   [print(poolid, table.name, 'after exec all : insert count', len(table.insert_queue), 'dict count', len(table.dict_queue)) for table in to_do['target tables']]
+
+   def Execute_DictUpdates(self):
+      print(f'(DB) {get_multiproc_id()} executing {len(self.dict_queue)} dict updates for {self.name}')
+      if len(self.dict_queue) == 0: print('(none found)'); return 
+      merged_db_dict = {self.Plainkey_DBkey((k,)):self.Plainval_DBval(v) for k,v in Dicts_Union(self.dict_queue).items()}
+      self.index.update(merged_db_dict)
+      self.dict_queue = []
+
+
+   def Row_QueuePair(self, row): 
+      self.insert_queue.append(self.PlainRow_DBPair(row))
+      print(f'(DB) {get_multiproc_id()} queued pair, count {len(self.insert_queue)} ')
+      if len(self.insert_queue) > self.batchsize: self.Execute_RowInsertions()
+
+
+
+   def Execute_RowInsertions(self):
+      print(f'(DB) {get_multiproc_id()} executing {len(self.insert_queue)} row insertions for {self.name}')
+      if len(self.insert_queue) == 0: print('(none found)'); return 
+      with self.index.transact():
+         for key, value in self.insert_queue: 
+            self.index[key] = value
+      self.insert_queue = []
+
+
+
+241019    07:20:42    
+
+multied.
+python src/precomputing/G_F_grampastmosts.py
+targeting _GRAM_StrictPastwards, _GRAM_ImmediatePastwards, _GRAM_Equivalents
+7366537 function calls (7363154 primitive calls) in 6.060 seconds
+
+multied.
+python src/precomputing/N_QGI_gram_coverings.py
+targeting _GRAM_Direction_Coveringwords
+4256129 function calls (4188909 primitive calls) in 5.328 seconds
+
+python src/precomputing/O_KN_word_pastwardwordposet.py
+targeting _WORD_PastwardPoset, _AllPastmostWords
+7729321 function calls (7585836 primitive calls) in 6.312 seconds
+
+multied.
+python precomputing/P_O_pastmostword_futurewordposet.py
+targeting _WORD_Lang_FuturewardPoset
+6025230 function calls (5971593 primitive calls) in 3.993 seconds
+
+
+241019    07:31:07    
+"""
+scalene src/precomputing/O_KN_word_pastwardwordposet.py
+python src/precomputing/O_KN_word_pastwardwordposet.py
+"""
+
+from src.precomputing.coordinator import *
+
+all_pastmost_words = set()
+already_pastmosted = set()
+
+def FUN(gram_exploring, _):
+   if gram_exploring in already_pastmosted: return []
+   results = []
+   for gram in (pastward_poset := Gram_Pastwardposet(gram_exploring)):
+      if gram not in already_pastmosted:
+         already_pastmosted.add(gram)
+         restricted_pastward_poset = pastward_poset if gram==gram_exploring else GramPoset_Ulteriorsubposet(gram, pastward_poset)
+         for word in gram.GivensOrPlaceholder():
+            pastward_wordposet = WordPoset_Wordposet(word, restricted_pastward_poset)
+            all_pastmost_words.update(Wordposet_Ulteriormostwords(pastward_wordposet))
+            results.append((word, pastward_wordposet))
+   return results
+
+DB._GRAM_ImmediatePastwards.ALLCACHE()
+DB._GRAM_ImmediateFuturewards.ALLCACHE()
+
+to_do_1 = {'generator source': DB._GRAM_ImmediateFuturewards, 'function':FUN, 'target tables':[DB._WORD_PastwardPoset], }
+
+to_do_2 = OBJECT_TABLE_TODO(all_pastmost_words, DB._AllPastmostWords)
+
+CALL([to_do_1, to_do_2, ],)
+
+"""
+scalene src/precomputing/O_KN_word_pastwardwordposet.py
+python src/precomputing/O_KN_word_pastwardwordposet.py
+"""
+
+#from src.precomputing.coordinator import *
+from src.precomputing.multi_coordinator import *
+
+all_pastmost_words = set()
+already_pastmosted = set()
+
+def FUN(gram_exploring, _):
+   if gram_exploring in already_pastmosted: return 
+   for gram in (pastward_poset := Gram_Pastwardposet(gram_exploring)):
+      if gram not in already_pastmosted:
+         already_pastmosted.add(gram)
+         restricted_pastward_poset = pastward_poset if gram==gram_exploring else GramPoset_Ulteriorsubposet(gram, pastward_poset)
+         for word in gram.GivensOrPlaceholder():
+            pastward_wordposet = WordPoset_Wordposet(word, restricted_pastward_poset)
+            all_pastmost_words.update(Wordposet_Ulteriormostwords(pastward_wordposet))
+            DB._WORD_PastwardPoset.Row_QueuePair((word, pastward_wordposet))
+
+#DB._GRAM_ImmediatePastwards.ALLCACHE()
+#DB._GRAM_ImmediateFuturewards.ALLCACHE()
+
+to_do_1 = {'generator source': DB._GRAM_ImmediateFuturewards, 'function':FUN, 'target tables':[DB._WORD_PastwardPoset], }
+
+to_do_2 = OBJECT_TABLE_TODO(all_pastmost_words, DB._AllPastmostWords)
+
+CALL([to_do_1, to_do_2, ],)
+
+
+241019    08:32:23    
+#   def __getstate__(self): return self.name
+#   def __setstate__(self, name): self.__dict__.update(getattr(DB, name).__dict__)
+#   def __reduce__(self): return (lambda name: getattr(DB, name), (self.name,))
+   def __reduce__(self): return f'DB.{self.name}'
+
+
+241019    15:04:15    
+
+:!rg src.precomputing.coord
+A_xmldump_redirects.py
+B_xmldump_separate.py
+D_C_parsed_allmentioners.py
+F_E_linksrefs_pastwardsfuturewards.py
+H_G_gram_immediatefutures.py
+I_G_gram_strictfutures.py
+T_gramorder_sortkey.py
+
+idk about a_
+should be able to do b_ by just... doing a "split once" at the end? if such exists, and assuming efficient. 
+
+dict accumulation:
+D_C_parsed_allmentioners.py
+F_E_linksrefs_pastwardsfuturewards.py
+
+one approach: just the bad way
+another: construct append-like thingusing an integer key and secondary counters, with write locks when getting the counters...
+maybe better: parallel, construct dicts. then get all the dicts in main proc.. then set-merge them in main. then distribute them back to subprocs to write... no that can't be good, we have to pickle to pass back... though can just finish the whole thing in main....
+another: use some other in-mem shared thing... like from Manager
+
+to do the approach with x by x thingies...
+ack i mean it should really be appendable, somehow...
+
+241020    08:25:32    
+"""
+exec(open('scanning/scan_parsed.py').read())
+python scanning/scan_parsed.py
+"""
+
+exec(open('src/precomputing/abstracted.py').read())
+
+RED = (255, 80, 80) 
+
+#RGBtext_Terminalcolored(RED,)
+
+count = 0
+d = {}
+def FUN(word, parsed):
+   global count 
+   for sensenum, sensedict in parsed.items():
+      for header, header_tokens in sensedict.items():
+         for token in header_tokens:
+            if token['kind'] == 'reference':
+               ref = token['content']
+               lang = ref.get('lang', 'NONE')
+               if lang != word.lang and PIE_langcode_poset.prior_to( word.lang, lang):
+#               if 'affixes' in ref and lang != word.lang and PIE_langcode_poset.prior_to( word.lang, lang):
+#               if 'affixes' in ref and lang != word.lang and not (PIE_langcode_poset.prior_to( lang, word.lang ) or PIE_langcode_poset.prior_to( word.lang, lang)):
+                  if not (word.lang in ['la', 'grc', 'fro']):
+                     if ref['kind'] in ['PIE word', 'root', 'derived',  'inherited', 'inflection of','borrowed','compound', 'univerbation', 'blend', 'de-adj form of', 'plural of', 'verb form of', 'participle of', 'back-formation']:
+                        print(word, ref)
+
+#               if 'affixes' in ref and ref.get('lang', 'NONE') != word.lang and 'nocat=1' not in ref['text']:
+
+#               text = ref['text'][2:][:-2]
+#               if ref != NEW_ReftextRefdict(text) and not NEW_ReftextRefdict(text)['kind']=='PIE word':
+#                  count += 1
+#                  print(ref)
+#                  print('')
+#                  print(NEW_ReftextRefdict(text))
+#                  obj_diff(ref, NEW_ReftextRefdict(text))
+
+#                  if not ref['text'].startswith('{{quote-book') and not ref['text'].startswith('{{RQ'):
+
+#         if header.startswith('Etymology'):
+#            for token in header_tokens:
+#               if token['kind'] == 'text' and 'from which' in token['content']:
+#                  print('word', word)
+#                  print('sense', sensenum)
+#                  print('')
+#                  print('text', Tokens_Text(header_tokens))
+
+#            if token['kind'] == 'reference' and '|id' in token['content']['text'] and any(x in token['content']['text'] for x in ['|id='] + ['|id' +str(k) for k in range(10)]):
+#               d.setdefault(token['content']['kind'], 0)
+#               d[token['content']['kind']]+=1
+#               if token['content']['kind'] == 'unrecognized':
+#                  print(token['content']['text'].replace('|id', TerminalColor(RED, '|id')))
+
+#               print(word, sensenum)
+#               print(header)
+#               print(token)
+   return []
+
+to_do_1 = {'generator source':SQL_WORD_Parsed, 'function':FUN, 'target tables':[SQL_SANDBOX], 'message': '', 'printing':False, 'printing_args':False}
+
+CALL([to_do_1, ], to_profile=False)
+
+
+
+241020    08:32:51    
+
+def FUN(gram, parsed):
+   for wordnum, worddict in parsed.items():
+      for header, header_tokens in worddict.items():
+         for token in header_tokens:
+            if token['kind'] == 'reference':
+               ref = token['content']
+               lang = ref.get('lang', 'NONE')
+               if lang != gram.lang and PIE_langcode_poset.prior_to( gram.lang, lang):
+#               if 'affixes' in ref and lang != gram.lang and PIE_langcode_poset.prior_to( gram.lang, lang):
+#               if 'affixes' in ref and lang != gram.lang and not (PIE_langcode_poset.prior_to( lang, gram.lang ) or PIE_langcode_poset.prior_to( gram.lang, lang)):
+                  if not (gram.lang in ['la', 'grc', 'fro']):
+                     if ref['kind'] in ['PIE gram', 'root', 'derived',  'inherited', 'inflection of','borrowed','compound', 'univerbation', 'blend', 'de-adj form of', 'plural of', 'verb form of', 'participle of', 'back-formation']:
+                        print(gram, ref)
+#G_regexes = []
+
+def CodeNameRecognizer_Regex(code, name, arg, kind):
+#   def register(pattern, predicate): globals()[name] = pattern(name, predicate)
+#   def register(pattern, predicate): G_regexes.append(pattern(name, predicate))
+   match code:
+      case 'OR'|'AND'|'NOT': return Primitive(name, lambda tok: G_code_fun[code](regex.test(tok) for regex in arg))
+      case 'Primitive'     : return Primitive(name, lambda tok: tok['kind'] == kind and arg(tok['content']))
+      case 'Pattern'       : return Pattern(name, arg)
+
+
+one approach: just the bad way
+another: construct append-like thingusing an integer key and secondary counters, with write locks when getting the counters...
+maybe better: parallel, construct dicts. then get all the dicts in main proc.. then set-merge them in main. then distribute them back to subprocs to write... no that can't be good, we have to pickle to pass back... though can just finish the whole thing in main....
+another: use some other in-mem shared thing... like from Manager
+maybe better: everyone writes to one dict, but they suffix each key with their process number. after the first run, the main process will get all the keys, and deduplicate them minus the suffix. that list of keys gets batched and sent to the workers. a worker given a key will look up in the auxilliary map the key, suffixed by each of N (number of workers) numbers. the worker then unions the resulting sets / lists (efficiency?) and then writes the result to the main map. this can be done piecemeal writes. 
+this is bad for several reasons. one is that the writes happen all at onece. but more importantly i don't even know how to do that in multiproc without jank that's just like "do your writes ; but if you've already dono this, sleep 1 second." or something. well no the first thing is the proble. 
+ok but we can fix this i think.... we're basically going to do some sort of append thing. it's like: keep writing; append to the key both the proc number, and also a counter of the batch number.... 
+probalem is that... this seems like it involves a lot of serialness..? not actuallysure. like, imagine that most of thesekeys point to just a single word. lame.
+but then again things should be fairly clustered? unclear...
+
+
+241022    16:43:52    
+copied
+:!rg src.precomputing.coord
+A_xmldump_redirects.py
+B_xmldump_separate.py
+D_C_parsed_allmentioners.py
+F_E_linksrefs_pastwardsfuturewards.py
+H_G_gram_immediatefutures.py
+I_G_gram_strictfutures.py
+T_gramorder_sortkey.py
+
+idk about a_
+should be able to do b_ by just... doing a "split once" at the end? if such exists, and assuming efficient. 
+
+dict accumulation:
+D_C_parsed_allmentioners.py
+F_E_linksrefs_pastwardsfuturewards.py
+
+
+241022    23:01:35    
+this seems.. bad because it sends everything to everyone....
+https://github.com/ronny-rentner/UltraDict
+
+jeeez. ok so requirements are:
+* write once per thing
+* O(1) writes --like, appends or set insertions, etc.
+* write continuously as each thing comes up, so we aren't writing in one big blob at the end fro everyone all at once
+* don't pass things around a bunch (as with shared memorry, or passingto and from main...)
+
+... ok here's what we do.
+we have an auxiliary which is like a map from grams to numbers. the number starts at 0 and means: "there have been this many written; and this is the id for the next"
+when you want to write gram -> gramset, in an atomic transaction, you get the number for gram and increment it +1. then you write to key= gram+num the value is the set. 
+then after, we will load the keys+values from the first table, the numbers, and pass then in batches. a process gets a gram and a number. it looks in gram+range(num) in the second table, gathering all those sets. 
+then it unions them. though, we may want to store not sets explicitly, rather just lists, for efficiency--avoid hasing everything twice. 
+
+241025    23:03:29    
+from src.precomputing.coordinator import *
+
+ALL_MENTIONERS = {}
+def GramRef_RegisterMentioners(mentioner_gram, ref):
+   if 'lang' in ref:
+      for gramtext in ref['gramtexts'] + ref.get('affixes', []):
+         ALL_MENTIONERS.setdefault(Gram(gramtext, ref['lang']), set()).add(mentioner_gram)
+
+def FUN(gram, parsed):
+   [GramRef_RegisterMentioners(gram, token['content']) 
+    for worddict in parsed.values() for tokens in worddict.values() for token in tokens if token['kind'] == 'template']
+   return []
+
+to_do_1 = {'generator source':DB._GRAM_Parsed, 'function':FUN, 'target tables':[], 'message':'get all mentioners'}
+
+to_do_2 = OBJECT_TABLE_TODO(ALL_MENTIONERS, DB._GRAM_AllMentioningGrams)
+
+CALL([to_do_1, to_do_2])
+
+
+241027    00:30:56    
+
+scalene src/radix.py
+exec('src/radix.py')
+
+def Read(file, read_type='r'):
+   with open(file, read_type) as f: return f.read()
+
+cmd = "exec(Read('src/radix.py'))"
+
+my_profile(cmd, log_file=None, log_string='')
+
+
+
+import subprocess
+from src.radix import *
+
+
+for file_name in x.strip().split('\n'):
+   if not file_name.startswith('#'):
+      if globals().get('MODE', 'normal') == 'scalene':
+         cmd = f'scalene --profile-all {SourceDir}precomputing/{file_name}.py'
+         check = False
+      else:
+         cmd = f'python {SourceDir}precomputing/{file_name}.py'
+         check = True
+      print(f'\nexecuting: {cmd}\n')
+      subprocess.run(cmd, shell=True, check=check)
+
+
+import subprocess
+from src.radix import *
+cmd = f"subprocess.run('python {SourceDir}radix.py', shell=True, check=True)"
+my_profile(cmd, log_file=Log.file(), log_string='startup ')
+
+
+
+
+
+#### profile startup
+
+
+import cProfile
+import pstats
+from pstats import SortKey
+
+import os 
+RadixRootdir = os.getcwd().split('radix')[0] + 'radix/'
+
+def printprofile(file='aux/cProfile_aux.stats', num=20, callers=False):
+   p = pstats.Stats(file)
+   p.sort_stats(SortKey.TIME).print_stats(num)
+   p.sort_stats(SortKey.CUMULATIVE).print_stats(num)
+   if callers:
+      p.sort_stats(SortKey.TIME).print_callers(num)
+      p.sort_stats(SortKey.CUMULATIVE).print_callers(num)
+
+def my_profile(cmd):
+   profiling_aux_file = RadixRootdir + 'aux/cProfile_aux.stats'
+   cProfile.run(cmd, profiling_aux_file)
+   printprofile(profiling_aux_file, num=50, callers=True)
+
+def Read(file, read_type='r'):
+   with open(file, read_type) as f: return f.read()
+
+
+cmd = "exec(Read('src/radix.py'))"
+my_profile(cmd)
+
+
+
+241029    23:33:10    
+
+G_pickle_file_codelangs = f'{ResourcesDir}Codelangs.pickle'
+def Code_Langs(): 
+   if not os.path.exists(G_pickle_file_codelangs): 
+      codelangs = luatext_entrydict(Read(f'{ResourcesDir}wikt_languages_data_merged.lua'), 3)
+      with open(G_pickle_file_codelangs, 'wb') as f: f.write(pickle.dumps(codelangs))
+      return codelangs
+   else:
+      return pickle.loads(Read(G_pickle_file_codelangs, read_type='rb'))
+
+
+def no_equals(entry):
+   return '\n'.join(line for i,line in enumerate(entry.split('\n')) if i==0 or '=' not in line)
+
+def luatext_entries(lua_text):
+   return [entry.split('\n}\n')[0] for entry in lua_text.split('\nm[')[1:]]
+
+def luatext_entrydict(lua_text, value_index):
+   return {(entry_bits := no_equals(entry).split('"'))[1] : entry_bits[value_index] for entry in luatext_entries(lua_text)}
+
+def Code_Langs(): 
+   return luatext_entrydict(Read(f'{ResourcesDir}wikt_languages_data_merged.lua'), 3)
+
+BasicCodelangs = Code_Langs()
+Langname_Code = Dict_Reversed(BasicCodelangs)
+
+
+241031    23:00:17    
+#      try    : self._cached_Gramtitle_Redirect      = self._GramtitleRedirect.OneValue()
+#      except : pass
+#      try    : self._cached_EnglishGramtext_Sortkey = self._EnglishGramtext_Sortkey.OneValue()
+#      except : pass
+'''
+https://en.wiktionary.org/wiki/Category:Proto-Indo-European_language
+languagecodes
+'''
+
+from src.shared_state import DB
+from src.ordering import *
+from src.db import * 
+from src.wiktionary_autoconfig import * 
+
+import copy
+import ast
+
+'''
+!!!
+WARNING
+!!!
+This caches the thingies. so have to delete the files in order for changes to show. could try something more complicated. or could just put these in ... yet another table. but its annoying because i want to do this stuff befoere loading db etc...
+!!!
+'''
+
+#Langname_Code = DB._LangnameCode.OneValue() or {}
+
+#GCode_Rectify = DB._CodeRectified.OneValue() or {}
+
+#DB._CodeLangs.OneValue() = DB._DB._CodeLangs.OneValue().OneValue() or {}
+
+
+####
+
+def PIE_path(suffix): return f'{ResourcesDir}proto-indo-european-langs{suffix}.txt'
+
+includeLangNames = {sline for line in Read(PIE_path('')).split('\n') if (sline := line.strip())}
+
+PIE_langcode_poset = Poset(ast.literal_eval(Read(PIE_path('-tree'))))
+
+def LangLang_isFutureward(lang1, lang2) : return lang1 in PIE_langcode_poset.strict_ulteriors.get(lang2, set())
+def LangLang_isPastward(lang1, lang2)   : return LangLang_isFutureward(lang2, lang1)
+
+241102    01:14:54    
+
+   def Execute_AppendictUpdates(self):
+      if len(self.appenddict_queue) == 0: return 
+      with self.index().transact():
+         for db_key, value in self.appenddict_queue.items(): 
+            self.index()[db_key] = self.Plainval_DBval(value | self.DBval_Plainval(self.index().get(db_key, self.DBval_SET)))
+      self.appenddict_queue = {}
+
+
