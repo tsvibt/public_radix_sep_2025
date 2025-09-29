@@ -4,6 +4,7 @@ updated 16 Jun 2024, but, probably incomplete. if you are interested in working 
 
 
 broadly speaking, setting up a working radix goes like:
+
 0. setting up the code
 1. config
 2. getting the wiktionary dump
@@ -33,6 +34,7 @@ step 1.
 make a file radix/src/config.py
 and put this in there:
 
+```
 # controls roughly how much ram the precompute uses. probably necessary if you're going to run the precompute on the whole wikt db. value should be [number of MB of RAM of your computer - 10000] or something like that, e.g. for 32GB RAM:
 G_RAM_ceiling = 15000
 
@@ -41,6 +43,8 @@ WiktionaryXMLfile = "40k-initial.xml"
 
 # for when you're using a full dump:
 #WiktionaryXMLfile = "file_name_of_full_wiktionary_dump.xml"
+
+```
 
 step 2.
 [omit if you're doing the 40k thing]
